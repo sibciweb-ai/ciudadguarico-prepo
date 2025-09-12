@@ -1,0 +1,58 @@
+# Comandos para ejecutar en el VPS para corregir los errores
+
+# 1. Detener contenedores
+docker compose down
+
+# 2. Eliminar archivos obsoletos
+rm -f backend/src/config/cloudinary.ts
+rm -f backend/src/config/database.ts
+rm -f backend/src/controllers/newsController.ts
+rm -f backend/src/models/Media.ts
+rm -f backend/src/models/News.ts
+rm -f backend/src/models/NewsMedia.ts
+rm -f backend/src/models/PDF.ts
+rm -f backend/src/models/Publicidad.ts
+rm -f backend/src/models/Role.ts
+rm -f backend/src/models/Section.ts
+rm -f backend/src/models/User.ts
+rm -f backend/src/models/UserRole.ts
+rm -f backend/src/models/View.ts
+rm -f backend/src/scripts/createAdminUser.ts
+
+# 3. Actualizar tsconfig.json
+cat > backend/tsconfig.json << 'EOF'
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+EOF
+
+# 4. Actualizar docker-compose.yml (eliminar primera línea)
+sed -i '1d' docker-compose.yml
+
+# 5. Reconstruir contenedores
+docker compose build --no-cache
+
+# 6. Ejecutar contenedores
+docker compose up -d
+
+# 7. Verificar estado
+docker compose ps
+docker compose logs --tail=10
