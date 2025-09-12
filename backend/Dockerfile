@@ -1,21 +1,24 @@
-# Backend Dockerfile (Node + Prisma + ts-node)
+# Backend Dockerfile (Node + Prisma + TypeScript build)
 FROM node:20-alpine
 
-# Install openssl for Prisma on Alpine
-RUN apk add --no-cache openssl
+# Install openssl for Prisma on Alpine and build tools for native modules if needed
+RUN apk add --no-cache openssl git python3 make g++
 
 WORKDIR /app
 
-# Install dependencies
+# Copy package files and install dependencies (including dev for build)
 COPY package*.json ./
 RUN npm install
 
-# Prisma client
+# Copy prisma schema and generate client
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# App source
+# Copy app source
 COPY . .
+
+# Build TypeScript to JS
+RUN npm run build
 
 ENV NODE_ENV=production
 ENV PORT=3000
@@ -23,5 +26,5 @@ ENV PORT=3000
 # Expose backend port
 EXPOSE 3000
 
-# Run migrations then start server
-CMD sh -c "npx prisma migrate deploy && npx ts-node src/app.ts"
+# Start the compiled app
+CMD ["node", "dist/app.js"]
