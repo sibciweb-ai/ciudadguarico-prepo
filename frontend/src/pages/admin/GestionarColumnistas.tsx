@@ -21,7 +21,7 @@ const GestionarColumnistas: React.FC = () => {
     try {
       // Intentar conectarse a diferentes endpoints
       const API_ENDPOINTS = [
-        'https://ciudadguaricor.onrender.com/api', // Producción
+        '/api', // Producción
         'http://localhost:3000/api', // Desarrollo
         'http://localhost:3001/api', // Desarrollo alternativo
         '/api' // Fallback
@@ -77,7 +77,7 @@ const GestionarColumnistas: React.FC = () => {
     };
     // Usar el mismo sistema de endpoints múltiples
     const API_ENDPOINTS = [
-      'https://ciudadguaricor.onrender.com/api', // Producción
+      '/api', // Producción
       'http://localhost:3000/api', // Desarrollo
       'http://localhost:3001/api', // Desarrollo alternativo
       '/api' // Fallback
@@ -119,7 +119,7 @@ const GestionarColumnistas: React.FC = () => {
     if (!window.confirm('¿Eliminar columnista?')) return;
     
     const API_ENDPOINTS = [
-      'https://ciudadguaricor.onrender.com/api', // Producción
+      '/api', // Producción
       'http://localhost:3000/api', // Desarrollo
       'http://localhost:3001/api', // Desarrollo alternativo
       '/api' // Fallback

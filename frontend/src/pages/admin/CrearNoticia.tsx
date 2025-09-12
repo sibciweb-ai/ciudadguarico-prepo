@@ -59,7 +59,7 @@ export default function CrearNoticia({ onCreada }: Props) {
   const [notificacion, setNotificacion] = useState<{ mensaje: string, tipo: 'exito' | 'error' } | null>(null);
 
   useEffect(() => {
-    axios.get('https://ciudadguaricor.onrender.com/api/sections').then(res => {
+    axios.get('/api/sections').then(res => {
       setSecciones(Array.isArray(res.data) ? res.data : []);
     });
   }, []);
@@ -94,7 +94,7 @@ export default function CrearNoticia({ onCreada }: Props) {
       // Usa la URL absoluta para el backend
       const formDataImg = new FormData();
       formDataImg.append('file', imagen);
-      const res = await axios.post('https://ciudadguaricor.onrender.com/api/media', formDataImg, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const res = await axios.post('/api/media', formDataImg, { headers: { 'Content-Type': 'multipart/form-data' } });
       mediaIds = [res.data.id];
     } catch (err) {
       mostrarNotificacion('Error al subir la imagen', 'error');
@@ -342,7 +342,7 @@ export default function CrearNoticia({ onCreada }: Props) {
                   const formData = new FormData();
                   formData.append('file', file);
                   try {
-                    const res = await fetch('https://ciudadguaricor.onrender.com/api/media', {
+                    const res = await fetch('/api/media', {
                       method: 'POST',
                       body: formData
                     });

@@ -26,7 +26,7 @@ export function ProveedorContextoContenido({ children }: { children: React.React
   const cargarContenidos = async () => {
     try {
       // Usa la URL absoluta del backend para evitar problemas de CORS y entorno
-      const API_URL = 'https://ciudadguaricor.onrender.com/api/content/contenido-destacado';
+      const API_URL = '/api/content/contenido-destacado';
       const res = await axios.get(API_URL);
       // Filtra y usa solo los que tengan media de Cloudinary
       const contenidosCloudinary = res.data.filter((c: any) =>

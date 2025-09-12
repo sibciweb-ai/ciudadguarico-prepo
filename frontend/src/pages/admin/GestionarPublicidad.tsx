@@ -52,12 +52,12 @@ export default function GestionarContenidoDestacado() {
   const fetchContenidos = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('https://ciudadguaricor.onrender.com/api/content/contenido-destacado');
+      const res = await axios.get('/api/content/contenido-destacado');
       // Asegúrate de que la URL sea absoluta
       const contenidos = res.data.map((b: any) => ({
         ...b,
         media: b.media && b.media.startsWith('/uploads')
-          ? `https://ciudadguaricor.onrender.com${b.media}`
+          ? `${b.media}`
           : b.media
       }));
       setContenidos(contenidos);
@@ -115,9 +115,9 @@ export default function GestionarContenidoDestacado() {
     data.append('visible', String(form.visible));
     try {
       if (editContenido) {
-        await axios.put(`https://ciudadguaricor.onrender.com/api/content/contenido-destacado/${editContenido.id}`, data);
+        await axios.put(`/api/content/contenido-destacado/${editContenido.id}`, data);
       } else {
-        await axios.post('https://ciudadguaricor.onrender.com/api/content/contenido-destacado', data);
+        await axios.post('/api/content/contenido-destacado', data);
       }
       setForm({ media: '', file: null, url: '', fecha_inicio: '', fecha_fin: '', titulo: '', ubicacion: POSICIONES[0].key, visible: true });
       setFormOpen(false);
@@ -193,7 +193,7 @@ export default function GestionarContenidoDestacado() {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('¿Eliminar este contenido destacado?')) return;
-    await axios.delete(`https://ciudadguaricor.onrender.com/api/content/contenido-destacado/${id}`);
+    await axios.delete(`/api/content/contenido-destacado/${id}`);
     fetchContenidos();
   };
 
