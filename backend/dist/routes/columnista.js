@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const columnistaController_1 = require("../controllers/columnistaController");
+const router = (0, express_1.Router)();
+router.get('/', columnistaController_1.ColumnistaController.getAll);
+router.get('/:id', columnistaController_1.ColumnistaController.getById);
+router.post('/', columnistaController_1.ColumnistaController.create);
+router.put('/:id', columnistaController_1.ColumnistaController.update);
+router.delete('/:id', columnistaController_1.ColumnistaController.delete);
+exports.default = router;
