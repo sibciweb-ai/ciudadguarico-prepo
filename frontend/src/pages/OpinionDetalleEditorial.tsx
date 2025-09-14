@@ -106,10 +106,10 @@ const OpinionDetalleEditorial: React.FC = () => {
       </div>
       
       {/* Contenido del Editorial */}
-      <article className="bg-white rounded-lg shadow-lg p-8">
-        <div className="prose prose-lg max-w-none">
+      <article className="bg-white rounded-lg shadow-lg p-8 opinion-container">
+        <div className="prose prose-lg max-w-none content-text">
           {editorial.contenido.split('\n\n').map((paragraph, index) => (
-            <p key={index} className="text-gray-700 leading-relaxed mb-6 text-justify">
+            <p key={index} className="text-gray-700 leading-relaxed opinion-content break-words mb-6 text-justify opinion-content break-words">
               {paragraph}
             </p>
           ))}

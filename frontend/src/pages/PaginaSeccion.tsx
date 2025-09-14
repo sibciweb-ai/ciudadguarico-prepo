@@ -115,7 +115,7 @@ export default function PaginaSeccion() {
                       {noticia.titulo}
                     </h2>
                     <p className="text-gray-600 text-sm line-clamp-2 mb-4">
-                      {noticia.resumen}
+                      <span className="summary-text line-clamp-3">{noticia.resumen}</span>
                     </p>
                     <div className="flex items-center justify-between text-sm pt-3 border-t border-gray-100">
                       <div className="flex items-center gap-2">

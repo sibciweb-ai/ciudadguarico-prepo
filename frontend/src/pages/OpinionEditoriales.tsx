@@ -221,7 +221,7 @@ const OpinionEditoriales: React.FC = () => {
           {/* Sidebar */}
           <div className="lg:w-80">
             <div className="bg-white rounded-2xl shadow-lg border p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <h3 className="text-2xl font-bold text-gray-900 opinion-title break-words mb-6 flex items-center">
                 <MessageSquare className="mr-3 h-6 w-6 text-guarico-blue" />
                 Minuto a Minuto
               </h3>
@@ -230,7 +230,7 @@ const OpinionEditoriales: React.FC = () => {
                   const colors = ['border-guarico-blue', 'border-green-500', 'border-purple-500', 'border-orange-500', 'border-red-500'];
                   return (
                     <div key={noticia.id} className={`border-l-4 ${colors[index]} pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors`}>
-                      <h4 className="font-semibold text-gray-900 mb-2 hover:text-guarico-blue transition-colors cursor-pointer">
+                      <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words hover:text-guarico-blue transition-colors cursor-pointer">
                         {noticia.titulo}
                       </h4>
                       <div className="flex items-center text-sm text-gray-500">

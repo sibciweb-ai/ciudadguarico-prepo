@@ -126,7 +126,7 @@ export default function VistaNoticia() {
       {/* Contenido */}
       <div className="prose prose-lg max-w-none">
         <p className="text-xl text-gray-700 leading-relaxed mb-6 font-medium border-l-4 border-guarico-blue pl-4 italic">
-          {noticia.resumen}
+          <span className="summary-text">{noticia.resumen}</span>
         </p>
         
         <div className="text-gray-800 leading-relaxed space-y-4">

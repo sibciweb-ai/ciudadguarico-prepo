@@ -182,7 +182,7 @@ const OpinionColumnistas: React.FC = () => {
                       </div>
 
                       {/* Nombre */}
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-guarico-blue transition-colors duration-300">
+                      <h3 className="text-2xl font-bold text-gray-900 opinion-title break-words mb-4 group-hover:text-guarico-blue transition-colors duration-300">
                         {columnista.nombre}
                       </h3>
 
@@ -206,14 +206,14 @@ const OpinionColumnistas: React.FC = () => {
           {/* Sidebar */}
           <div className="lg:w-80">
             <div className="bg-white rounded-2xl shadow-lg border p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <h3 className="text-2xl font-bold text-gray-900 opinion-title break-words mb-6 flex items-center">
                 <MessageSquare className="mr-3 h-6 w-6 text-guarico-blue" />
                 Minuto a Minuto
               </h3>
               <div className="space-y-6">
                 {noticias.slice(0, 5).map((noticia) => (
                   <div key={noticia.id} className="border-l-4 border-guarico-blue pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors">
-                    <h4 className="font-semibold text-gray-900 mb-2 hover:text-guarico-blue transition-colors cursor-pointer">
+                    <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words hover:text-guarico-blue transition-colors cursor-pointer">
                       {noticia.titulo}
                     </h4>
                     <div className="flex items-center text-sm text-gray-500">

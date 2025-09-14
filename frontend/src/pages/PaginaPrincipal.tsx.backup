@@ -184,6 +184,7 @@ export default function PaginaPrincipal() {
           <div className="space-y-8">
             {/* Carrusel principal + noticias destacadas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Carrusel principal */}
               <div className="relative group">
                 {noticiasPrincipales.length > 0 && noticiasPrincipales[noticiaActual] ? (
                   <>
@@ -211,9 +212,10 @@ export default function PaginaPrincipal() {
                                   {noticiaMostrada.seccion?.nombre}
                                 </span>
                               </div>
-                              <h2 className="text-2xl font-bold mb-2 group-hover:text-guarico-gold transition-colors news-title line-clamp-3">
+                              <h2 className="text-2xl font-bold mb-2 group-hover:text-guarico-gold transition-colors">
                                 {noticiaMostrada.titulo}
                               </h2>
+                              <p className="text-sm opacity-90 mb-2">{noticiaMostrada.resumen}</p>
                               <div className="text-xs opacity-75">
                                 {convertirFecha(noticiaMostrada.fecha_publicacion).toLocaleDateString('es-ES')} | 
                                 Diario Ciudad Guárico
@@ -296,7 +298,7 @@ export default function PaginaPrincipal() {
                                 {noticia.seccion?.nombre}
                               </span>
                             </div>
-                            <h3 className="font-semibold text-sm text-gray-900 group-hover:text-guarico-blue transition-colors line-clamp-2 mb-1 news-title">
+                            <h3 className="font-semibold text-sm text-gray-900 group-hover:text-guarico-blue transition-colors line-clamp-2 mb-1">
                               {noticia.titulo}
                             </h3>
                           </div>

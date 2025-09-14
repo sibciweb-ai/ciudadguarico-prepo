@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { getPrismaClient } from '../config/prisma';
-import { upload } from '../middleware/upload';
+import { upload, convertToWebP } from '../middleware/upload';
 
 const router = Router();
 
 // Subir imagen
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', upload.single('file'), convertToWebP, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No se subió ningún archivo' });

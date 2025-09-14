@@ -148,11 +148,11 @@ const OpinionPage: React.FC = () => {
             </div>
             
             {editoriales.length > 0 && (
-              <div className="bg-white rounded-xl shadow-lg border p-8 mb-6 hover:shadow-xl transition-shadow">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="bg-white rounded-xl shadow-lg border p-8 mb-6 hover:shadow-xl transition-shadow opinion-container">
+                <h3 className="text-2xl font-bold text-gray-900 opinion-title break-words mb-4 opinion-title break-words">
                   {editoriales[0].titulo}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+                <p className="text-gray-600 mb-6 leading-relaxed text-lg opinion-content break-words">
                   {editoriales[0].contenido.substring(0, 250)}...
                 </p>
                 <div className="flex items-center justify-between">
@@ -176,11 +176,11 @@ const OpinionPage: React.FC = () => {
             
             <div className="space-y-4">
               {editoriales.slice(1, 4).map((editorial) => (
-                <div key={editorial.id} className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow">
-                  <h4 className="font-semibold text-gray-900 mb-2 text-lg">
+                <div key={editorial.id} className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow opinion-container">
+                  <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words text-lg opinion-title break-words">
                     {editorial.titulo}
                   </h4>
-                  <p className="text-gray-600 mb-3 text-sm">
+                  <p className="text-gray-600 mb-3 text-sm opinion-content break-words">
                     {editorial.contenido.substring(0, 120)}...
                   </p>
                   <div className="flex items-center justify-between">
@@ -237,7 +237,7 @@ const OpinionPage: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-guarico-blue transition-colors">
+                  <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-guarico-blue transition-colors">
                     {columnista.nombre}
                   </h4>
                   <p className="text-sm text-gray-500 leading-relaxed">
@@ -260,36 +260,46 @@ const OpinionPage: React.FC = () => {
         
         {/* Sidebar Minuto a Minuto */}
         <div className="mt-16">
-          <div className="bg-white rounded-xl shadow-lg border p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg border p-8 opinion-container">
+            <h3 className="text-2xl font-bold text-gray-900 opinion-title break-words mb-6 flex items-center opinion-title">
               <MessageSquare className="mr-3 h-6 w-6 text-guarico-blue" />
               Minuto a Minuto
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="border-l-4 border-guarico-blue pl-4">
-                <h4 className="font-semibold text-gray-900 mb-2">
+              <Link to="/noticias" className="border-l-4 border-guarico-blue pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-guarico-blue transition-colors opinion-title break-words">
                   Análisis político semanal
                 </h4>
                 <p className="text-sm text-gray-500">Hace 2 horas • Política</p>
-              </div>
-              <div className="border-l-4 border-green-500 pl-4">
-                <h4 className="font-semibold text-gray-900 mb-2">
+              </Link>
+              <Link to="/noticias" className="border-l-4 border-green-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-green-600 transition-colors opinion-title break-words">
                   Perspectivas económicas
                 </h4>
                 <p className="text-sm text-gray-500">Hace 4 horas • Economía</p>
-              </div>
-              <div className="border-l-4 border-purple-500 pl-4">
-                <h4 className="font-semibold text-gray-900 mb-2">
+              </Link>
+              <Link to="/noticias" className="border-l-4 border-purple-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-purple-600 transition-colors opinion-title break-words">
                   Cultura y sociedad
                 </h4>
                 <p className="text-sm text-gray-500">Hace 6 horas • Cultura</p>
-              </div>
-              <div className="border-l-4 border-orange-500 pl-4">
-                <h4 className="font-semibold text-gray-900 mb-2">
+              </Link>
+              <Link to="/noticias" className="border-l-4 border-orange-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-orange-600 transition-colors opinion-title break-words">
                   Deportes regionales
                 </h4>
                 <p className="text-sm text-gray-500">Hace 8 horas • Deportes</p>
-              </div>
+              </Link>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <Link 
+                to="/noticias"
+                className="inline-flex items-center text-guarico-blue hover:text-blue-700 font-medium transition-colors group"
+              >
+                <span className="mr-2">Ver todas las actualizaciones</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+              </Link>
             </div>
           </div>
         </div>

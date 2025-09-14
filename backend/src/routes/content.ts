@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getPrismaClient } from '../config/prisma';
-import { uploadContenido } from '../middleware/upload';
+import { uploadContenido, convertToWebP } from '../middleware/upload';
 import path from 'path';
 import fs from 'fs';
 
@@ -50,7 +50,7 @@ router.get('/contenido-destacado', async (req, res) => {
 });
 
 // Subir contenido destacado
-router.post('/contenido-destacado', uploadContenido.single('file'), async (req, res) => {
+router.post('/contenido-destacado', uploadContenido.single('file'), convertToWebP, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No se subió ningún archivo' });
     
@@ -81,7 +81,7 @@ router.post('/contenido-destacado', uploadContenido.single('file'), async (req, 
 });
 
 // Editar contenido destacado
-router.put('/contenido-destacado/:id', uploadContenido.single('file'), async (req, res) => {
+router.put('/contenido-destacado/:id', uploadContenido.single('file'), convertToWebP, async (req, res) => {
   try {
     const prisma = getPrismaClient();
     const contenido = await prisma.contenidoDestacado.findUnique({ where: { id: parseInt(req.params.id) } });

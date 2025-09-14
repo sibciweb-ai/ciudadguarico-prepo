@@ -134,9 +134,9 @@ const OpinionDetalleColumnista: React.FC = () => {
         {columnista.opiniones && columnista.opiniones.length > 0 ? (
           <div className="space-y-6">
             {columnista.opiniones.map((opinion) => (
-              <article key={opinion.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+              <article className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow opinion-container">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl font-bold text-gray-800 hover:text-guarico-blue transition-colors">
+                  <h3 className="text-xl font-bold text-gray-800 opinion-title break-words hover:text-guarico-blue transition-colors opinion-title break-words">
                     {opinion.titulo}
                   </h3>
                   {opinion.destacado && (
@@ -156,7 +156,7 @@ const OpinionDetalleColumnista: React.FC = () => {
                 </div>
                 
                 <div className="prose prose-gray max-w-none">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed opinion-content break-words opinion-content break-words">
                     {opinion.contenido.length > 300 
                       ? `${opinion.contenido.substring(0, 300)}...` 
                       : opinion.contenido

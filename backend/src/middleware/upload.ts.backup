@@ -9,7 +9,7 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Almacenamiento local en disco con conversión selectiva
+// Almacenamiento local en disco con conversión a WebP
 const diskStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, uploadsDir);
@@ -17,15 +17,8 @@ const diskStorage = multer.diskStorage({
   filename: (_req, file, cb) => {
     const timestamp = Date.now();
     const nameWithoutExt = path.parse(file.originalname).name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const originalExt = path.parse(file.originalname).ext.toLowerCase();
-    
-    // Preservar GIFs y WebPs, convertir otros formatos
-    if (file.mimetype === 'image/gif' || file.mimetype === 'image/webp') {
-      cb(null, `${timestamp}-${nameWithoutExt}${originalExt}`);
-    } else {
-      // Convertir JPG y PNG a WebP
-      cb(null, `${timestamp}-${nameWithoutExt}.webp`);
-    }
+    // Siempre guardar como .webp
+    cb(null, `${timestamp}-${nameWithoutExt}.webp`);
   }
 });
 
@@ -39,19 +32,13 @@ const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterC
   }
 };
 
-// Middleware personalizado para convertir imágenes a WebP (excepto GIFs)
+// Middleware personalizado para convertir imágenes a WebP
 export const convertToWebP = (req: any, res: any, next: any) => {
   if (!req.file) {
     return next();
   }
 
   const inputPath = req.file.path;
-  
-  // No convertir GIFs ni WebPs
-  if (req.file.mimetype === 'image/gif' || req.file.mimetype === 'image/webp') {
-    return next();
-  }
-
   const timestamp = Date.now();
   const nameWithoutExt = path.parse(req.file.originalname).name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
   const outputFilename = `${timestamp}-${nameWithoutExt}.webp`;
@@ -62,10 +49,12 @@ export const convertToWebP = (req: any, res: any, next: any) => {
     .webp({ quality: 85, effort: 4 }) // Calidad 85% con optimización nivel 4
     .toFile(outputPath)
     .then(() => {
-      // Eliminar archivo original
-      fs.unlink(inputPath, (err) => {
-        if (err) console.warn('Error eliminando archivo temporal:', err);
-      });
+      // Eliminar archivo original si no es WebP
+      if (req.file.mimetype !== 'image/webp') {
+        fs.unlink(inputPath, (err) => {
+          if (err) console.warn('Error eliminando archivo temporal:', err);
+        });
+      }
 
       // Actualizar información del archivo en req.file
       req.file.filename = outputFilename;
