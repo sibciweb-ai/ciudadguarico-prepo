@@ -32,7 +32,7 @@ services:
     depends_on:
       - db
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - pgladmin_data:/var/lib/pgadmin
     restart: unless-stopped
     networks:
       - ciudadguarico-net
@@ -46,7 +46,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://cg_user:cg_password@db:5432/cg_database?schema=public
-      ALLOWED_ORIGINS: http://localhost,http://localhost:80,http://localhost:5173,http://localhost:8080,http://ciudadguarico.com,https://ciudadguarico.com,http://149.50.138.208,https://149.50.138.208
+      ALLOWED_ORIGINS: http://localhost,http://localhost:80,http://localhost:5173,http://localhost:8080,http://ciudadguarico.com,https://ciudadguarico.com,http://www.ciudadguarico.com,https://www.ciudadguarico.com,http://administracion.ciudadguarico.com,https://administracion.ciudadguarico.com,http://149.50.138.208,https://149.50.138.208
     depends_on:
       db:
         condition: service_healthy
@@ -75,7 +75,7 @@ services:
 
 volumes:
   pgdata:
-  pgadmin_data:
+  pgladmin_data:
   backend_uploads:
 
 networks:
