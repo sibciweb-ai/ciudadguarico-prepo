@@ -278,7 +278,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
 
   const obtenerNoticiasPorSeccion = async (seccion: string): Promise<Noticia[]> => {
     try {
-      const response = await axios.get(createApiUrl(`/news/section/${seccion}`));
+      const response = await axios.get(createApiUrl(`/news?seccion=${encodeURIComponent(seccion)}`));
       return response.data.map((noticia: any) => ({
         id: noticia.id,
         titulo: noticia.titulo,

@@ -1,247 +1,114 @@
-/* Importar fuente adicional */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Variables CSS personalizadas para Ciudad Guárico */
+/* Variables CSS personalizadas */
 :root {
-  --guarico-blue: #4CAF50;
-  --guarico-dark-blue: #2E7D32;
-  --guarico-light-blue: #81C784;
-  --guarico-gold: #FFD700;
-  --guarico-light-gold: #FFE55C;
-  --guarico-white: #FFFFFF;
-  --guarico-black: #000000;
+  --guarico-blue: #1e40af;
+  --guarico-gold: #f59e0b;
+  --guarico-white: #ffffff;
+  --header-height: 140px;
 }
 
-/* Utilidades adicionales */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Estilos globales */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
 }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Clases personalizadas de Tailwind */
+@layer utilities {
+  .text-guarico-blue {
+    color: var(--guarico-blue);
+  }
+  
+  .bg-guarico-blue {
+    background-color: var(--guarico-blue);
+  }
+  
+  .text-guarico-gold {
+    color: var(--guarico-gold);
+  }
+  
+  .bg-guarico-gold {
+    background-color: var(--guarico-gold);
+  }
+  
+  .text-guarico-white {
+    color: var(--guarico-white);
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
-/* Animaciones personalizadas */
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
+/* Animaciones */
+@keyframes fade-in-down {
+  0% {
     opacity: 0;
+    transform: translateY(-10px);
   }
-  to {
-    transform: translateY(0);
+  100% {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-slideDown {
-  animation: slideDown 0.3s ease-out forwards;
+.animate-fade-in-down {
+  animation: fade-in-down 0.5s ease-out;
 }
 
-/* Estilos para el scroll infinito */
-@keyframes scroll-left {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll-left {
-  animation: scroll-left 60s linear infinite;
-}
-
-@keyframes scroll-right {
-  0% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.animate-scroll-right {
-  animation: scroll-right 30s linear infinite;
-}
-
-/* Mejoras de accesibilidad y UX */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Estilos para dispositivos móviles */
-@media (max-width: 768px) {
-  .mobile-hidden {
-    display: none;
-  }
-}
-
-/* Mejoras de accesibilidad y UX */
-.btn-primary {
-  @apply bg-guarico-blue text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-guarico-dark-blue focus:ring-2 focus:ring-guarico-blue focus:ring-offset-2;
-}
-
-.btn-secondary {
-  @apply bg-guarico-gold text-guarico-black px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-guarico-light-gold focus:ring-2 focus:ring-guarico-blue focus:ring-offset-2;
-}
-
-/* Clases para evitar que el texto rompa el layout */
-.word-break-all {
-  word-break: break-all;
-}
-
-.word-wrap-anywhere {
-  overflow-wrap: anywhere;
-}
-
-.word-wrap-break-word {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-}
-
-/* Estilos específicos para contenido de noticias */
-.news-content {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  line-break: auto;
-  max-width: 100%;
-}
-
+/* Estilos para contenedores con texto dinámico para evitar overflow */
 .news-title {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
-  line-break: auto;
-}
-
-.news-summary {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  line-break: auto;
-}
-
-/* Prevenir texto que rompe el layout - Versión mejorada */
-.news-container {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
+  line-height: 1.4;
   max-width: 100%;
-  overflow: hidden;
-}
-
-.news-container * {
-  max-width: 100%;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-}
-
-/* Estilos globales para prevenir desbordamiento */
-* {
-  box-sizing: border-box;
-}
-
-.container {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Clases específicas para diferentes tipos de contenido */
-.title-text {
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
-  hyphens: auto;
-  line-height: 1.2;
+  white-space: normal;
 }
 
 .summary-text {
   word-wrap: break-word;
-  overflow-wrap: anywhere;
-  hyphens: auto;
-  line-height: 1.4;
-}
-
-.content-text {
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   hyphens: auto;
   line-height: 1.6;
-}
-
-/* Prevenir overflow horizontal en cualquier contenedor */
-.no-overflow {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.break-words {
-  word-break: break-all;
-  overflow-wrap: break-word;
-}
-
-/* Específico para carruseles y componentes que pueden tener texto largo */
-.carousel-text {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
   max-width: 100%;
   white-space: normal;
-}
-
-/* Específico para páginas de opinión, editoriales y columnistas */
-.opinion-container {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.opinion-container * {
-  max-width: 100%;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
 }
 
 .opinion-title {
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  word-break: break-word !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   hyphens: auto;
-  line-height: 1.3;
+  line-height: 1.4;
   max-width: 100%;
+  white-space: normal;
 }
 
 .opinion-content {
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  word-break: break-word !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   hyphens: auto;
   line-height: 1.6;
   max-width: 100%;
   white-space: normal;
+}
+
+.opinion-container {
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Para texto largo que podría romper */
@@ -257,4 +124,11 @@
   overflow-wrap: anywhere;
   word-break: break-word;
   max-width: 100%;
+}
+
+/* SOLO para el contenido de noticias individuales - texto justificado */
+.noticia-individual .prose p,
+.noticia-individual .prose div {
+  text-align: justify !important;
+  text-justify: inter-word;
 }

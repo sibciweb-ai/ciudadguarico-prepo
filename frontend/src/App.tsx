@@ -17,8 +17,15 @@ const OpinionColumnistas = React.lazy(() => import('./pages/OpinionColumnistas')
 const OpinionDetalleEditorial = React.lazy(() => import('./pages/OpinionDetalleEditorial'));
 const OpinionDetalleColumnista = React.lazy(() => import('./pages/OpinionDetalleColumnista'));
 
-
-
+// Componente de Loading mejorado
+const LoadingFallback = ({ mensaje = "Cargando..." }: { mensaje?: string }) => (
+  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-guarico-blue mx-auto mb-4"></div>
+      <p className="text-gray-600 text-lg">{mensaje}</p>
+    </div>
+  </div>
+);
 
 export default function App() {
   return (
@@ -33,11 +40,46 @@ export default function App() {
                 <Route path="noticia/:id" element={<VistaNoticia />} />
                 <Route path="buscar" element={<ResultadosBusqueda />} />
                 {/* Opinión */}
-                <Route path="opinion" element={<React.Suspense fallback={null}><Opinion /></React.Suspense>} />
-                <Route path="opinion/editoriales" element={<React.Suspense fallback={null}><OpinionEditoriales /></React.Suspense>} />
-                <Route path="opinion/columnistas" element={<React.Suspense fallback={null}><OpinionColumnistas /></React.Suspense>} />
-                <Route path="opinion/editoriales/:id" element={<React.Suspense fallback={null}><OpinionDetalleEditorial /></React.Suspense>} />
-                <Route path="opinion/columnistas/:id" element={<React.Suspense fallback={null}><OpinionDetalleColumnista /></React.Suspense>} />
+                <Route 
+                  path="opinion" 
+                  element={
+                    <React.Suspense fallback={<LoadingFallback mensaje="Cargando sección de opinión..." />}>
+                      <Opinion />
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="opinion/editoriales" 
+                  element={
+                    <React.Suspense fallback={<LoadingFallback mensaje="Cargando editoriales..." />}>
+                      <OpinionEditoriales />
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="opinion/columnistas" 
+                  element={
+                    <React.Suspense fallback={<LoadingFallback mensaje="Cargando columnistas..." />}>
+                      <OpinionColumnistas />
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="opinion/editoriales/:id" 
+                  element={
+                    <React.Suspense fallback={<LoadingFallback mensaje="Cargando editorial..." />}>
+                      <OpinionDetalleEditorial />
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="opinion/columnistas/:id" 
+                  element={
+                    <React.Suspense fallback={<LoadingFallback mensaje="Cargando artículos del columnista..." />}>
+                      <OpinionDetalleColumnista />
+                    </React.Suspense>
+                  } 
+                />
               </Route>
               
               {/* Rutas de administración */}

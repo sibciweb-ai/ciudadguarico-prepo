@@ -22,7 +22,9 @@ export default function VistaNoticia() {
   };
 
   // Obtener la imagen principal desde media
-  const imagenPrincipal = noticia.media?.find(m => m.tipo === 'imagen')?.url || '';
+  const mediaPrincipal = noticia.media?.find(m => m.tipo === 'imagen');
+  const imagenPrincipal = mediaPrincipal?.url || '';
+  const leyendaImagen = mediaPrincipal?.descripcion || '';
   // Obtener autores como string
   const autores = [noticia.autorTexto, noticia.autorFoto].filter(Boolean).join(' / ');
   // Obtener nombre de la sección
@@ -61,6 +63,11 @@ export default function VistaNoticia() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg" />
         <span className="absolute top-4 left-4 bg-guarico-blue text-guarico-white px-3 py-1 text-sm rounded-lg shadow-lg">
+        {leyendaImagen && (
+          <div className="absolute bottom-2 left-2 right-2 bg-black bg-opacity-60 text-white text-sm p-2 rounded">
+            {leyendaImagen}
+          </div>
+        )}
           {nombreSeccion}
         </span>
       </div>
@@ -129,7 +136,7 @@ export default function VistaNoticia() {
           <span className="summary-text">{noticia.resumen}</span>
         </p>
         
-        <div className="text-gray-800 leading-relaxed space-y-4">
+        <div className="text-gray-800 leading-relaxed space-y-4 noticia-individual">
   {/* Renderizar el contenido como HTML enriquecido (incluyendo imágenes) */}
   <div
     className="prose prose-lg max-w-none"

@@ -9,11 +9,12 @@ const secciones = [
   { nombre: 'Municipales', color: 'bg-green-600', limite: 3 },
   { nombre: 'Deportes', color: 'bg-yellow-600', limite: 3 },
   { nombre: 'Cultura', color: 'bg-purple-600', limite: 3 },
-  { nombre: 'Produccion', color: 'bg-emerald-600', limite: 3 },
+  { nombre: 'Producción', color: 'bg-emerald-600', limite: 3 }, // CORREGIDO: era "Produccion"
   { nombre: 'Comunidad', color: 'bg-pink-600', limite: 3 },
   { nombre: 'Seguridad', color: 'bg-red-600', limite: 3 },
   { nombre: 'Turismo', color: 'bg-cyan-600', limite: 3 },
-  { nombre: 'Educación', color: 'bg-indigo-600', limite: 3 }
+  { nombre: 'Educación', color: 'bg-indigo-600', limite: 3 },
+  { nombre: 'Salud', color: 'bg-teal-600', limite: 3 } // AGREGADO: nueva sección
 ];
 
 // Paleta de colores para cada sección (igual que en PaginaSeccion)
@@ -22,11 +23,12 @@ const coloresSeccion = {
   'Municipales': 'bg-green-600 text-white',
   'Deportes': 'bg-yellow-500 text-gray-900',
   'Cultura': 'bg-purple-600 text-white',
-  'Produccion': 'bg-emerald-600 text-white',
+  'Producción': 'bg-emerald-600 text-white', // CORREGIDO: era "Produccion"
   'Comunidad': 'bg-pink-600 text-white',
   'Seguridad': 'bg-red-600 text-white',
   'Turismo': 'bg-cyan-600 text-white',
-  'Educación': 'bg-indigo-600 text-white'
+  'Educación': 'bg-indigo-600 text-white',
+  'Salud': 'bg-teal-600 text-white' // AGREGADO: nueva sección
 };
 
 export default function PaginaPrincipal() {

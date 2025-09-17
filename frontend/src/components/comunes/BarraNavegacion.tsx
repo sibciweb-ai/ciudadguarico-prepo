@@ -10,7 +10,7 @@ const seccionesPrincipales = [
   { nombre: 'DEPORTES', ruta: '/seccion/Deportes' },
   { nombre: 'SALUD', ruta: '/seccion/Salud' },
   { nombre: 'CULTURA', ruta: '/seccion/Cultura' },
-  { nombre: 'PRODUCCIÓN', ruta: '/seccion/Produccion' },
+  { nombre: 'PRODUCCIÓN', ruta: '/seccion/Producción' },
 ];
 
 // Secciones que van en el dropdown "Más"
@@ -42,7 +42,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
   
   const dropdownOpinionRef = useRef<HTMLDivElement>(null);
   const dropdownMasRef = useRef<HTMLDivElement>(null);
-  const dropdownBusquedaRef = useRef<HTMLDivElement>(null); // Nueva referencia para búsqueda
+  const dropdownBusquedaRef = useRef<HTMLDivElement>(null);
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -53,9 +53,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
       if (dropdownMasRef.current && !dropdownMasRef.current.contains(event.target as Node)) {
         setDropdownMasAbierto(false);
       }
-      // Cerrar búsqueda si se hace click fuera - usando la referencia correcta
-      if (dropdownBusquedaRef.current && 
-          !dropdownBusquedaRef.current.contains(event.target as Node)) {
+      if (dropdownBusquedaRef.current && !dropdownBusquedaRef.current.contains(event.target as Node)) {
         setMostrarBusqueda(false);
       }
     }
@@ -139,7 +137,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               <button
                 onClick={() => {
                   setDropdownOpinionAbierto(!dropdownOpinionAbierto);
-                  setDropdownMasAbierto(false); // Cerrar el otro dropdown
+                  setDropdownMasAbierto(false);
                 }}
                 className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${
                   location.pathname.startsWith('/opinion')
@@ -153,7 +151,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               </button>
               
               {dropdownOpinionAbierto && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg border border-gray-200" style={{ zIndex: 9999 }}>
                   {opinionSubsecciones.map((sub) => (
                     <Link
                       key={sub.nombre}
@@ -177,7 +175,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               <button
                 onClick={() => {
                   setDropdownMasAbierto(!dropdownMasAbierto);
-                  setDropdownOpinionAbierto(false); // Cerrar el otro dropdown
+                  setDropdownOpinionAbierto(false);
                 }}
                 className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${
                   masActivo
@@ -189,7 +187,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               </button>
               
               {dropdownMasAbierto && (
-                <div className="absolute top-full left-0 mt-2 w-40 bg-white text-gray-900 rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="absolute top-full left-0 mt-2 w-40 bg-white text-gray-900 rounded-lg shadow-lg border border-gray-200" style={{ zIndex: 9999 }}>
                   {seccionesMas.map((seccion) => (
                     <Link
                       key={seccion.nombre}
@@ -211,7 +209,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
 
           {/* Búsqueda y menú móvil */}
           <div className="ml-auto flex items-center space-x-4">
-            <div className="relative" ref={dropdownBusquedaRef}> {/* Cambiada la referencia aquí */}
+            <div className="relative" ref={dropdownBusquedaRef}>
               <button
                 onClick={() => {
                   setMostrarBusqueda(!mostrarBusqueda);
@@ -226,7 +224,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               
               {/* Dropdown de búsqueda */}
               {mostrarBusqueda && (
-                <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200" style={{ zIndex: 9999 }}>
                   <form onSubmit={manejarSubmitBusqueda} className="p-4">
                     <div className="relative">
                       <input

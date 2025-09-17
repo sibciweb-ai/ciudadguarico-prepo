@@ -266,25 +266,25 @@ const OpinionPage: React.FC = () => {
               Minuto a Minuto
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Link to="/noticias" className="border-l-4 border-guarico-blue pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+              <Link to="/" className="border-l-4 border-guarico-blue pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
                 <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-guarico-blue transition-colors opinion-title break-words">
                   Análisis político semanal
                 </h4>
                 <p className="text-sm text-gray-500">Hace 2 horas • Política</p>
               </Link>
-              <Link to="/noticias" className="border-l-4 border-green-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+              <Link to="/" className="border-l-4 border-green-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
                 <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-green-600 transition-colors opinion-title break-words">
                   Perspectivas económicas
                 </h4>
                 <p className="text-sm text-gray-500">Hace 4 horas • Economía</p>
               </Link>
-              <Link to="/noticias" className="border-l-4 border-purple-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+              <Link to="/" className="border-l-4 border-purple-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
                 <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-purple-600 transition-colors opinion-title break-words">
                   Cultura y sociedad
                 </h4>
                 <p className="text-sm text-gray-500">Hace 6 horas • Cultura</p>
               </Link>
-              <Link to="/noticias" className="border-l-4 border-orange-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
+              <Link to="/" className="border-l-4 border-orange-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
                 <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-orange-600 transition-colors opinion-title break-words">
                   Deportes regionales
                 </h4>
@@ -294,7 +294,7 @@ const OpinionPage: React.FC = () => {
             
             <div className="mt-6 pt-4 border-t border-gray-200">
               <Link 
-                to="/noticias"
+                to="/"
                 className="inline-flex items-center text-guarico-blue hover:text-blue-700 font-medium transition-colors group"
               >
                 <span className="mr-2">Ver todas las actualizaciones</span>

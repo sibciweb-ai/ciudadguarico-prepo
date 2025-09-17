@@ -4,25 +4,45 @@ import { upload } from '../middleware/upload';
 
 const router = Router();
 
-// Obtener todas las noticias (con búsqueda global)
+// Obtener todas las noticias (con búsqueda global y filtrado por sección)
 router.get('/', async (req, res) => {
   try {
     const prisma = getPrismaClient();
     const search = req.query.search ? String(req.query.search).toLowerCase() : '';
+    const seccion = req.query.seccion ? String(req.query.seccion) : '';
+    const limit = req.query.limit ? parseInt(String(req.query.limit)) : undefined;
     
-    let news;
-    if (search) {
-      news = await prisma.noticia.findMany({
-        include: {
-          seccion: true,
-          noticiaMedia: {
-            include: {
-              media: true
-            }
-          }
-        },
-        orderBy: { fechaPublicacion: 'desc' }
+    let whereClause: any = {};
+    
+    // Si hay filtro por sección, agregarlo al where
+    if (seccion) {
+      const seccionData = await prisma.seccion.findFirst({ 
+        where: { nombre: seccion } 
       });
+      if (seccionData) {
+        whereClause.seccionId = seccionData.id;
+      } else {
+        // Si no encuentra la sección, retornar array vacío
+        return res.json([]);
+      }
+    }
+    
+    let news = await prisma.noticia.findMany({
+      where: whereClause,
+      include: {
+        seccion: true,
+        noticiaMedia: {
+          include: {
+            media: true
+          }
+        }
+      },
+      orderBy: { fechaPublicacion: 'desc' },
+      take: limit
+    });
+    
+    // Si hay término de búsqueda, aplicar filtro adicional
+    if (search) {
       news = news.filter(n =>
         n.titulo.toLowerCase().includes(search) ||
         n.resumen.toLowerCase().includes(search) ||
@@ -30,18 +50,6 @@ router.get('/', async (req, res) => {
         n.autorTexto.toLowerCase().includes(search) ||
         n.autorFoto.toLowerCase().includes(search)
       );
-    } else {
-      news = await prisma.noticia.findMany({
-        include: {
-          seccion: true,
-          noticiaMedia: {
-            include: {
-              media: true
-            }
-          }
-        },
-        orderBy: { fechaPublicacion: 'desc' }
-      });
     }
     
     const formatted = news.map(n => ({

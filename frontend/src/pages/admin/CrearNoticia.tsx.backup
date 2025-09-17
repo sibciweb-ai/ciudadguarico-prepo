@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, X, Image as ImageIcon } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 import axios from 'axios';
 // TipTap imports
@@ -29,6 +29,11 @@ interface Seccion {
   nombre: string;
 }
 
+interface Autor {
+  id: number;
+  nombre: string;
+}
+
 export default function CrearNoticia({ onCreada }: Props) {
   // TipTap editor para el contenido
   const editor = useEditor({
@@ -38,7 +43,6 @@ export default function CrearNoticia({ onCreada }: Props) {
       setFormulario(prev => ({ ...prev, contenido: editor.getHTML() }));
     },
   });
-  
   const { agregarNoticia } = useContextoNoticias();
   const [formulario, setFormulario] = useState({
     titulo: '',
@@ -47,13 +51,11 @@ export default function CrearNoticia({ onCreada }: Props) {
     seccion_id: '',
     autorTexto: '',
     autorFoto: '',
-    leyendaImagen: '', // AGREGADO: campo para leyenda
     destacada: false
   });
-  
   const [imagen, setImagen] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // AGREGADO: URL de previsualización
   const [secciones, setSecciones] = useState<Seccion[]>([]);
+  const [autores, setAutores] = useState<Autor[]>([]);
   const [notificacion, setNotificacion] = useState<{ mensaje: string, tipo: 'exito' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -61,15 +63,6 @@ export default function CrearNoticia({ onCreada }: Props) {
       setSecciones(Array.isArray(res.data) ? res.data : []);
     });
   }, []);
-
-  // Limpiar URL de previsualización cuando el componente se desmonte
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
 
   const mostrarNotificacion = (mensaje: string, tipo: 'exito' | 'error') => {
     setNotificacion({ mensaje, tipo });
@@ -84,35 +77,9 @@ export default function CrearNoticia({ onCreada }: Props) {
     }));
   };
 
-  // FUNCIÓN CORRECTA para manejar la imagen con previsualización
   const manejarImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      
-      // Limpiar URL anterior si existe
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-      
-      // Crear nueva URL para previsualización
-      const newPreviewUrl = URL.createObjectURL(file);
-      setImagen(file);
-      setPreviewUrl(newPreviewUrl);
-    }
-  };
-
-  // Función para quitar imagen
-  const quitarImagen = () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setImagen(null);
-    setPreviewUrl(null);
-    
-    // Limpiar el input de archivo
-    const fileInput = document.getElementById('imagen') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
+      setImagen(e.target.files[0]);
     }
   };
 
@@ -122,22 +89,17 @@ export default function CrearNoticia({ onCreada }: Props) {
       mostrarNotificacion('Por favor completa todos los campos obligatorios y selecciona una imagen', 'error');
       return;
     }
-    
     let mediaIds: number[] = [];
     try {
-      // Subir imagen con descripción/leyenda
+      // Usa la URL absoluta para el backend
       const formDataImg = new FormData();
       formDataImg.append('file', imagen);
-      if (formulario.leyendaImagen.trim()) {
-        formDataImg.append('descripcion', formulario.leyendaImagen);
-      }
       const res = await axios.post('/api/media', formDataImg, { headers: { 'Content-Type': 'multipart/form-data' } });
       mediaIds = [res.data.id];
     } catch (err) {
       mostrarNotificacion('Error al subir la imagen', 'error');
       return;
     }
-    
     const noticiaForm = new FormData();
     noticiaForm.append('titulo', formulario.titulo);
     noticiaForm.append('contenido', formulario.contenido);
@@ -147,12 +109,9 @@ export default function CrearNoticia({ onCreada }: Props) {
     noticiaForm.append('autorFoto', formulario.autorFoto);
     noticiaForm.append('destacada', String(formulario.destacada));
     mediaIds.forEach(id => noticiaForm.append('media', String(id)));
-    
     try {
       await agregarNoticia(noticiaForm);
       mostrarNotificacion('Noticia creada exitosamente', 'exito');
-      
-      // Limpiar formulario
       setFormulario({
         titulo: '',
         contenido: '',
@@ -160,17 +119,13 @@ export default function CrearNoticia({ onCreada }: Props) {
         seccion_id: '',
         autorTexto: '',
         autorFoto: '',
-        leyendaImagen: '',
         destacada: false
       });
-      
-      quitarImagen();
-      
+      setImagen(null);
       // Limpiar también el editor
       if (editor) {
         editor.commands.setContent('');
       }
-      
       onCreada();
     } catch (error) {
       mostrarNotificacion('Error al crear la noticia', 'error');
@@ -195,46 +150,61 @@ export default function CrearNoticia({ onCreada }: Props) {
           box-sizing: border-box !important;
           color: #374151 !important;
         }
+        
         .editor-container .ProseMirror:focus {
           outline: none !important;
-          ring: none !important;
+          box-shadow: none !important;
         }
-        .editor-container {
-          border: 1px solid #D1D5DB !important;
-          border-radius: 8px !important;
-          background: #ffffff !important;
-        }
+        
         .editor-container .ProseMirror p {
-          margin: 8px 0 !important;
+          margin: 0 0 12px 0 !important;
         }
+        
+        .editor-container .ProseMirror p:last-child {
+          margin-bottom: 0 !important;
+        }
+        
+        .editor-container .ProseMirror img {
+          max-width: 100% !important;
+          height: auto !important;
+          border-radius: 8px !important;
+          margin: 16px 0 !important;
+          display: block !important;
+        }
+        
+        .editor-container .ProseMirror.is-editor-empty:first-child::before {
+          color: #9ca3af !important;
+          content: "Escribe aquí el contenido de tu noticia. Puedes insertar imágenes usando el botón de arriba..." !important;
+          float: left !important;
+          height: 0 !important;
+          pointer-events: none !important;
+        }
+        
         .editor-container .ProseMirror h1, 
         .editor-container .ProseMirror h2, 
         .editor-container .ProseMirror h3 {
           font-weight: bold !important;
-          margin: 16px 0 8px 0 !important;
+          margin: 24px 0 16px 0 !important;
         }
-        .editor-container .ProseMirror h1 { font-size: 1.5rem !important; }
-        .editor-container .ProseMirror h2 { font-size: 1.3rem !important; }
-        .editor-container .ProseMirror h3 { font-size: 1.1rem !important; }
+        
+        .editor-container .ProseMirror h1 { font-size: 24px !important; }
+        .editor-container .ProseMirror h2 { font-size: 20px !important; }
+        .editor-container .ProseMirror h3 { font-size: 18px !important; }
+        
         .editor-container .ProseMirror ul, 
         .editor-container .ProseMirror ol {
-          margin: 8px 0 !important;
-          padding-left: 20px !important;
+          margin: 12px 0 !important;
+          padding-left: 24px !important;
         }
-        .editor-container .ProseMirror blockquote {
-          border-left: 3px solid #D1D5DB !important;
-          margin: 16px 0 !important;
-          padding-left: 16px !important;
-          font-style: italic !important;
-        }
-        .editor-container .ProseMirror img {
-          max-width: 100% !important;
-          height: auto !important;
-          margin: 16px 0 !important;
+        
+        .editor-container .ProseMirror li {
+          margin: 4px 0 !important;
         }
       `}</style>
 
-      <form onSubmit={manejarSubmit} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <h2 className="text-2xl font-bold text-gray-900">Crear Nueva Noticia</h2>
+      
+      <form onSubmit={manejarSubmit} encType="multipart/form-data" className="bg-white rounded-lg shadow-md p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
             <label htmlFor="titulo" className="block text-sm font-medium text-gray-700 mb-2">
@@ -247,9 +217,11 @@ export default function CrearNoticia({ onCreada }: Props) {
               value={formulario.titulo}
               onChange={manejarCambio}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Escribe el título de la noticia"
+              placeholder="Ingrese el título de la noticia"
+              maxLength={150}
               required
             />
+            <p className="text-xs text-gray-500 mt-1">{formulario.titulo.length}/150 caracteres</p>
           </div>
 
           <div>
@@ -264,89 +236,27 @@ export default function CrearNoticia({ onCreada }: Props) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               required
             >
-              <option value="">Selecciona una sección</option>
-              {secciones.map((seccion) => (
-                <option key={seccion.id} value={seccion.id}>
-                  {seccion.nombre}
-                </option>
+              <option value="">Seleccione una sección</option>
+              {(Array.isArray(secciones) ? secciones : []).map(seccion => (
+                <option key={seccion.id} value={seccion.id}>{seccion.nombre}</option>
               ))}
             </select>
           </div>
 
-          {/* SECCIÓN DE IMAGEN CON PREVISUALIZACIÓN MEJORADA */}
           <div>
             <label htmlFor="imagen" className="block text-sm font-medium text-gray-700 mb-2">
               Imagen de la Noticia *
             </label>
-            
-            {/* Si no hay imagen, mostrar input de carga estilizado */}
-            {!imagen && (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
-                   onClick={() => document.getElementById('imagen')?.click()}>
-                <input
-                  type="file"
-                  id="imagen"
-                  name="imagen"
-                  accept="image/*"
-                  onChange={manejarImagen}
-                  className="hidden"
-                  required
-                />
-                <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-sm text-gray-600 mb-2 font-medium">
-                  Haz clic para seleccionar una imagen
-                </p>
-                <p className="text-xs text-gray-400">
-                  PNG, JPG, JPEG, WEBP (máx. 10MB)
-                </p>
-              </div>
-            )}
-            
-            {/* Si hay imagen, mostrar previsualización */}
-            {imagen && previewUrl && (
-              <div className="space-y-4">
-                <div className="relative border border-gray-300 rounded-lg overflow-hidden">
-                  <img 
-                    src={previewUrl} 
-                    alt="Previsualización" 
-                    className="w-full h-64 object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={quitarImagen}
-                    className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors shadow-lg"
-                    title="Quitar imagen"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                  <span className="truncate font-medium">{imagen.name}</span>
-                  <span className="text-xs bg-gray-200 px-2 py-1 rounded">
-                    {(imagen.size / 1024 / 1024).toFixed(2)} MB
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* CAMPO DE LEYENDA - SE MUESTRA SIEMPRE */}
-          <div className="md:col-span-2">
-            <label htmlFor="leyendaImagen" className="block text-sm font-medium text-gray-700 mb-2">
-              Leyenda de la imagen (opcional)
-            </label>
             <input
-              type="text"
-              id="leyendaImagen"
-              name="leyendaImagen"
-              value={formulario.leyendaImagen}
-              onChange={manejarCambio}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Texto que aparecerá como leyenda debajo de la imagen principal"
+              type="file"
+              id="imagen"
+              name="imagen"
+              accept="image/*"
+              onChange={manejarImagen}
+              className="w-full"
+              required
             />
-            <p className="text-xs text-gray-500 mt-1">
-              La leyenda aparecerá debajo de la imagen principal de la noticia
-            </p>
+            {imagen && <p className="text-xs text-gray-500 mt-1">{imagen.name}</p>}
           </div>
 
           <div className="md:col-span-2">
@@ -364,10 +274,10 @@ export default function CrearNoticia({ onCreada }: Props) {
               required
             />
           </div>
-
+          
           <div className="md:col-span-2">
             <label htmlFor="autorFoto" className="block text-sm font-medium text-gray-700 mb-2">
-              Autor de Foto
+              Autor de Foto *
             </label>
             <input
               type="text"
@@ -376,91 +286,48 @@ export default function CrearNoticia({ onCreada }: Props) {
               value={formulario.autorFoto}
               onChange={manejarCambio}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Nombre del autor de foto (opcional)"
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label htmlFor="resumen" className="block text-sm font-medium text-gray-700 mb-2">
-              Resumen/Descripción *
-            </label>
-            <textarea
-              id="resumen"
-              name="resumen"
-              value={formulario.resumen}
-              onChange={manejarCambio}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Breve resumen de la noticia (aparecerá en listados y vista previa)"
-              maxLength={300}
+              placeholder="Nombre del autor de foto"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
-              {formulario.resumen.length}/300 caracteres
-            </p>
           </div>
         </div>
 
-        {/* Editor de contenido */}
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div>
+          <label htmlFor="resumen" className="block text-sm font-medium text-gray-700 mb-2">
+            Resumen *
+          </label>
+          <textarea
+            id="resumen"
+            name="resumen"
+            value={formulario.resumen}
+            onChange={manejarCambio}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            placeholder="Resumen breve de la noticia"
+            maxLength={300}
+            required
+          />
+          <p className="text-xs text-gray-500 mt-1">{formulario.resumen.length}/300 caracteres</p>
+        </div>
+
+        {/* EDITOR DE CONTENIDO MEJORADO */}
+        <div>
+          <label htmlFor="contenido" className="block text-sm font-medium text-gray-700 mb-2">
             Contenido de la Noticia *
           </label>
           
-          <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
+          {/* Contenedor principal del editor */}
+          <div className="editor-container border border-gray-300 rounded-lg bg-white overflow-hidden shadow-sm">
             {/* Barra de herramientas */}
-            <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
+            <div className="border-b border-gray-200 px-4 py-3 bg-gray-50">
               <button
                 type="button"
-                onClick={() => editor?.chain().focus().toggleBold().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
-              >
-                Negrita
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleItalic().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
-              >
-                Cursiva
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
-              >
-                H2
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('heading', { level: 3 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
-              >
-                H3
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
-              >
-                Lista
-              </button>
-              <button
-                type="button"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
                 onClick={() => document.getElementById('input-img-editor')?.click()}
-                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
-                <ImageIcon className="w-4 h-4" />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z" />
+                </svg>
                 Insertar imagen
               </button>
               
@@ -485,7 +352,7 @@ export default function CrearNoticia({ onCreada }: Props) {
                     editor.chain().focus().setImage({ src: data.url }).run();
                     mostrarNotificacion('Imagen insertada correctamente', 'exito');
                   } catch (err) {
-                    mostrarNotificacion('Error al subir la imagen al contenido', 'error');
+                    mostrarNotificacion('Error al subir la imagen', 'error');
                   } finally {
                     e.target.value = '';
                   }
@@ -493,7 +360,7 @@ export default function CrearNoticia({ onCreada }: Props) {
               />
             </div>
             
-            {/* Área del editor */}
+            {/* Área del editor - con altura mínima grande */}
             <div className="min-h-[400px] w-full">
               <EditorContent 
                 editor={editor}
@@ -507,7 +374,7 @@ export default function CrearNoticia({ onCreada }: Props) {
           </p>
         </div>
 
-        <div className="flex items-center mt-6">
+        <div className="flex items-center">
           <input
             type="checkbox"
             id="destacada"
@@ -521,7 +388,7 @@ export default function CrearNoticia({ onCreada }: Props) {
           </label>
         </div>
 
-        <div className="flex justify-end space-x-4 mt-8">
+        <div className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={() => {
@@ -532,10 +399,10 @@ export default function CrearNoticia({ onCreada }: Props) {
                 seccion_id: '',
                 autorTexto: '',
                 autorFoto: '',
-                leyendaImagen: '',
                 destacada: false
               });
-              quitarImagen();
+              setImagen(null);
+              // Limpiar también el editor
               if (editor) {
                 editor.commands.setContent('');
               }
