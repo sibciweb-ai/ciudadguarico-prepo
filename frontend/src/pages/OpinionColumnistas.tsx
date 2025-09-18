@@ -129,20 +129,30 @@ const OpinionColumnistas: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-guarico-blue to-blue-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div
+        className="relative"
+        style={{
+          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="h-1.5 w-full bg-green-600/90"></div>
+        {/* Overlay verde frente a la imagen */}
+        <div className="absolute inset-0 bg-green-200/30"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-10">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <User className="h-12 w-12 text-white mr-4" />
-              <h1 className="text-5xl font-bold">Columnistas</h1>
+            <div className="flex items-center justify-center mb-2">
+              <User className="h-10 w-10 text-green-700 mr-3" />
+              <h1 className="text-5xl font-bold text-black">Columnistas</h1>
             </div>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+            <p className="text-xl text-black/80 max-w-3xl mx-auto">
               Voces expertas que aportan análisis, reflexiones y perspectivas únicas sobre la actualidad
             </p>
-            <div className="mt-6">
+            <div className="mt-4">
               <Link 
                 to="/opinion"
-                className="inline-flex items-center text-blue-200 hover:text-white transition-colors duration-300"
+                className="inline-flex items-center text-black/70 hover:text-black transition-colors duration-300"
               >
                 ← Volver a Opinión
               </Link>
@@ -211,17 +221,24 @@ const OpinionColumnistas: React.FC = () => {
                 Minuto a Minuto
               </h3>
               <div className="space-y-6">
-                {noticias.slice(0, 5).map((noticia) => (
-                  <div key={noticia.id} className="border-l-4 border-guarico-blue pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors">
-                    <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words hover:text-guarico-blue transition-colors cursor-pointer">
-                      {noticia.titulo}
-                    </h4>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span>{new Date(noticia.fecha_publicacion).toLocaleDateString('es-ES')} • {noticia.seccion.nombre}</span>
-                    </div>
-                  </div>
-                ))}
+                {noticias.slice(0, 5).map((noticia, index) => {
+                  const colors = ['border-guarico-blue', 'border-green-500', 'border-purple-500', 'border-orange-500', 'border-red-500'];
+                  return (
+                    <Link 
+                      key={noticia.id} 
+                      to={`/noticia/${noticia.id}`}
+                      className={`border-l-4 ${colors[index]} pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors block group`}
+                    >
+                      <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-guarico-blue transition-colors cursor-pointer">
+                        {noticia.titulo}
+                      </h4>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span>{new Date(noticia.fecha_publicacion).toLocaleDateString('es-ES')} • {noticia.seccion.nombre}</span>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>

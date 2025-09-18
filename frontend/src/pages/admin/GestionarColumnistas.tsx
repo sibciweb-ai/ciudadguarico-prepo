@@ -7,6 +7,9 @@ interface Columnista {
   bio: string;
   fotoUrl?: string;
   redes?: any;
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
   createdAt: string;
 }
 
@@ -69,11 +72,17 @@ const GestionarColumnistas: React.FC = () => {
   const handleSave = async () => {
     if (!nuevo.nombre || !nuevo.bio) return;
     // Prepara el payload asegurando que fotoUrl y redes se envían correctamente
-    const payload: any = {
+    // Crear objeto de redes sociales a partir de los campos individuales
+    const redesSociales: any = {};
+    if (nuevo.facebook) redesSociales.facebook = nuevo.facebook;
+    if (nuevo.twitter) redesSociales.twitter = nuevo.twitter;
+    if (nuevo.instagram) redesSociales.instagram = nuevo.instagram;
+    
+    const payload = {
       nombre: nuevo.nombre,
       bio: nuevo.bio,
       fotoUrl: nuevo.fotoUrl || '',
-      redes: nuevo.redes ? (typeof nuevo.redes === 'string' ? nuevo.redes : JSON.stringify(nuevo.redes)) : undefined
+      redes: Object.keys(redesSociales).length > 0 ? JSON.stringify(redesSociales) : undefined
     };
     // Usar el mismo sistema de endpoints múltiples
     const API_ENDPOINTS = [
@@ -111,7 +120,22 @@ const GestionarColumnistas: React.FC = () => {
   };
 
   const handleEdit = (col: Columnista) => {
-    setNuevo(col);
+    // Parsear las redes sociales si existen
+    let redesParseadas: any = {};
+    if (col.redes) {
+      try {
+        redesParseadas = typeof col.redes === 'string' ? JSON.parse(col.redes) : col.redes;
+      } catch (e) {
+        console.error('Error parsing redes sociales:', e);
+      }
+    }
+    
+    setNuevo({
+      ...col,
+      facebook: redesParseadas.facebook || '',
+      twitter: redesParseadas.twitter || '',
+      instagram: redesParseadas.instagram || ''
+    });
     setEditando(col.id);
   };
 
@@ -180,8 +204,32 @@ const GestionarColumnistas: React.FC = () => {
         </div>
         <textarea name="bio" placeholder="Biografía" value={nuevo.bio || ''} onChange={handleChange}
           className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition col-span-1 md:col-span-2 min-h-[80px]" />
-        <input name="redes" placeholder="Redes sociales (JSON opcional)" value={nuevo.redes || ''} onChange={handleChange}
-          className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition col-span-1 md:col-span-2" />
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Redes Sociales (opcional)</label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input 
+              name="facebook" 
+              placeholder="Facebook (URL)" 
+              value={nuevo.facebook || ''} 
+              onChange={handleChange}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition" 
+            />
+            <input 
+              name="twitter" 
+              placeholder="Twitter (URL)" 
+              value={nuevo.twitter || ''} 
+              onChange={handleChange}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition" 
+            />
+            <input 
+              name="instagram" 
+              placeholder="Instagram (URL)" 
+              value={nuevo.instagram || ''} 
+              onChange={handleChange}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition" 
+            />
+          </div>
+        </div>
         <div className="flex gap-3 col-span-1 md:col-span-2 mt-2">
           <button onClick={handleSave}
             className="bg-green-600 hover:bg-green-700 text-white font-bold px-5 py-2 rounded-lg shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -213,7 +261,28 @@ const GestionarColumnistas: React.FC = () => {
                   <td className="py-2 px-4 whitespace-pre-line">{col.nombre}</td>
                   <td className="py-2 px-4 whitespace-pre-line">{col.bio}</td>
                   <td className="py-2 px-4">{col.fotoUrl ? <img src={col.fotoUrl} alt={col.nombre} className="rounded-full object-cover border shadow" width={60} /> : '-'}</td>
-                  <td className="py-2 px-4">{col.redes ? (<pre className="max-w-xs overflow-auto whitespace-pre-wrap text-xs bg-gray-100 rounded p-2">{JSON.stringify(col.redes)}</pre>) : '-'}</td>
+                  <td className="py-2 px-4">
+                    {col.redes ? (
+                      <div className="text-xs space-y-1">
+                        {(() => {
+                          try {
+                            const redes = typeof col.redes === 'string' ? JSON.parse(col.redes) : col.redes;
+                            return (
+                              <>
+                                {redes.facebook && <div className="text-blue-600">📘 Facebook</div>}
+                                {redes.twitter && <div className="text-blue-400">🐦 Twitter</div>}
+                                {redes.instagram && <div className="text-pink-500">📷 Instagram</div>}
+                              </>
+                            );
+                          } catch (e) {
+                            return <span className="text-gray-500">Error en datos</span>;
+                          }
+                        })()}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
                   <td className="py-2 px-4 flex gap-2">
                     <button onClick={() => handleEdit(col)}
                       className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold px-3 py-1 rounded transition"

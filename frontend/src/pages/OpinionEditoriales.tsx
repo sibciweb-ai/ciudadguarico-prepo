@@ -40,10 +40,10 @@ const OpinionEditoriales: React.FC = () => {
         setEditoriales([
           {
             id: 1,
-            titulo: "Reflexiones sobre el futuro de nuestra región",
-            contenido: "En estos tiempos de cambio, es fundamental que como sociedad reflexionemos sobre el rumbo que queremos tomar. La participación ciudadana y el compromiso con el desarrollo sostenible son claves para construir un mejor mañana. Necesitamos líderes visionarios que entiendan las necesidades de nuestra comunidad y trabajen incansablemente por el progreso de todos.",
-            fecha: "2024-01-15",
-            autor: "Redacción Editorial"
+            titulo: "¿Qué pasará con David Martínez tras la llegada de esta figura?",
+            contenido: "En estos tiempos de cambio político, es fundamental analizar las implicaciones de las nuevas figuras que llegan al escenario regional. La participación ciudadana y el compromiso con el desarrollo sostenible son claves para construir un mejor mañana. Necesitamos líderes visionarios que entiendan las necesidades de nuestra comunidad y trabajen incansablemente por el progreso de todos los ciudadanos de Guárico.",
+            fecha: "2025-09-11",
+            autor: "hector"
           },
           {
             id: 2,
@@ -126,21 +126,57 @@ const OpinionEditoriales: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style>{`
+        .text-content {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
+          -webkit-hyphens: auto;
+          -ms-hyphens: auto;
+          white-space: normal;
+          word-break: break-word;
+        }
+        .title-content {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
+          -webkit-hyphens: auto;
+          -ms-hyphens: auto;
+          line-height: 1.3;
+          white-space: normal;
+          word-break: break-word;
+        }
+        .editorial-content {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+          line-height: 1.6;
+          text-rendering: optimizeLegibility;
+        }
+      `}</style>
       {/* Header */}
-      <div className="bg-gradient-to-r from-guarico-blue to-blue-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div
+        className="relative"
+        style={{
+          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="h-1.5 w-full bg-purple-600/90"></div>
+        {/* Overlay en frente de la imagen */}
+        <div className="absolute inset-0 bg-purple-200/30"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-10">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <BookOpen className="h-12 w-12 text-white mr-4" />
-              <h1 className="text-5xl font-bold">Editoriales</h1>
+            <div className="flex items-center justify-center mb-3">
+              <BookOpen className="h-10 w-10 text-purple-700 mr-3" />
+              <h1 className="text-5xl font-bold text-black">Editoriales</h1>
             </div>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+            <p className="text-xl text-black/80 max-w-3xl mx-auto">
               Análisis profundos y reflexiones editoriales sobre los temas más relevantes de nuestra región
             </p>
-            <div className="mt-6">
+            <div className="mt-4">
               <Link 
                 to="/opinion"
-                className="inline-flex items-center text-blue-200 hover:text-white transition-colors duration-300"
+                className="inline-flex items-center text-black/70 hover:text-black transition-colors duration-300"
               >
                 ← Volver a Opinión
               </Link>
@@ -171,7 +207,7 @@ const OpinionEditoriales: React.FC = () => {
                         </div>
                       )}
                       
-                      <h2 className={`font-bold text-gray-900 group-hover:text-guarico-blue transition-colors duration-300 mb-4 ${
+                      <h2 className={`font-bold text-gray-900 group-hover:text-guarico-blue transition-colors duration-300 mb-4 title-content ${
                         index === 0 ? 'text-3xl' : 'text-2xl'
                       }`}>
                         {editorial.titulo}
@@ -192,11 +228,13 @@ const OpinionEditoriales: React.FC = () => {
                         )}
                       </div>
                       
-                      <p className={`text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors ${
+                      <div className={`text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors text-content editorial-content ${
                         index === 0 ? 'text-lg mb-6' : 'mb-4'
                       }`}>
-                        {editorial.contenido.substring(0, index === 0 ? 300 : 200)}...
-                      </p>
+                        <p className="whitespace-pre-wrap">
+                          {editorial.contenido.substring(0, index === 0 ? 300 : 200)}...
+                        </p>
+                      </div>
                       
                       <div className="flex items-center justify-between">
                         <div className="inline-flex items-center text-guarico-blue group-hover:text-blue-700 font-medium transition-colors">
@@ -221,7 +259,7 @@ const OpinionEditoriales: React.FC = () => {
           {/* Sidebar */}
           <div className="lg:w-80">
             <div className="bg-white rounded-2xl shadow-lg border p-8">
-              <h3 className="text-2xl font-bold text-gray-900 opinion-title break-words mb-6 flex items-center">
+              <h3 className="text-2xl font-bold text-gray-900 title-content mb-6 flex items-center">
                 <MessageSquare className="mr-3 h-6 w-6 text-guarico-blue" />
                 Minuto a Minuto
               </h3>
@@ -229,15 +267,19 @@ const OpinionEditoriales: React.FC = () => {
                 {noticias.slice(0, 5).map((noticia, index) => {
                   const colors = ['border-guarico-blue', 'border-green-500', 'border-purple-500', 'border-orange-500', 'border-red-500'];
                   return (
-                    <div key={noticia.id} className={`border-l-4 ${colors[index]} pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors`}>
-                      <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words hover:text-guarico-blue transition-colors cursor-pointer">
+                    <Link 
+                      key={noticia.id} 
+                      to={`/noticia/${noticia.id}`}
+                      className={`border-l-4 ${colors[index]} pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors block group`}
+                    >
+                      <h4 className="font-semibold text-gray-900 mb-2 title-content group-hover:text-guarico-blue transition-colors cursor-pointer">
                         {noticia.titulo}
                       </h4>
                       <div className="flex items-center text-sm text-gray-500">
                         <Calendar className="h-4 w-4 mr-2" />
                         <span>{new Date(noticia.fecha_publicacion).toLocaleDateString('es-ES')} • {noticia.seccion.nombre}</span>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>

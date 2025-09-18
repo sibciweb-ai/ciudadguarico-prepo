@@ -1,17 +1,81 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Calendar, User, Camera, Share2, Facebook, Twitter, Apple as WhatsApp } from 'lucide-react';
-import { useContextoNoticias } from '../contexts/ContextoNoticias';
+import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
+import axios from 'axios';
+import { createApiUrl } from '../config/api';
+import SEOHead from '../components/seo/SEOHead';
 
 export default function VistaNoticia() {
   const { id } = useParams<{ id: string }>();
   const { obtenerNoticiaPorId, noticias } = useContextoNoticias();
+  const [noticia, setNoticia] = useState<Noticia | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(false);
   
   if (!id) return <Navigate to="/" replace />;
+
+  useEffect(() => {
+    const cargarNoticia = async () => {
+      setCargando(true);
+      setError(false);
+      
+      // Primero intentar obtener de las noticias ya cargadas
+      const noticiaLocal = obtenerNoticiaPorId(id);
+      if (noticiaLocal) {
+        setNoticia(noticiaLocal);
+        setCargando(false);
+        return;
+      }
+      
+      // Si no está en las noticias locales, cargar desde el backend
+      try {
+        const response = await axios.get(createApiUrl(`/news/${id}`));
+        const noticiaData = response.data;
+        
+        // Formatear la noticia igual que en el contexto
+        const noticiaFormateada: Noticia = {
+          id: noticiaData.id,
+          titulo: noticiaData.titulo,
+          contenido: noticiaData.contenido,
+          resumen: noticiaData.resumen,
+          seccion: noticiaData.seccion,
+          autorTexto: noticiaData.autorTexto,
+          autorFoto: noticiaData.autorFoto,
+          media: (noticiaData.media || []).map((m: any) => ({
+            ...m,
+            url: m.url
+          })),
+          fecha_publicacion: noticiaData.fecha_publicacion,
+          destacada: noticiaData.destacada,
+          created_at: noticiaData.created_at,
+          updated_at: noticiaData.updated_at
+        };
+        
+        setNoticia(noticiaFormateada);
+      } catch (error) {
+        console.error('Error al cargar noticia:', error);
+        setError(true);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarNoticia();
+  }, [id, obtenerNoticiaPorId]);
   
-  const noticia = obtenerNoticiaPorId(id);
+  if (cargando) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-guarico-blue mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Cargando noticia...</p>
+        </div>
+      </div>
+    );
+  }
   
-  if (!noticia) return <Navigate to="/" replace />;
+  if (error || !noticia) return <Navigate to="/" replace />;
 
   // Función para convertir fecha a Date si es string
   const convertirFecha = (fecha: Date | string): Date => {
@@ -25,8 +89,6 @@ export default function VistaNoticia() {
   const mediaPrincipal = noticia.media?.find(m => m.tipo === 'imagen');
   const imagenPrincipal = mediaPrincipal?.url || '';
   const leyendaImagen = mediaPrincipal?.descripcion || '';
-  // Obtener autores como string
-  const autores = [noticia.autorTexto, noticia.autorFoto].filter(Boolean).join(' / ');
   // Obtener nombre de la sección
   const nombreSeccion = noticia.seccion?.nombre || '';
 
@@ -53,8 +115,24 @@ export default function VistaNoticia() {
   };
 
   return (
-    <div className="p-6">
-      {/* Imagen principal */}
+    <>
+      {/* SEO dinámico para cada noticia */}
+      <SEOHead
+        title={`${noticia.titulo} - Ciudad Guárico`}
+        description={noticia.resumen || noticia.contenido.replace(/<[^>]+>/g, '').substring(0, 160)}
+        keywords={`${nombreSeccion}, ${noticia.titulo}, Ciudad Guárico, noticias Venezuela, Guárico, ${noticia.autorTexto}`}
+        image={imagenPrincipal || 'https://ciudadguarico.com/logo.png'}
+        url={window.location.href}
+        type="article"
+        publishedTime={new Date(noticia.fecha_publicacion).toISOString()}
+        modifiedTime={new Date(noticia.updated_at || noticia.fecha_publicacion).toISOString()}
+        author={noticia.autorTexto}
+        section={nombreSeccion}
+        tags={[nombreSeccion, 'Venezuela', 'Guárico', 'noticias']}
+      />
+      
+      <div className="p-6">
+        {/* Imagen principal */}
       <div className="relative mb-6">
         <img
           src={imagenPrincipal}
@@ -63,14 +141,14 @@ export default function VistaNoticia() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg" />
         <span className="absolute top-4 left-4 bg-guarico-blue text-guarico-white px-3 py-1 text-sm rounded-lg shadow-lg">
-        {leyendaImagen && (
-          <div className="absolute bottom-2 left-2 right-2 bg-black bg-opacity-60 text-white text-sm p-2 rounded">
-            {leyendaImagen}
-          </div>
-        )}
           {nombreSeccion}
         </span>
       </div>
+      {leyendaImagen && (
+        <p className="text-sm text-gray-600 -mt-4 mb-4 italic text-left">
+          {leyendaImagen}
+        </p>
+      )}
 
       {/* Título */}
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight font-serif">
@@ -177,6 +255,7 @@ export default function VistaNoticia() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

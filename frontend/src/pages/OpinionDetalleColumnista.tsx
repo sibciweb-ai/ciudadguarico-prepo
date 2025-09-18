@@ -80,41 +80,52 @@ const OpinionDetalleColumnista: React.FC = () => {
       </Link>
       
       {/* Header del Columnista */}
-      <div className="bg-gradient-to-r from-guarico-blue to-blue-600 rounded-lg p-8 mb-8 text-white">
-        <div className="flex items-center mb-4">
-          <img 
-            src={columnista.fotoUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'} 
-            alt={columnista.nombre} 
-            className="w-24 h-24 rounded-full object-cover mr-6 border-4 border-white/20" 
-          />
-          <div>
-            <h1 className="text-4xl font-bold mb-2">{columnista.nombre}</h1>
-            <div className="flex items-center text-blue-100">
-              <User className="h-4 w-4 mr-2" />
-              <span>Columnista</span>
+      <div
+        className="relative rounded-lg mb-8"
+        style={{
+          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="h-1.5 w-full bg-teal-600/90 rounded-t-lg"></div>
+        {/* Overlay frente a la imagen */}
+        <div className="absolute inset-0 bg-teal-200/30 rounded-b-lg"></div>
+        <div className="relative px-4 md:px-6 py-12 z-10">
+          <div className="flex items-center mb-4">
+            <img 
+              src={columnista.fotoUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'} 
+              alt={columnista.nombre} 
+              className="w-24 h-24 rounded-full object-cover mr-6 border-4 border-white/60" 
+            />
+            <div>
+              <h1 className="text-4xl font-bold mb-2 text-black">{columnista.nombre}</h1>
+              <div className="flex items-center text-black/70">
+                <User className="h-4 w-4 mr-2" />
+                <span>Columnista</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Biografía */}
-        <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold mb-2">Biografía</h3>
-          <p className="text-blue-50 leading-relaxed">{columnista.bio}</p>
+          {/* Biografía */}
+          <div>
+            <h3 className="text-lg font-semibold mb-1 text-black">Biografía</h3>
+            <p className="text-black/80 leading-relaxed">{columnista.bio}</p>
+          </div>
         </div>
         
         {/* Redes Sociales */}
         {columnista.redes && (
-          <div className="mt-4 flex items-center space-x-4">
+          <div className="mt-4 flex items-center space-x-4 px-4 md:px-6">
             {columnista.redes.twitter && (
               <a href={`https://twitter.com/${columnista.redes.twitter.replace('@', '')}`} 
                  target="_blank" rel="noopener noreferrer"
-                 className="text-blue-100 hover:text-white transition-colors">
+                 className="text-black/70 hover:text-black transition-colors">
                 📱 {columnista.redes.twitter}
               </a>
             )}
             {columnista.redes.email && (
               <a href={`mailto:${columnista.redes.email}`}
-                 className="text-blue-100 hover:text-white transition-colors">
+                 className="text-black/70 hover:text-black transition-colors">
                 📧 {columnista.redes.email}
               </a>
             )}
@@ -134,7 +145,7 @@ const OpinionDetalleColumnista: React.FC = () => {
         {columnista.opiniones && columnista.opiniones.length > 0 ? (
           <div className="space-y-6">
             {columnista.opiniones.map((opinion) => (
-              <article className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow opinion-container">
+              <article key={opinion.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow opinion-container">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-xl font-bold text-gray-800 opinion-title break-words hover:text-guarico-blue transition-colors opinion-title break-words">
                     {opinion.titulo}

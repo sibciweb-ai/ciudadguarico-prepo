@@ -131,4 +131,28 @@ body {
 .noticia-individual .prose div {
   text-align: justify !important;
   text-justify: inter-word;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Estilos para figuras e imágenes en el contenido */
+.noticia-individual .prose figure {
+  margin: 16px 0;
+}
+
+.noticia-individual .prose figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Leyendas del contenido idénticas a la imagen principal */
+.noticia-individual .prose figcaption {
+  font-size: 0.875rem !important; /* text-sm */
+  color: #4B5563 !important; /* text-gray-600 */
+  margin-top: -1rem !important; /* -mt-4 */
+  margin-bottom: 1rem !important; /* mb-4 */
+  font-style: italic !important;
+  text-align: left !important;
 }

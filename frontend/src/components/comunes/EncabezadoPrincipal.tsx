@@ -58,7 +58,7 @@ export default function EncabezadoPrincipal() {
         <div 
           className="relative w-full bg-cover bg-center bg-no-repeat"
           style={{
-            height: 'clamp(140px, 30vw, 280px)',
+            height: 'clamp(180px, 35vw, 320px)',
             backgroundImage: `url(${bannerHeader?.media || '/media/contenido/header-bg.png'})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
@@ -85,8 +85,8 @@ export default function EncabezadoPrincipal() {
                 alt="Logo Ciudad Guárico" 
                 className="w-auto transition-transform duration-300 hover:scale-105 max-w-full"
                 style={{
-                  height: 'clamp(70px, 18vw, 180px)',
-                  filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))'
+                  height: 'clamp(100px, 25vw, 250px)',
+                  filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.15))'
                 }}
               />
             </Link>

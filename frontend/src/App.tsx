@@ -10,6 +10,7 @@ import ResultadosBusqueda from './pages/ResultadosBusqueda';
 import LoginAdmin from './pages/admin/LoginAdmin';
 import DashboardAdmin from './pages/admin/DashboardAdmin';
 import GestionarContenidoDestacado from './pages/admin/GestionarPublicidad';
+import ScrollToTop from './components/comunes/ScrollToTop';
 
 const Opinion = React.lazy(() => import('./pages/Opinion'));
 const OpinionEditoriales = React.lazy(() => import('./pages/OpinionEditoriales'));
@@ -32,6 +33,7 @@ export default function App() {
     <ProveedorContextoAuth>
       <ProveedorContextoNoticias>
           <Router>
+            <ScrollToTop />
             <Routes>
               {/* Rutas públicas */}
               <Route path="/" element={<LayoutPublico />}>

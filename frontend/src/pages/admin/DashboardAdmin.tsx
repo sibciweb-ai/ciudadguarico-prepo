@@ -17,7 +17,6 @@ import GestionarNoticias from './GestionarNoticias';
 import CrearNoticia from './CrearNoticia';
 import GestionarPublicidad from './GestionarPublicidad';
 import EstadisticasPanel from './EstadisticasPanel';
-import EdicionPDF from './EdicionPDF';
 import GestionarColumnistas from './GestionarColumnistas';
 import GestionarEditoriales from './GestionarEditoriales';
 import GestionarOpiniones from './GestionarOpiniones';
@@ -28,7 +27,6 @@ type VistaActiva =
   | 'crear'
   | 'publicidad'
   | 'estadisticas'
-  | 'pdf'
   | 'columnistas'
   | 'editoriales'
   | 'opiniones';
@@ -55,7 +53,6 @@ export default function DashboardAdmin() {
     { id: 'crear', nombre: 'Crear Noticia', icono: Plus },
     { id: 'publicidad', nombre: 'Publicidad', icono: Image },
     { id: 'estadisticas', nombre: 'Estadísticas', icono: Settings },
-    { id: 'pdf', nombre: 'Edición PDF', icono: FileText },
     // Opinión
     { id: 'columnistas', nombre: 'Columnistas', icono: Users },
     { id: 'editoriales', nombre: 'Editoriales', icono: FileText },
@@ -153,8 +150,6 @@ export default function DashboardAdmin() {
         return <GestionarPublicidad />;
       case 'estadisticas':
         return <EstadisticasPanel />;
-      case 'pdf':
-        return <EdicionPDF />;
       case 'columnistas':
         return <GestionarColumnistas />;
       case 'editoriales':

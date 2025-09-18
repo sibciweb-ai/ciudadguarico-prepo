@@ -1,4 +1,3 @@
-import React from 'react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 import { Calendar, TrendingUp, Eye, Star } from 'lucide-react';
 
@@ -9,10 +8,11 @@ export default function EstadisticasPanel() {
   const totalNoticias = noticias.length;
   const noticiasDestacadas = noticias.filter(n => n.destacada).length;
   
-  // Total de espacios de publicidad disponibles: 10 (6 side + 4 main/header)
-  const totalEspaciosPublicidad = 10;
-  const publicidadesOcupadas = publicidades.length;
-  const totalPublicidades = totalEspaciosPublicidad;
+  // Métricas de publicidad reales
+  const totalPublicidades = publicidades.length;
+  const publicidadesCarrusel = publicidades.filter(p => p.tipo === 'carrusel' || p.posicion === 'carrusel').length;
+  const publicidadesSidebar = publicidades.filter(p => p.tipo === 'sidebar' || p.posicion?.startsWith('side')).length;
+  const publicidadesHeader = publicidades.filter(p => p.tipo === 'header' || p.posicion === 'header').length;
   
   // Noticias por sección
   const noticiasPorSeccion = noticias.reduce((acc, noticia) => {
@@ -187,20 +187,35 @@ export default function EstadisticasPanel() {
       {/* Resumen de publicidad */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">Resumen de Publicidad</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">Publicidad del Carrusel</h4>
-            <p className="text-2xl font-bold text-blue-600">
-              {publicidades.filter(p => p.tipo && p.tipo === 'carrusel').length}
-            </p>
+            <h4 className="font-medium text-gray-700 mb-2">Carrusel Header</h4>
+            <p className="text-2xl font-bold text-blue-600">{publicidadesCarrusel}</p>
             <p className="text-sm text-gray-500">anuncios activos</p>
           </div>
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">Publicidad del Sidebar</h4>
-            <p className="text-2xl font-bold text-green-600">
-              {publicidades.filter(p => p.tipo && p.tipo === 'sidebar').length}
-            </p>
-            <p className="text-sm text-gray-500">de 6 espacios disponibles</p>
+            <h4 className="font-medium text-gray-700 mb-2">Sidebar</h4>
+            <p className="text-2xl font-bold text-green-600">{publicidadesSidebar}</p>
+            <p className="text-sm text-gray-500">banners laterales</p>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">Header/Otros</h4>
+            <p className="text-2xl font-bold text-purple-600">{publicidadesHeader}</p>
+            <p className="text-sm text-gray-500">espacios adicionales</p>
+          </div>
+        </div>
+        
+        {/* Detalles adicionales */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">Total de espacios publicitarios ocupados:</span>
+            <span className="font-bold text-gray-900">{totalPublicidades}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm mt-2">
+            <span className="text-gray-600">Publicidades visibles:</span>
+            <span className="font-bold text-green-600">
+              {publicidades.filter(p => p.visible !== false).length}
+            </span>
           </div>
         </div>
       </div>

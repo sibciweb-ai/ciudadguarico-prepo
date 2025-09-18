@@ -12,6 +12,8 @@ async function seedDatabase() {
       'Gestión',
       'Municipales', 
       'Deportes',
+      'Salud',
+      'Nacionales',
       'Cultura',
       'Producción',
       'Comunidad',

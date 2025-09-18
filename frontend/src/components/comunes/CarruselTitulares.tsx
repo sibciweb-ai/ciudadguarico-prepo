@@ -1,4 +1,3 @@
-import React from 'react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function CarruselTitulares() {
@@ -45,7 +44,7 @@ export default function CarruselTitulares() {
         }
         
         .animate-scroll-left {
-          animation: scroll-left 60s linear infinite;
+          animation: scroll-left 30s linear infinite;
         }
       `}</style>
     </div>

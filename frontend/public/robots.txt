@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Permitir acceso a todas las páginas principales
+Allow: /seccion/*
+Allow: /noticia/*
+Allow: /opinion/*
+Allow: /buscar*
+
+# Bloquear páginas de administración
+Disallow: /admin/*
+
+# Sitemap
+Sitemap: https://ciudadguarico.com/sitemap.xml
+
+# Crawl-delay para ser amigable con los bots
+Crawl-delay: 1
+
+# Información adicional para medios
+# Periódico digital de Venezuela
+# Cobertura: Estado Guárico y Venezuela
+# Idioma: Español (es-VE)
+# Contacto: info@ciudadguarico.com

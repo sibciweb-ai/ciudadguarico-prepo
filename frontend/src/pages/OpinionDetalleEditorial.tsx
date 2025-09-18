@@ -71,22 +71,32 @@ const OpinionDetalleEditorial: React.FC = () => {
       </Link>
       
       {/* Header del Editorial */}
-      <div className="bg-gradient-to-r from-guarico-blue to-blue-600 rounded-lg p-8 mb-8 text-white">
-        <div className="flex items-center mb-4">
-          <div className="bg-white/20 p-3 rounded-full mr-4">
-            <BookOpen className="h-8 w-8" />
-          </div>
-          <div>
-            <div className="flex items-center text-blue-100 mb-2">
-              <span className="text-sm font-medium">EDITORIAL</span>
+      <div
+        className="relative rounded-lg mb-8"
+        style={{
+          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="h-1.5 w-full bg-orange-600/90 rounded-t-lg"></div>
+        {/* Overlay frente a la imagen */}
+        <div className="absolute inset-0 bg-orange-200/30 rounded-b-lg"></div>
+        <div className="relative px-4 md:px-6 py-12 z-10">
+          <div className="flex items-center mb-4">
+            <div className="bg-black/5 p-3 rounded-full mr-4">
+              <BookOpen className="h-8 w-8 text-orange-700" />
             </div>
-            <h1 className="text-4xl font-bold leading-tight">{editorial.titulo}</h1>
+            <div>
+              <div className="flex items-center text-black/70 mb-2">
+                <span className="text-sm font-medium">EDITORIAL</span>
+              </div>
+              <h1 className="text-4xl font-bold leading-tight text-black">{editorial.titulo}</h1>
+            </div>
           </div>
-        </div>
-        
-        {/* Metadatos */}
-        <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-          <div className="flex items-center space-x-6 text-blue-100">
+          
+          {/* Metadatos */}
+          <div className="flex items-center space-x-6 text-black/70">
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               <span>{new Date(editorial.fecha).toLocaleDateString('es-ES', {

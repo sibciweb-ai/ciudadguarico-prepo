@@ -28,9 +28,17 @@ interface Opinion {
   destacado: boolean;
 }
 
+interface Noticia {
+  id: number;
+  titulo: string;
+  fecha_publicacion: string;
+  seccion: { nombre: string };
+}
+
 const OpinionPage: React.FC = () => {
   const [editoriales, setEditoriales] = useState<Editorial[]>([]);
   const [columnistas, setColumnistas] = useState<Columnista[]>([]);
+  const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [mostrarTodos, setMostrarTodos] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -38,12 +46,14 @@ const OpinionPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [editorialesRes, columnistasRes] = await Promise.all([
+        const [editorialesRes, columnistasRes, noticiasRes] = await Promise.all([
           axios.get('/api/editoriales'),
-          axios.get('/api/columnistas')
+          axios.get('/api/columnistas'),
+          axios.get('/api/noticias?limit=5')
         ]);
         setEditoriales(editorialesRes.data);
         setColumnistas(columnistasRes.data);
+        setNoticias(noticiasRes.data);
       } catch (error) {
         console.error('Error fetching opinion data:', error);
         // Datos de ejemplo si falla la API
@@ -119,11 +129,22 @@ const OpinionPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-guarico-blue to-blue-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div
+        className="relative"
+        style={{
+          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Accent bar */}
+        <div className="h-1.5 w-full bg-guarico-blue/90"></div>
+        {/* Light overlay in front of image */}
+        <div className="absolute inset-0 bg-blue-200/30"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-10">
           <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4">Opinión</h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+            <h1 className="text-5xl font-bold mb-2 text-black">Opinión</h1>
+            <p className="text-xl text-black/80 max-w-3xl mx-auto">
               Análisis, reflexiones y perspectivas sobre los temas que nos importan
             </p>
           </div>
@@ -266,30 +287,24 @@ const OpinionPage: React.FC = () => {
               Minuto a Minuto
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Link to="/" className="border-l-4 border-guarico-blue pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
-                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-guarico-blue transition-colors opinion-title break-words">
-                  Análisis político semanal
-                </h4>
-                <p className="text-sm text-gray-500">Hace 2 horas • Política</p>
-              </Link>
-              <Link to="/" className="border-l-4 border-green-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
-                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-green-600 transition-colors opinion-title break-words">
-                  Perspectivas económicas
-                </h4>
-                <p className="text-sm text-gray-500">Hace 4 horas • Economía</p>
-              </Link>
-              <Link to="/" className="border-l-4 border-purple-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
-                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-purple-600 transition-colors opinion-title break-words">
-                  Cultura y sociedad
-                </h4>
-                <p className="text-sm text-gray-500">Hace 6 horas • Cultura</p>
-              </Link>
-              <Link to="/" className="border-l-4 border-orange-500 pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group">
-                <h4 className="font-semibold text-gray-900 mb-2 opinion-title break-words group-hover:text-orange-600 transition-colors opinion-title break-words">
-                  Deportes regionales
-                </h4>
-                <p className="text-sm text-gray-500">Hace 8 horas • Deportes</p>
-              </Link>
+              {noticias.slice(0, 4).map((noticia, index) => {
+                const colors = ['border-guarico-blue', 'border-green-500', 'border-purple-500', 'border-orange-500'];
+                const hoverColors = ['group-hover:text-guarico-blue', 'group-hover:text-green-600', 'group-hover:text-purple-600', 'group-hover:text-orange-600'];
+                return (
+                  <Link 
+                    key={noticia.id} 
+                    to={`/noticia/${noticia.id}`}
+                    className={`border-l-4 ${colors[index]} pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-all duration-300 cursor-pointer group`}
+                  >
+                    <h4 className={`font-semibold text-gray-900 mb-2 opinion-title break-words ${hoverColors[index]} transition-colors`}>
+                      {noticia.titulo}
+                    </h4>
+                    <p className="text-sm text-gray-500">
+                      {new Date(noticia.fecha_publicacion).toLocaleDateString('es-ES')} • {noticia.seccion.nombre}
+                    </p>
+                  </Link>
+                );
+              })}
             </div>
             
             <div className="mt-6 pt-4 border-t border-gray-200">

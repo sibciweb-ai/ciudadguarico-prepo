@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TipTapImage from '@tiptap/extension-image';
 
 interface Columnista {
   id: number;
@@ -22,6 +25,15 @@ const GestionarOpiniones: React.FC = () => {
   const [nuevo, setNuevo] = useState<Partial<Opinion & { columnistaId?: number }>>({});
   const [editando, setEditando] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Editor TipTap para contenido
+  const editor = useEditor({
+    extensions: [StarterKit, TipTapImage],
+    content: '',
+    onUpdate: ({ editor }) => {
+      setNuevo(prev => ({ ...prev, contenido: editor.getHTML() }));
+    },
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -57,6 +69,11 @@ const GestionarOpiniones: React.FC = () => {
   const handleEdit = (op: Opinion) => {
     setNuevo({ ...op, columnistaId: op.columnista.id });
     setEditando(op.id);
+    
+    // Cargar contenido en el editor
+    if (editor) {
+      editor.commands.setContent(op.contenido || '');
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -86,8 +103,87 @@ const GestionarOpiniones: React.FC = () => {
             className="accent-red-600 w-4 h-4" />
           Destacado
         </label>
-        <textarea name="contenido" placeholder="Contenido (HTML)" value={nuevo.contenido || ''} onChange={handleChange}
-          className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-400 transition col-span-1 md:col-span-2 min-h-[100px]" />
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Contenido de la Opinión *
+          </label>
+          
+          <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
+            {/* Barra de herramientas */}
+            <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleBold().run()}
+                className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                  editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                }`}
+              >
+                Negrita
+              </button>
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleItalic().run()}
+                className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                  editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                }`}
+              >
+                Cursiva
+              </button>
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                  editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                }`}
+              >
+                H2
+              </button>
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                  editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                }`}
+              >
+                Lista
+              </button>
+            </div>
+            
+            {/* Área del editor */}
+            <div className="min-h-[200px] w-full">
+              <EditorContent 
+                editor={editor}
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+          
+          <style>{`
+            .editor-container .ProseMirror {
+              min-height: 200px !important;
+              padding: 16px !important;
+              font-size: 14px !important;
+              line-height: 1.6 !important;
+              outline: none !important;
+              border: none !important;
+              width: 100% !important;
+              box-sizing: border-box !important;
+              word-wrap: break-word !important;
+              overflow-wrap: break-word !important;
+            }
+            .editor-container .ProseMirror:focus {
+              outline: none !important;
+            }
+            .editor-container .ProseMirror p {
+              margin: 8px 0 !important;
+            }
+            .editor-container .ProseMirror h2 {
+              font-size: 1.3rem !important;
+              font-weight: bold !important;
+              margin: 16px 0 8px 0 !important;
+            }
+          `}</style>
+        </div>
         <div className="flex gap-3 col-span-1 md:col-span-2 mt-2">
           <button onClick={handleSave}
             className="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-lg shadow transition disabled:opacity-50 disabled:cursor-not-allowed"

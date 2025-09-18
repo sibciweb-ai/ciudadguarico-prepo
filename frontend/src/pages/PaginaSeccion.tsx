@@ -3,20 +3,9 @@ import { useParams, Navigate, Link } from 'react-router-dom';
 import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
 import { Calendar, Clock } from 'lucide-react';
 
-const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación']; // CORREGIDO: "Produccion" -> "Producción"
+const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Nacionales', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación']; // CORREGIDO: "Produccion" -> "Producción"
 
-const coloresSeccion = {
-  'Gestión': 'from-blue-600 to-blue-800',
-  'Municipales': 'from-green-600 to-green-800',
-  'Deportes': 'from-yellow-600 to-yellow-800',
-  'Salud': 'from-teal-600 to-teal-800', // YA ESTABA CORRECTO
-  'Cultura': 'from-purple-600 to-purple-800',
-  'Producción': 'from-emerald-600 to-emerald-800', // CORREGIDO: "Produccion" -> "Producción"
-  'Comunidad': 'from-pink-600 to-pink-800',
-  'Seguridad': 'from-red-600 to-red-800',
-  'Turismo': 'from-cyan-600 to-cyan-800',
-  'Educación': 'from-indigo-600 to-indigo-800'
-};
+// Gradientes por sección (no usado actualmente porque el encabezado usa imagen de fondo)
 
 export default function PaginaSeccion() {
   const { seccion } = useParams<{ seccion: string }>();
@@ -53,18 +42,28 @@ export default function PaginaSeccion() {
     cargarNoticias();
   }, [seccion, obtenerNoticiasPorSeccion]);
   
-  const gradienteSeccion = coloresSeccion[seccion as keyof typeof coloresSeccion] || 'from-blue-600 to-blue-800';
+  // Nota: el gradiente por sección se ha desactivado temporalmente al usar imagen de fondo
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Encabezado de la sección */}
-      <div className={`w-full bg-gradient-to-r ${gradienteSeccion} text-white`}>
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex flex-col items-center text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+      <div
+        className={`relative w-full`}
+        style={{
+          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="h-1.5 w-full bg-amber-600/90"></div>
+        {/* Overlay de color delante de la imagen */}
+        <div className="absolute inset-0 bg-amber-200/30"></div>
+        <div className="relative max-w-7xl mx-auto px-4 py-12 z-10 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-2 text-black">
               {seccion}
             </h1>
-            <p className="text-lg text-white/80">
+            <p className="text-base md:text-lg text-black/80">
               Las últimas noticias de {seccion.toLowerCase()}
             </p>
           </div>
@@ -73,10 +72,6 @@ export default function PaginaSeccion() {
 
       {/* Contenido principal */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Encabezado de la sección */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-center text-gray-900">{seccion}</h1>
-        </div>
 
         {/* Grid de noticias */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,8 +84,6 @@ export default function PaginaSeccion() {
             noticias.map((noticia) => {
               // Obtener la imagen principal desde media
               const imagenPrincipal = noticia.media?.find(m => m.tipo === 'imagen')?.url || '';
-              // Obtener nombre de la sección
-              const nombreSeccion = typeof noticia.seccion === 'object' && noticia.seccion !== null ? noticia.seccion.nombre : String(noticia.seccion);
               return (
                 <Link 
                   key={noticia.id}

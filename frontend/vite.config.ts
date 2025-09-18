@@ -9,7 +9,9 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:3000'
+      '/api': 'http://localhost:3000',
+      // Proxy uploads to backend so editor image previews work in dev
+      '/uploads': 'http://localhost:3000'
     }
   }
 });

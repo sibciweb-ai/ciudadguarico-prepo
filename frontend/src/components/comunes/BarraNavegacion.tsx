@@ -9,12 +9,13 @@ const seccionesPrincipales = [
   { nombre: 'MUNICIPALES', ruta: '/seccion/Municipales' },
   { nombre: 'DEPORTES', ruta: '/seccion/Deportes' },
   { nombre: 'SALUD', ruta: '/seccion/Salud' },
-  { nombre: 'CULTURA', ruta: '/seccion/Cultura' },
+  { nombre: 'NACIONALES', ruta: '/seccion/Nacionales' },
   { nombre: 'PRODUCCIÓN', ruta: '/seccion/Producción' },
 ];
 
 // Secciones que van en el dropdown "Más"
 const seccionesMas = [
+  { nombre: 'CULTURA', ruta: '/seccion/Cultura' },
   { nombre: 'COMUNIDAD', ruta: '/seccion/Comunidad' },
   { nombre: 'SEGURIDAD', ruta: '/seccion/Seguridad' },
   { nombre: 'TURISMO', ruta: '/seccion/Turismo' },

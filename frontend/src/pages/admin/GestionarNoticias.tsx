@@ -1,8 +1,11 @@
-import React, { useState, useCallback } from 'react';
-import { Edit2, Trash2, Eye, Star, StarOff, Image as ImageIcon, Search, X } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Edit2, Trash2, Eye, Star, StarOff, Image as ImageIcon, Search, X, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContextoNoticias, Noticia } from '../../contexts/ContextoNoticias';
 import axios from 'axios';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TipTapImage from '@tiptap/extension-image';
 
 // Notificación flotante
 function Notificacion({ mensaje, tipo, onClose }: { mensaje: string, tipo: 'exito' | 'error', onClose: () => void }) {
@@ -24,8 +27,17 @@ export default function GestionarNoticias() {
   const [noticiaEditando, setNoticiaEditando] = useState<Noticia | null>(null);
   const [formularioEdicion, setFormularioEdicion] = useState<Partial<Noticia>>({});
   const [secciones, setSecciones] = useState<{ id: number; nombre: string }[]>([]);
-  const [autores, setAutores] = useState<{ id: number; nombre: string }[]>([]);
   const [notificacion, setNotificacion] = useState<{ mensaje: string, tipo: 'exito' | 'error' } | null>(null);
+  const [guardando, setGuardando] = useState(false);
+
+  // Editor TipTap para contenido
+  const editor = useEditor({
+    extensions: [StarterKit, TipTapImage],
+    content: '',
+    onUpdate: ({ editor }) => {
+      setFormularioEdicion(prev => ({ ...prev, contenido: editor.getHTML() }));
+    },
+  });
 
   React.useEffect(() => {
     axios.get('/api/sections').then(res => setSecciones(res.data));
@@ -38,16 +50,29 @@ export default function GestionarNoticias() {
     setTimeout(() => setNotificacion(null), 3500);
   };
 
-  const noticiasFiltradas = seccionFiltro 
-    ? noticias.filter(noticia => noticia.seccion?.nombre === seccionFiltro)
-    : noticias;
-  const noticiasBuscadas = noticiasFiltradas.filter(noticia =>
-    noticia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-    noticia.autorTexto.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  // Optimización: usar useMemo para evitar recálculos innecesarios
+  const noticiasBuscadas = useMemo(() => {
+    let resultado = noticias;
+    
+    // Filtrar por sección
+    if (seccionFiltro) {
+      resultado = resultado.filter(noticia => noticia.seccion?.nombre === seccionFiltro);
+    }
+    
+    // Filtrar por búsqueda
+    if (busqueda.trim()) {
+      const busquedaLower = busqueda.toLowerCase();
+      resultado = resultado.filter(noticia =>
+        noticia.titulo.toLowerCase().includes(busquedaLower) ||
+        noticia.autorTexto.toLowerCase().includes(busquedaLower) ||
+        noticia.resumen.toLowerCase().includes(busquedaLower)
+      );
+    }
+    
+    return resultado;
+  }, [noticias, seccionFiltro, busqueda]);
 
   const seccionesOptions = secciones.map(s => ({ id: s.id, nombre: s.nombre }));
-  const autoresOptions = autores.map(a => ({ id: a.id, nombre: a.nombre }));
 
   const confirmarEliminacion = async (id: string | number, titulo: string) => {
     if (window.confirm(`¿Está seguro de eliminar la noticia "${titulo}"?`)) {
@@ -106,6 +131,11 @@ export default function GestionarNoticias() {
       autorFoto: noticia.autorFoto || '',
       destacada: noticia.destacada || false
     });
+    
+    // Cargar contenido en el editor
+    if (editor) {
+      editor.commands.setContent(noticia.contenido || '');
+    }
   };
 
   const cerrarModalEdicion = useCallback(() => {
@@ -120,20 +150,27 @@ export default function GestionarNoticias() {
   }, [cerrarModalEdicion]);
 
   const guardarEdicion = async () => {
-    if (noticiaEditando && Object.keys(formularioEdicion).length > 0) {
+    if (!noticiaEditando || Object.keys(formularioEdicion).length === 0) return;
+    
+    setGuardando(true);
+    try {
       // Enviar solo los campos editables y seccion_id
       const payload: any = {
         ...formularioEdicion,
         seccion_id: formularioEdicion.seccion?.id || noticiaEditando.seccion?.id || null
       };
       delete payload.seccion;
-      try {
-        await editarNoticia(String(noticiaEditando.id), payload);
-        mostrarNotificacion('Noticia editada exitosamente', 'exito');
-        cerrarModalEdicion();
-      } catch (error) {
-        mostrarNotificacion('Error al editar la noticia', 'error');
-      }
+      
+      await editarNoticia(String(noticiaEditando.id), payload);
+      mostrarNotificacion('Noticia editada exitosamente', 'exito');
+      cerrarModalEdicion();
+      
+      // Recargar noticias en background sin bloquear UI
+      setTimeout(() => cargarNoticias(), 500);
+    } catch (error) {
+      mostrarNotificacion('Error al editar la noticia', 'error');
+    } finally {
+      setGuardando(false);
     }
   };
 
@@ -382,16 +419,102 @@ export default function GestionarNoticias() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Contenido
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contenido *
                 </label>
-                <textarea
-                  name="contenido"
-                  value={formularioEdicion.contenido || ''}
-                  onChange={handleInputChange}
-                  rows={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                />
+                
+                <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
+                  {/* Barra de herramientas simplificada */}
+                  <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleBold().run()}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                        editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                      }`}
+                    >
+                      Negrita
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleItalic().run()}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                        editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                      }`}
+                    >
+                      Cursiva
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                        editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                      }`}
+                    >
+                      H2
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
+                        editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                      }`}
+                    >
+                      Lista
+                    </button>
+                  </div>
+                  
+                  {/* Área del editor */}
+                  <div className="min-h-[300px] w-full">
+                    <EditorContent 
+                      editor={editor}
+                      className="w-full h-full"
+                    />
+                  </div>
+                </div>
+                
+                <style>{`
+                  .editor-container .ProseMirror {
+                    min-height: 300px !important;
+                    padding: 16px !important;
+                    font-size: 14px !important;
+                    line-height: 1.6 !important;
+                    outline: none !important;
+                    border: none !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    word-wrap: break-word !important;
+                    overflow-wrap: break-word !important;
+                    white-space: normal !important;
+                    overflow-x: hidden !important;
+                  }
+                  .editor-container .ProseMirror:focus {
+                    outline: none !important;
+                  }
+                  .editor-container .ProseMirror p {
+                    margin: 8px 0 !important;
+                    word-wrap: break-word !important;
+                    overflow-wrap: break-word !important;
+                  }
+                  .editor-container .ProseMirror h1, 
+                  .editor-container .ProseMirror h2, 
+                  .editor-container .ProseMirror h3 {
+                    font-weight: bold !important;
+                    margin: 16px 0 8px 0 !important;
+                    word-wrap: break-word !important;
+                  }
+                  .editor-container .ProseMirror h2 { font-size: 1.3rem !important; }
+                  .editor-container .ProseMirror ul, 
+                  .editor-container .ProseMirror ol {
+                    margin: 8px 0 !important;
+                    padding-left: 20px !important;
+                  }
+                  .editor-container .ProseMirror img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    margin: 16px 0 !important;
+                  }
+                `}</style>
               </div>
               <div className="mb-4">
                 <label htmlFor="seccion_id" className="block text-sm font-medium text-gray-700 mb-2">Sección *</label>
@@ -451,9 +574,20 @@ export default function GestionarNoticias() {
               </button>
               <button
                 onClick={guardarEdicion}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                disabled={guardando}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                Guardar Cambios
+                {guardando ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} />
+                    Guardar Cambios
+                  </>
+                )}
               </button>
             </div>
           </div>

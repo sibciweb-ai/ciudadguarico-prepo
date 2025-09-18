@@ -46,7 +46,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Servir archivos estáticos de uploads
-app.use('/uploads', express.static('/app/uploads'));
+// Usamos una ruta relativa a dist para que coincida con donde guarda upload.ts (dist/uploads)
+// __dirname aquí apunta a dist/ en tiempo de ejecución
+const uploadsPath = path.join(__dirname, './uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // Inicializar base de datos y servidor
 const startServer = async () => {

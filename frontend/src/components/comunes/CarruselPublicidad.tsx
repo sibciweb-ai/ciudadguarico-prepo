@@ -1,4 +1,3 @@
-import React from 'react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function CarruselContenidoDestacado() {
@@ -18,72 +17,68 @@ export default function CarruselContenidoDestacado() {
   console.log('Contenidos filtrados para carrusel:', contenidosCarrusel);
   
   if (contenidosCarrusel.length === 0) {
+    const placeholders = Array(12).fill(null);
+    
     return (
-      <div className="h-16 md:h-20 bg-gradient-to-r from-guarico-blue to-guarico-dark-blue flex items-center justify-center border-b-2 border-guarico-light-blue overflow-hidden">
-        <div className="flex animate-scroll-left min-w-full">
-          <div className="flex items-center whitespace-nowrap">
-            <span className="text-guarico-gold font-medium mx-8">Espacio de Contenido Disponible</span>
-            <span className="text-guarico-light-gold mx-4">•</span>
-            <span className="text-guarico-gold font-medium mx-8">Contacte con nosotros para destacar su contenido</span>
-            <span className="text-guarico-light-gold mx-4">•</span>
-            <span className="text-guarico-gold font-medium mx-8">Espacio de Contenido Disponible</span>
-            <span className="text-guarico-light-gold mx-4">•</span>
-            <span className="text-guarico-gold font-medium mx-8">Contacte con nosotros para destacar su contenido</span>
-            <span className="text-guarico-light-gold mx-4">•</span>
-          </div>
+      <div className="h-16 md:h-20 bg-gradient-to-r from-guarico-blue to-guarico-dark-blue overflow-hidden border-b-2 border-guarico-light-blue relative">
+        <div className="flex h-full animate-scroll-left-fallback">
+          {placeholders.map((_, index) => (
+            <div key={index} className="flex items-center justify-center flex-shrink-0" style={{ width: '200px' }}>
+              <div className="h-12 w-full md:h-16 md:w-full bg-guarico-gold/20 rounded flex items-center justify-center mx-4">
+                <span className="text-guarico-gold text-xs font-bold">LOGO</span>
+              </div>
+            </div>
+          ))}
         </div>
         
         <style>{`
-          @keyframes scroll-left {
+          @keyframes scroll-left-fallback {
             0% {
               transform: translateX(0);
             }
             100% {
-              transform: translateX(-50%);
+              transform: translateX(-25%);
             }
           }
           
-          .animate-scroll-left {
-            animation: scroll-left 30s linear infinite;
+          .animate-scroll-left-fallback {
+            animation: scroll-left-fallback 20s linear infinite;
+            width: 400%;
           }
         `}</style>
       </div>
     );
   }
 
-  // Duplicamos para asegurar un scroll perpetuo
-  const contenidosDuplicados = Array(4).fill(contenidosCarrusel).flat();
+  // Crear un array muy largo para scroll verdaderamente perpetuo
+  const contenidosDuplicados = Array(8).fill(contenidosCarrusel).flat();
 
   return (
     <div className="h-16 md:h-20 bg-gradient-to-r from-guarico-blue to-guarico-dark-blue overflow-hidden border-b-2 border-guarico-light-blue relative">
-      <div className="flex h-full animate-scroll-left" style={{ minWidth: '200%' }}>
+      <div className="flex h-full animate-scroll-left-perpetual">
         {contenidosDuplicados.map((contenido, index) => (
-          <div key={`${contenido.id}-${index}`} className="flex items-center justify-center px-4 md:px-8 whitespace-nowrap flex-shrink-0">
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <img 
-                src={contenido.media} 
-                alt={(contenido as any).titulo || contenido.titulo || 'Contenido destacado'}
-                className="h-8 w-8 md:h-12 md:w-12 object-contain rounded"
-              />
-              <span className="text-guarico-gold font-semibold text-sm md:text-lg">
-                {(contenido as any).titulo || contenido.titulo || 'Contenido'}
-              </span>
-            </div>
-            <span className="text-guarico-light-gold mx-3 md:mx-6">•</span>
+          <div key={`${contenido.id}-${index}`} className="flex items-center justify-center flex-shrink-0" style={{ width: '200px' }}>
+            <img 
+              src={contenido.media} 
+              alt="Logo"
+              className="h-12 w-full md:h-16 md:w-full object-contain px-4"
+            />
           </div>
         ))}
       </div>
       <style>{`
-        @keyframes scroll-left {
+        @keyframes scroll-left-perpetual {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-25%);
           }
         }
-        .animate-scroll-left {
-          animation: scroll-left 60s linear infinite;
+        .animate-scroll-left-perpetual {
+          animation: scroll-left-perpetual 20s linear infinite;
+          animation-play-state: running;
+          width: 400%;
         }
       `}</style>
     </div>

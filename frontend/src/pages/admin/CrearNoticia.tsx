@@ -194,6 +194,10 @@ export default function CrearNoticia({ onCreada }: Props) {
           width: 100% !important;
           box-sizing: border-box !important;
           color: #374151 !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+          white-space: normal !important;
+          overflow-x: hidden !important;
         }
         .editor-container .ProseMirror:focus {
           outline: none !important;
@@ -203,15 +207,23 @@ export default function CrearNoticia({ onCreada }: Props) {
           border: 1px solid #D1D5DB !important;
           border-radius: 8px !important;
           background: #ffffff !important;
+          overflow: hidden !important;
+          max-width: 100% !important;
         }
         .editor-container .ProseMirror p {
           margin: 8px 0 !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+          hyphens: auto !important;
         }
         .editor-container .ProseMirror h1, 
         .editor-container .ProseMirror h2, 
         .editor-container .ProseMirror h3 {
           font-weight: bold !important;
           margin: 16px 0 8px 0 !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+          hyphens: auto !important;
         }
         .editor-container .ProseMirror h1 { font-size: 1.5rem !important; }
         .editor-container .ProseMirror h2 { font-size: 1.3rem !important; }
@@ -474,6 +486,11 @@ export default function CrearNoticia({ onCreada }: Props) {
                   const file = e.target.files[0];
                   const formData = new FormData();
                   formData.append('file', file);
+                  // Pedir leyenda para esta imagen insertada en el contenido
+                  const leyenda = window.prompt('Leyenda para esta imagen (opcional):', '') || '';
+                  if (leyenda.trim()) {
+                    formData.append('descripcion', leyenda.trim());
+                  }
                   try {
                     const res = await fetch('/api/media', {
                       method: 'POST',
@@ -482,7 +499,19 @@ export default function CrearNoticia({ onCreada }: Props) {
                     if (!res.ok) throw new Error('Error al subir la imagen');
                     const data = await res.json();
                     if (!data.url) throw new Error('No se obtuvo la URL de la imagen');
-                    editor.chain().focus().setImage({ src: data.url }).run();
+                    // Insertar como figure con figcaption si hay leyenda
+                    if (leyenda.trim()) {
+                      editor.chain().focus().insertContent(
+                        `<figure>
+                          <img src="${data.url}" alt="${leyenda.replace(/\"/g, '&quot;')}" />
+                          <figcaption>${leyenda}</figcaption>
+                        </figure>`
+                      ).run();
+                    } else {
+                      editor.chain().focus().insertContent(
+                        `<figure><img src="${data.url}" alt="" /></figure>`
+                      ).run();
+                    }
                     mostrarNotificacion('Imagen insertada correctamente', 'exito');
                   } catch (err) {
                     mostrarNotificacion('Error al subir la imagen al contenido', 'error');
@@ -494,10 +523,10 @@ export default function CrearNoticia({ onCreada }: Props) {
             </div>
             
             {/* Área del editor */}
-            <div className="min-h-[400px] w-full">
+            <div className="min-h-[400px] w-full overflow-hidden">
               <EditorContent 
                 editor={editor}
-                className="w-full h-full"
+                className="w-full h-full overflow-hidden"
               />
             </div>
           </div>
