@@ -10,27 +10,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./postgres-optimized.conf:/etc/postgresql/postgresql.conf:ro
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cg_user -d cg_database"]
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
-    networks:
-      - ciudadguarico-net
-
-  postgres_exporter:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: cg_postgres_exporter
-    environment:
-      DATA_SOURCE_NAME: "postgresql://cg_user:cg_password@db:5432/cg_database?sslmode=disable"
-    ports:
-      - "9187:9187"
-    depends_on:
-      db:
-        condition: service_healthy
     restart: unless-stopped
     networks:
       - ciudadguarico-net
@@ -61,7 +45,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://cg_user:cg_password@db:5432/cg_database?schema=public&pool_timeout=20&connection_limit=20&pool_size=20
+      DATABASE_URL: postgresql://cg_user:cg_password@db:5432/cg_database?schema=public
       ALLOWED_ORIGINS: http://localhost,http://localhost:80,http://localhost:5173,http://localhost:8080,http://ciudadguarico.com,https://ciudadguarico.com,http://www.ciudadguarico.com,https://www.ciudadguarico.com,http://administracion.ciudadguarico.com,https://administracion.ciudadguarico.com,http://149.50.138.208,https://149.50.138.208
     depends_on:
       db:
@@ -71,9 +55,8 @@ services:
     volumes:
       - backend_uploads:/app/uploads
     restart: unless-stopped
-    mem_limit: 1g
-    mem_reservation: 512m
-    cpus: '0.5'
+    mem_limit: 512m
+    mem_reservation: 256m
     networks:
       - ciudadguarico-net
 
@@ -85,7 +68,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "3001:80"
+      - "3001:80"  # Cambiado de puerto 80 a 3001
     restart: unless-stopped
     networks:
       - ciudadguarico-net

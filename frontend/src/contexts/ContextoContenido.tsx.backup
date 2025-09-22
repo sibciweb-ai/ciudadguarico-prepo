@@ -1,15 +1,16 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
-interface ContenidoDestacado {
-  id: string;
-  titulo: string;
-  media: string;
-  ubicacion: string;
+export interface ContenidoDestacado {
+  id: string | number;
+  media: string; // URL de Cloudinary
   url?: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  activo: boolean;
+  fechaInicio?: string;
+  fechaFin?: string;
+  titulo?: string;
+  ubicacion: string;
+  visible?: boolean;
 }
 
 interface ContextoContenidoProps {
@@ -27,13 +28,11 @@ export function ProveedorContextoContenido({ children }: { children: React.React
       // Usa la URL absoluta del backend para evitar problemas de CORS y entorno
       const API_URL = '/api/content/contenido-destacado';
       const res = await axios.get(API_URL);
-      
-      // Usar todos los contenidos con media válida (solo almacenamiento local)
-      const contenidosValidos = res.data.filter((c: any) =>
-        typeof c.media === 'string' && c.media.startsWith('/uploads/')
+      // Filtra y usa solo los que tengan media de Cloudinary
+      const contenidosCloudinary = res.data.filter((c: any) =>
+        typeof c.media === 'string' && c.media.startsWith('https://res.cloudinary.com')
       );
-      
-      setContenidos(contenidosValidos);
+      setContenidos(contenidosCloudinary);
     } catch (error) {
       console.error('Error al cargar contenidos destacados:', error);
     }
@@ -54,9 +53,9 @@ export function ProveedorContextoContenido({ children }: { children: React.React
 }
 
 export function useContextoContenido() {
-  const contexto = useContext(ContextoContenido);
-  if (contexto === undefined) {
-    throw new Error('useContextoContenido debe usarse dentro de ProveedorContextoContenido');
+  const context = useContext(ContextoContenido);
+  if (context === undefined) {
+    throw new Error('useContextoContenido debe ser usado dentro de un ProveedorContextoContenido');
   }
-  return contexto;
+  return context;
 }

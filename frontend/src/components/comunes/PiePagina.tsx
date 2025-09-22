@@ -184,7 +184,7 @@ export default function PiePagina() {
                 &copy; 2025 Ciudad Guárico. Todos los derechos reservados.
               </p>
               <p className="text-guarico-gold text-base font-semibold">
-                Desarrollado por el equipo de SIBCI Guárico
+                Desarrollado por el equipo de Informática de SIBCI Guárico
               </p>
             </div>
         </div>

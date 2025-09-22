@@ -111,7 +111,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
       // Cargar todos los contenidos destacados del backend
       const contenidosDelBackend = response.data.map((c: any) => ({
         ...c,
-        media: c.media, // URL directa de almacenamiento local
+        media: c.media, // URL directa de Cloudinary
         // Agregar campos necesarios para el carrusel
         titulo: c.titulo,
         ubicacion: c.ubicacion,
