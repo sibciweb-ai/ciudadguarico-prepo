@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
 import { Calendar, Clock } from 'lucide-react';
+import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
+import SEOHead from '../components/seo/SEOHead';
 
 const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Nacionales', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación']; // CORREGIDO: "Produccion" -> "Producción"
 
@@ -46,28 +48,23 @@ export default function PaginaSeccion() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOHead 
+        title={`${seccion} - Ciudad Guárico`}
+        description={`Las últimas noticias de ${seccion} en Ciudad Guárico. Mantente informado con las noticias más relevantes de ${seccion.toLowerCase()}.`}
+        keywords={`${seccion}, noticias ${seccion.toLowerCase()}, Ciudad Guárico, Venezuela, Guárico`}
+        section={seccion}
+      />
       {/* Encabezado de la sección */}
       <div
-        className={`relative w-full`}
+        className={`relative w-full h-32 sm:h-40 md:h-48 lg:h-56`}
         style={{
-          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundImage: `url('${obtenerImagenSeccion(seccion)}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="h-1.5 w-full bg-amber-600/90"></div>
-        {/* Overlay de color delante de la imagen */}
-        <div className="absolute inset-0 bg-amber-200/30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 py-12 z-10 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-2 text-black">
-              {seccion}
-            </h1>
-            <p className="text-base md:text-lg text-black/80">
-              Las últimas noticias de {seccion.toLowerCase()}
-            </p>
-          </div>
-        </div>
+        {/* El título y subtítulo ya están incluidos en la imagen de fondo */}
       </div>
 
       {/* Contenido principal */}

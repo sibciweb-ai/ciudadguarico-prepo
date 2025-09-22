@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { User, MessageSquare, Calendar } from 'lucide-react';
 import axios from 'axios';
 import { createApiUrl } from '../config/api';
+import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
+import SEOHead from '../components/seo/SEOHead';
 
 interface Columnista {
   id: number;
@@ -128,37 +130,33 @@ const OpinionColumnistas: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOHead 
+        title="Columnistas - Ciudad Guárico"
+        description="Voces expertas que aportan análisis, reflexiones y perspectivas únicas sobre la actualidad."
+        keywords="columnistas, análisis, perspectivas, Ciudad Guárico, Venezuela, Guárico, opinión"
+        section="Columnistas"
+      />
       {/* Header */}
       <div
-        className="relative"
+        className="relative w-full h-32 sm:h-40 md:h-48 lg:h-56"
         style={{
-          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundImage: `url('${obtenerImagenSeccion('Columnistas')}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="h-1.5 w-full bg-green-600/90"></div>
-        {/* Overlay verde frente a la imagen */}
-        <div className="absolute inset-0 bg-green-200/30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-10">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <User className="h-10 w-10 text-green-700 mr-3" />
-              <h1 className="text-5xl font-bold text-black">Columnistas</h1>
-            </div>
-            <p className="text-xl text-black/80 max-w-3xl mx-auto">
-              Voces expertas que aportan análisis, reflexiones y perspectivas únicas sobre la actualidad
-            </p>
-            <div className="mt-4">
-              <Link 
-                to="/opinion"
-                className="inline-flex items-center text-black/70 hover:text-black transition-colors duration-300"
-              >
-                ← Volver a Opinión
-              </Link>
-            </div>
-          </div>
-        </div>
+        {/* El título y subtítulo ya están incluidos en la imagen de fondo */}
+      </div>
+      
+      {/* Botón de navegación fuera de la imagen */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+        <Link 
+          to="/opinion"
+          className="inline-flex items-center text-guarico-blue hover:text-blue-700 transition-colors duration-300 text-sm font-medium"
+        >
+          ← Volver a Opinión
+        </Link>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

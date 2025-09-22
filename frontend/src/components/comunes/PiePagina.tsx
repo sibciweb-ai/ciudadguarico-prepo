@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube, MapPin, Newspaper, Users, BookOpen, Radio, Mail } from 'lucide-react';
+import { Instagram, MapPin, Newspaper, Users, BookOpen, Radio, Mail, Send } from 'lucide-react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function PiePagina() {
@@ -49,25 +49,15 @@ export default function PiePagina() {
             <div>
               <h5 className="text-lg font-semibold mb-3 text-guarico-gold">Síguenos</h5>
               <div className="flex space-x-4">
-                <a href="https://facebook.com/ciudadguarico" target="_blank" rel="noopener noreferrer" 
-                   className="bg-blue-600 hover:bg-blue-700 p-3 rounded-full transition-colors" 
-                   aria-label="Facebook">
-                  <Facebook size={20} />
-                </a>
-                <a href="https://twitter.com/ciudadguarico" target="_blank" rel="noopener noreferrer" 
-                   className="bg-sky-500 hover:bg-sky-600 p-3 rounded-full transition-colors"
-                   aria-label="Twitter">
-                  <Twitter size={20} />
-                </a>
-                <a href="https://instagram.com/ciudadguarico" target="_blank" rel="noopener noreferrer" 
+                <a href="https://www.instagram.com/ciudad.guarico/" target="_blank" rel="noopener noreferrer" 
                    className="bg-pink-600 hover:bg-pink-700 p-3 rounded-full transition-colors"
                    aria-label="Instagram">
                   <Instagram size={20} />
                 </a>
-                <a href="https://youtube.com/@ciudadguarico" target="_blank" rel="noopener noreferrer" 
-                   className="bg-red-600 hover:bg-red-700 p-3 rounded-full transition-colors"
-                   aria-label="YouTube">
-                  <Youtube size={20} />
+                <a href="https://t.me/ciudadguarico" target="_blank" rel="noopener noreferrer" 
+                   className="bg-blue-500 hover:bg-blue-600 p-3 rounded-full transition-colors"
+                   aria-label="Telegram">
+                  <Send size={20} />
                 </a>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
 import TarjetaNoticia from '../components/noticias/TarjetaNoticia';
+import SEOHead from '../components/seo/SEOHead';
 
 const secciones = [
   { nombre: 'Gestión', color: 'bg-blue-600', limite: 3 },
@@ -175,6 +176,11 @@ export default function PaginaPrincipal() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOHead 
+        title="Ciudad Guárico"
+        description="Ciudad Guárico - Periódico digital líder de Venezuela. Noticias de Guárico, gobernación, municipios, deportes, cultura y política nacional."
+        keywords="Ciudad Guárico, noticias Venezuela, Guárico, periódico digital, gobernación"
+      />
       <main className="max-w-7xl mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="flex items-center mb-6">

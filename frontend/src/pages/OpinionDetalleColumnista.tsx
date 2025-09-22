@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, User, Calendar } from 'lucide-react';
+import { Calendar, User, ArrowLeft, MessageSquare } from 'lucide-react';
 import axios from 'axios';
 import { createApiUrl } from '../config/api';
+import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
 
 interface Opinion {
   id: number;
@@ -81,56 +82,81 @@ const OpinionDetalleColumnista: React.FC = () => {
       
       {/* Header del Columnista */}
       <div
-        className="relative rounded-lg mb-8"
+        className="relative rounded-lg mb-8 h-28 sm:h-32 md:h-36 lg:h-40 flex items-end"
         style={{
-          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundImage: `url('${obtenerImagenSeccion('Columnistas')}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="h-1.5 w-full bg-teal-600/90 rounded-t-lg"></div>
-        {/* Overlay frente a la imagen */}
-        <div className="absolute inset-0 bg-teal-200/30 rounded-b-lg"></div>
-        <div className="relative px-4 md:px-6 py-12 z-10">
-          <div className="flex items-center mb-4">
-            <img 
-              src={columnista.fotoUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'} 
-              alt={columnista.nombre} 
-              className="w-24 h-24 rounded-full object-cover mr-6 border-4 border-white/60" 
-            />
-            <div>
-              <h1 className="text-4xl font-bold mb-2 text-black">{columnista.nombre}</h1>
-              <div className="flex items-center text-black/70">
-                <User className="h-4 w-4 mr-2" />
-                <span>Columnista</span>
-              </div>
+        <div className="relative px-4 pb-3 z-10 w-full">
+          <div className="text-center">
+            {/* El título ya está incluido en la imagen de fondo */}
+            <div className="flex items-center justify-center space-x-4 text-xs sm:text-sm">
+              <Link 
+                to="/opinion"
+                className="text-white/80 hover:text-white transition-colors duration-300 flex items-center drop-shadow-md"
+              >
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                Opinión
+              </Link>
+              <span className="text-white/60">/</span>
+              <Link 
+                to="/opinion/columnistas"
+                className="text-white/80 hover:text-white transition-colors duration-300 drop-shadow-md"
+              >
+                Columnistas
+              </Link>
             </div>
           </div>
-          {/* Biografía */}
-          <div>
-            <h3 className="text-lg font-semibold mb-1 text-black">Biografía</h3>
-            <p className="text-black/80 leading-relaxed">{columnista.bio}</p>
+        </div>
+      </div>
+      
+      {/* Perfil del Columnista */}
+      <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Foto del columnista */}
+          <div className="flex-shrink-0">
+            {columnista.fotoUrl ? (
+              <img 
+                src={columnista.fotoUrl} 
+                alt={columnista.nombre}
+                className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-guarico-blue to-blue-600 flex items-center justify-center border-4 border-gray-200">
+                <span className="text-white font-bold text-4xl">
+                  {columnista.nombre.charAt(0)}
+                </span>
+              </div>
+            )}
+          </div>
+          
+          {/* Información del columnista */}
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{columnista.nombre}</h1>
+            <p className="text-gray-700 leading-relaxed mb-6">{columnista.bio}</p>
+            
+            {/* Redes sociales si están disponibles */}
+            {columnista.redes && (
+              <div className="flex flex-wrap gap-4">
+                {columnista.redes.twitter && (
+                  <a href={columnista.redes.twitter} target="_blank" rel="noopener noreferrer"
+                     className="text-black/70 hover:text-black transition-colors">
+                    📱 Twitter
+                  </a>
+                )}
+                {columnista.redes.email && (
+                  <a href={`mailto:${columnista.redes.email}`}
+                     className="text-black/70 hover:text-black transition-colors">
+                    📧 Email
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
-        
-        {/* Redes Sociales */}
-        {columnista.redes && (
-          <div className="mt-4 flex items-center space-x-4 px-4 md:px-6">
-            {columnista.redes.twitter && (
-              <a href={`https://twitter.com/${columnista.redes.twitter.replace('@', '')}`} 
-                 target="_blank" rel="noopener noreferrer"
-                 className="text-black/70 hover:text-black transition-colors">
-                📱 {columnista.redes.twitter}
-              </a>
-            )}
-            {columnista.redes.email && (
-              <a href={`mailto:${columnista.redes.email}`}
-                 className="text-black/70 hover:text-black transition-colors">
-                📧 {columnista.redes.email}
-              </a>
-            )}
-          </div>
-        )}
       </div>
       
       {/* Artículos del Columnista */}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram } from 'lucide-react';
+import { Instagram, Send } from 'lucide-react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function EncabezadoPrincipal() {
@@ -24,28 +24,20 @@ export default function EncabezadoPrincipal() {
             </div>
             <div className="flex items-center space-x-4 mx-auto sm:mx-0">
               <a 
-                href="https://facebook.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-guarico-white hover:text-guarico-gold transition-colors"
-              >
-                <Facebook size={18} />
-              </a>
-              <a 
-                href="https://twitter.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-guarico-white hover:text-guarico-gold transition-colors"
-              >
-                <Twitter size={18} />
-              </a>
-              <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/ciudad.guarico/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-guarico-white hover:text-guarico-gold transition-colors"
               >
                 <Instagram size={18} />
+              </a>
+              <a 
+                href="https://t.me/ciudadguarico" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-guarico-white hover:text-guarico-gold transition-colors"
+              >
+                <Send size={18} />
               </a>
             </div>
           </div>

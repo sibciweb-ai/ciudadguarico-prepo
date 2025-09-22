@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, User, BookOpen } from 'lucide-react';
+import { Calendar, BookOpen, ArrowLeft, MessageSquare, User } from 'lucide-react';
 import axios from 'axios';
 import { createApiUrl } from '../config/api';
+import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
 
 interface Editorial {
   id: number;
@@ -72,31 +73,42 @@ const OpinionDetalleEditorial: React.FC = () => {
       
       {/* Header del Editorial */}
       <div
-        className="relative rounded-lg mb-8"
+        className="relative rounded-lg mb-8 h-28 sm:h-32 md:h-36 lg:h-40 flex items-end"
         style={{
-          backgroundImage: "url('/backgroun-secciones.jpg')",
+          backgroundImage: `url('${obtenerImagenSeccion('Editorial')}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="h-1.5 w-full bg-orange-600/90 rounded-t-lg"></div>
-        {/* Overlay frente a la imagen */}
-        <div className="absolute inset-0 bg-orange-200/30 rounded-b-lg"></div>
-        <div className="relative px-4 md:px-6 py-12 z-10">
-          <div className="flex items-center mb-4">
-            <div className="bg-black/5 p-3 rounded-full mr-4">
-              <BookOpen className="h-8 w-8 text-orange-700" />
-            </div>
-            <div>
-              <div className="flex items-center text-black/70 mb-2">
-                <span className="text-sm font-medium">EDITORIAL</span>
-              </div>
-              <h1 className="text-4xl font-bold leading-tight text-black">{editorial.titulo}</h1>
+        <div className="relative px-4 pb-3 z-10 w-full">
+          <div className="text-center">
+            {/* El título ya está incluido en la imagen de fondo */}
+            <div className="flex items-center justify-center space-x-4 text-xs sm:text-sm">
+              <Link 
+                to="/opinion"
+                className="text-white/80 hover:text-white transition-colors duration-300 flex items-center drop-shadow-md"
+              >
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                Opinión
+              </Link>
+              <span className="text-white/60">/</span>
+              <Link 
+                to="/opinion/editoriales"
+                className="text-white/80 hover:text-white transition-colors duration-300 drop-shadow-md"
+              >
+                Editoriales
+              </Link>
             </div>
           </div>
-          
-          {/* Metadatos */}
-          <div className="flex items-center space-x-6 text-black/70">
+        </div>
+      </div>
+      
+      {/* Contenido del Editorial */}
+      <article className="bg-white rounded-lg shadow-lg p-8 opinion-container">
+        <div className="prose prose-lg max-w-none content-text">
+          <h1 className="text-4xl font-bold leading-tight text-black">{editorial.titulo}</h1>
+          <div className="flex items-center space-x-6 text-black/70 mb-6">
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               <span>{new Date(editorial.fecha).toLocaleDateString('es-ES', {
@@ -112,14 +124,9 @@ const OpinionDetalleEditorial: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
-      </div>
-      
-      {/* Contenido del Editorial */}
-      <article className="bg-white rounded-lg shadow-lg p-8 opinion-container">
-        <div className="prose prose-lg max-w-none content-text">
+          
           {editorial.contenido.split('\n\n').map((paragraph, index) => (
-            <p key={index} className="text-gray-700 leading-relaxed opinion-content break-words mb-6 text-justify opinion-content break-words">
+            <p key={index} className="text-gray-700 leading-relaxed opinion-content break-words mb-6 text-justify">
               {paragraph}
             </p>
           ))}

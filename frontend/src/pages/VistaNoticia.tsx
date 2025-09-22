@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
-import { Calendar, User, Camera, Share2, Facebook, Twitter, Apple as WhatsApp } from 'lucide-react';
+import { Calendar, User, Camera, Share2, Facebook, Instagram, MessageCircle, X } from 'lucide-react';
 import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
 import axios from 'axios';
 import { createApiUrl } from '../config/api';
@@ -102,11 +102,16 @@ export default function VistaNoticia() {
     const texto = noticia.titulo;
     
     switch (red) {
+      case 'instagram':
+        // Instagram no permite compartir enlaces directamente, así que copiamos al portapapeles
+        navigator.clipboard.writeText(`${texto} ${url}`);
+        alert('Enlace copiado al portapapeles. Puedes pegarlo en Instagram.');
+        break;
       case 'facebook':
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
         break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(texto)}&url=${encodeURIComponent(url)}`, '_blank');
+      case 'x':
+        window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(texto)}&url=${encodeURIComponent(url)}`, '_blank');
         break;
       case 'whatsapp':
         window.open(`https://wa.me/?text=${encodeURIComponent(texto + ' ' + url)}`, '_blank');
@@ -185,25 +190,32 @@ export default function VistaNoticia() {
           <Share2 size={16} className="text-gray-500" />
           <span className="text-xs text-gray-500 mr-2">Compartir:</span>
           <button
+            onClick={() => compartirEnRedes('instagram')}
+            className="p-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+            title="Compartir en Instagram"
+          >
+            <Instagram size={14} />
+          </button>
+          <button
             onClick={() => compartirEnRedes('facebook')}
-            className="p-2 bg-guarico-blue text-guarico-white rounded-lg hover:bg-guarico-light-blue transition-colors"
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             title="Compartir en Facebook"
           >
             <Facebook size={14} />
           </button>
           <button
-            onClick={() => compartirEnRedes('twitter')}
-            className="p-2 bg-guarico-green text-guarico-white rounded-lg hover:bg-guarico-light-green transition-colors"
-            title="Compartir en Twitter"
+            onClick={() => compartirEnRedes('x')}
+            className="p-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+            title="Compartir en X (Twitter)"
           >
-            <Twitter size={14} />
+            <X size={14} />
           </button>
           <button
             onClick={() => compartirEnRedes('whatsapp')}
-            className="p-2 bg-guarico-gold text-guarico-black rounded-lg hover:bg-guarico-light-gold transition-colors"
+            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
             title="Compartir en WhatsApp"
           >
-            <WhatsApp size={14} />
+            <MessageCircle size={14} />
           </button>
         </div>
       </div>
