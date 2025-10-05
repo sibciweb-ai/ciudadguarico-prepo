@@ -41,7 +41,7 @@ export default function PiePagina() {
             
             <p className="text-gray-300 mb-6 leading-relaxed">
               El periódico digital líder de Venezuela. Información veraz, oportuna y de calidad 
-              para mantener informada a la comunidad guariceña y nacional.
+              para mantener informada a la comunidad guariqueña y nacional.
             </p>
 
 

@@ -26,7 +26,7 @@ effective_io_concurrency = 200        # Para SSD
 # Logging para debug si es necesario
 log_statement = 'none'                 # Cambiar a 'all' solo para debug
 log_duration = off                     # Cambiar a on solo para debug
-# log_slow_query = on  # Invalid parameter - commented out
+log_slow_query = on
 log_min_duration_statement = 1000     # Log queries > 1 segundo
 
 # Autovacuum optimizado
@@ -38,5 +38,3 @@ autovacuum_naptime = 30s
 track_activities = on
 track_counts = on
 track_io_timing = on
-# Network Configuration
-listen_addresses = '*'
