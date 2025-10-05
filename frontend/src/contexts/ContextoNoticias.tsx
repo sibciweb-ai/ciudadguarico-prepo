@@ -6,6 +6,7 @@ import { useContextoAuth } from './ContextoAuth';
 export interface Noticia {
   id: string | number;
   titulo: string;
+  slug?: string; // URL-friendly slug del título
   contenido: string;
   resumen: string;
   seccion: {

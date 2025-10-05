@@ -193,18 +193,23 @@ const OpinionDetalleColumnista: React.FC = () => {
                 </div>
                 
                 <div className="prose prose-gray max-w-none">
-                  <p className="text-gray-700 leading-relaxed opinion-content break-words opinion-content break-words">
-                    {opinion.contenido.length > 300 
-                      ? `${opinion.contenido.substring(0, 300)}...` 
-                      : opinion.contenido
-                    }
-                  </p>
+                  <div 
+                    className="text-gray-700 leading-relaxed opinion-content line-clamp-6"
+                    dangerouslySetInnerHTML={{ 
+                      __html: opinion.contenido.length > 300 
+                        ? opinion.contenido.replace(/<[^>]+>/g, '').substring(0, 300) + '...' 
+                        : opinion.contenido.replace(/<[^>]+>/g, '').substring(0, 300) + '...'
+                    }}
+                  />
                 </div>
                 
                 {opinion.contenido.length > 300 && (
-                  <button className="mt-4 text-guarico-blue hover:text-blue-700 font-medium transition-colors">
+                  <Link 
+                    to={`/opinion/articulo/${opinion.id}`}
+                    className="mt-4 inline-block text-guarico-blue hover:text-blue-700 font-medium transition-colors"
+                  >
                     Leer más →
-                  </button>
+                  </Link>
                 )}
               </article>
             ))}

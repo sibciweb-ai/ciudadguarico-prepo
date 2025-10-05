@@ -17,6 +17,7 @@ const OpinionEditoriales = React.lazy(() => import('./pages/OpinionEditoriales')
 const OpinionColumnistas = React.lazy(() => import('./pages/OpinionColumnistas'));
 const OpinionDetalleEditorial = React.lazy(() => import('./pages/OpinionDetalleEditorial'));
 const OpinionDetalleColumnista = React.lazy(() => import('./pages/OpinionDetalleColumnista'));
+const OpinionDetalleArticulo = React.lazy(() => import('./pages/OpinionDetalleArticulo'));
 
 // Componente de Loading mejorado
 const LoadingFallback = ({ mensaje = "Cargando..." }: { mensaje?: string }) => (
@@ -79,6 +80,14 @@ export default function App() {
                   element={
                     <React.Suspense fallback={<LoadingFallback mensaje="Cargando artículos del columnista..." />}>
                       <OpinionDetalleColumnista />
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="opinion/articulo/:id" 
+                  element={
+                    <React.Suspense fallback={<LoadingFallback mensaje="Cargando artículo..." />}>
+                      <OpinionDetalleArticulo />
                     </React.Suspense>
                   } 
                 />

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getPrismaClient } from '../config/prisma';
 import { upload } from '../middleware/upload';
+import { generarSlug, truncarSlug } from '../utils/slug';
 
 const router = Router();
 
@@ -55,6 +56,7 @@ router.get('/', async (req, res) => {
     const formatted = news.map(n => ({
       id: n.id,
       titulo: n.titulo,
+      slug: n.slug,
       contenido: n.contenido,
       resumen: n.resumen,
       seccion: n.seccion ? { id: n.seccion.id, nombre: n.seccion.nombre } : null,
@@ -116,25 +118,52 @@ router.get('/section/:seccion', async (req, res) => {
   }
 });
 
-// Obtener noticia por ID
-router.get('/:id', async (req, res) => {
+// Obtener noticia por ID o SLUG
+router.get('/:idOrSlug', async (req, res) => {
   try {
     const prisma = getPrismaClient();
-    const noticia = await prisma.noticia.findUnique({
-      where: { id: parseInt(req.params.id) },
-      include: {
-        seccion: true,
-        noticiaMedia: {
-          include: {
-            media: true
+    const { idOrSlug } = req.params;
+    
+    // Intentar buscar por ID si es un número, sino por slug
+    let noticia = null;
+    const isNumeric = /^\d+$/.test(idOrSlug);
+    
+    if (isNumeric) {
+      // Buscar por ID
+      noticia = await prisma.noticia.findUnique({
+        where: { id: parseInt(idOrSlug) },
+        include: {
+          seccion: true,
+          noticiaMedia: {
+            include: {
+              media: true
+            }
           }
         }
-      }
-    });
+      });
+    }
+    
+    // Si no se encontró por ID o el parámetro no es numérico, buscar por slug
+    if (!noticia) {
+      noticia = await prisma.noticia.findUnique({
+        where: { slug: idOrSlug },
+        include: {
+          seccion: true,
+          noticiaMedia: {
+            include: {
+              media: true
+            }
+          }
+        }
+      });
+    }
+    
     if (!noticia) return res.status(404).json({ message: 'Noticia no encontrada' });
+    
     const formatted = {
       id: noticia.id,
       titulo: noticia.titulo,
+      slug: noticia.slug,
       contenido: noticia.contenido,
       resumen: noticia.resumen,
       seccion: noticia.seccion ? { id: noticia.seccion.id, nombre: noticia.seccion.nombre } : null,
@@ -148,7 +177,7 @@ router.get('/:id', async (req, res) => {
     };
     res.json(formatted);
   } catch (error) {
-    console.error('Error al obtener noticia por ID:', error);
+    console.error('Error al obtener noticia:', error);
     res.status(500).json({ message: 'Error al obtener la noticia' });
   }
 });
@@ -194,9 +223,33 @@ router.post('/', upload.none(), async (req, res) => {
       }
     }
 
+    // Generar slug único a partir del título
+    let slug = truncarSlug(generarSlug(titulo));
+    
+    // Verificar si el slug ya existe y hacerlo único
+    const existentes = await prisma.noticia.findMany({
+      where: { slug: { startsWith: slug } },
+      select: { slug: true }
+    });
+    
+    if (existentes.length > 0) {
+      const slugsExistentes = existentes.map(n => n.slug);
+      if (slugsExistentes.includes(slug)) {
+        // Agregar contador al slug
+        let contador = 2;
+        let slugUnico = `${slug}-${contador}`;
+        while (slugsExistentes.includes(slugUnico)) {
+          contador++;
+          slugUnico = `${slug}-${contador}`;
+        }
+        slug = slugUnico;
+      }
+    }
+    
     const noticia = await prisma.noticia.create({
       data: {
         titulo,
+        slug,
         contenido,
         resumen,
         seccion: { connect: { id: seccion_id } },

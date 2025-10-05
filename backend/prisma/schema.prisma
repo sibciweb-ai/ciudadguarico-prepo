@@ -87,6 +87,7 @@ enum MediaTipo {
 model Noticia {
   id               Int            @id @default(autoincrement())
   titulo           String
+  slug             String         @unique
   contenido        String
   resumen          String
   autorTexto       String

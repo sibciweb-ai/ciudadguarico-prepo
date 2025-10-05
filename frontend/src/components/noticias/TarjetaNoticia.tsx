@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Noticia } from '../../contexts/ContextoNoticias';
+import { obtenerUrlNoticia } from '../../utils/noticiaUrl';
 
 interface Props {
   noticia: Noticia;
@@ -24,7 +25,7 @@ export default function TarjetaNoticia({ noticia }: Props) {
 
   return (
     <Link 
-      to={`/noticia/${noticia.id}`} 
+      to={obtenerUrlNoticia(noticia)} 
       className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 group news-container"
     >
       <div className="relative h-48 md:h-56 lg:h-64 overflow-hidden">

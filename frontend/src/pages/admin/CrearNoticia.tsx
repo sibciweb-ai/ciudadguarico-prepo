@@ -6,19 +6,7 @@ import axios from 'axios';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
-
-// Notificación flotante
-function Notificacion({ mensaje, tipo, onClose }: { mensaje: string, tipo: 'exito' | 'error', onClose: () => void }) {
-  return (
-    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all animate-fade-in-down ${tipo === 'exito' ? 'bg-green-600' : 'bg-red-600'}`}
-      style={{ minWidth: 220 }}>
-      <div className="flex items-center justify-between gap-4">
-        <span>{mensaje}</span>
-        <button onClick={onClose} className="ml-4 text-white hover:text-gray-200 font-bold">×</button>
-      </div>
-    </div>
-  );
-}
+import NotificacionMejorada, { TipoNotificacion } from '../../components/comunes/NotificacionMejorada';
 
 interface Props {
   onCreada: () => void;
@@ -54,7 +42,7 @@ export default function CrearNoticia({ onCreada }: Props) {
   const [imagen, setImagen] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // AGREGADO: URL de previsualización
   const [secciones, setSecciones] = useState<Seccion[]>([]);
-  const [notificacion, setNotificacion] = useState<{ mensaje: string, tipo: 'exito' | 'error' } | null>(null);
+  const [notificacion, setNotificacion] = useState<{ mensaje: string, tipo: TipoNotificacion, detalles?: string } | null>(null);
 
   useEffect(() => {
     axios.get('/api/sections').then(res => {
@@ -71,9 +59,9 @@ export default function CrearNoticia({ onCreada }: Props) {
     };
   }, [previewUrl]);
 
-  const mostrarNotificacion = (mensaje: string, tipo: 'exito' | 'error') => {
-    setNotificacion({ mensaje, tipo });
-    setTimeout(() => setNotificacion(null), 3500);
+  const mostrarNotificacion = (mensaje: string, tipo: TipoNotificacion, detalles?: string) => {
+    setNotificacion({ mensaje, tipo, detalles });
+    setTimeout(() => setNotificacion(null), 5000);
   };
 
   const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -84,10 +72,35 @@ export default function CrearNoticia({ onCreada }: Props) {
     }));
   };
 
-  // FUNCIÓN CORRECTA para manejar la imagen con previsualización
+  // FUNCIÓN CORRECTA para manejar la imagen con previsualización y validación
   const manejarImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validar tamaño (10MB máximo)
+      const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+      if (file.size > maxSize) {
+        const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+        mostrarNotificacion(
+          'Imagen demasiado pesada', 
+          'advertencia',
+          `El archivo pesa ${sizeMB}MB. El tamaño máximo permitido es 10MB. Por favor, comprime la imagen antes de subirla.`
+        );
+        e.target.value = ''; // Limpiar el input
+        return;
+      }
+      
+      // Validar tipo de archivo
+      const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+      if (!tiposPermitidos.includes(file.type)) {
+        mostrarNotificacion(
+          'Tipo de archivo no válido', 
+          'error',
+          'Solo se permiten imágenes en formato JPG, PNG, WebP o GIF.'
+        );
+        e.target.value = '';
+        return;
+      }
       
       // Limpiar URL anterior si existe
       if (previewUrl) {
@@ -98,6 +111,14 @@ export default function CrearNoticia({ onCreada }: Props) {
       const newPreviewUrl = URL.createObjectURL(file);
       setImagen(file);
       setPreviewUrl(newPreviewUrl);
+      
+      // Mostrar notificación de éxito
+      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+      mostrarNotificacion(
+        'Imagen cargada correctamente', 
+        'exito',
+        `Archivo: ${file.name} (${sizeMB}MB)`
+      );
     }
   };
 
@@ -179,7 +200,14 @@ export default function CrearNoticia({ onCreada }: Props) {
 
   return (
     <div className="space-y-6">
-      {notificacion && <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} onClose={() => setNotificacion(null)} />}
+      {notificacion && (
+        <NotificacionMejorada 
+          mensaje={notificacion.mensaje} 
+          tipo={notificacion.tipo}
+          detalles={notificacion.detalles}
+          onClose={() => setNotificacion(null)} 
+        />
+      )}
       
       {/* Estilos CSS para el editor TipTap */}
       <style>{`
@@ -484,6 +512,32 @@ export default function CrearNoticia({ onCreada }: Props) {
                 onChange={async (e) => {
                   if (!e.target.files || !e.target.files[0] || !editor) return;
                   const file = e.target.files[0];
+                  
+                  // Validar tamaño
+                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  if (file.size > maxSize) {
+                    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                    mostrarNotificacion(
+                      'Imagen demasiado pesada', 
+                      'advertencia',
+                      `El archivo pesa ${sizeMB}MB. El tamaño máximo es 10MB. Comprime la imagen antes de subirla.`
+                    );
+                    e.target.value = '';
+                    return;
+                  }
+                  
+                  // Validar tipo
+                  const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+                  if (!tiposPermitidos.includes(file.type)) {
+                    mostrarNotificacion(
+                      'Tipo de archivo no válido', 
+                      'error',
+                      'Solo se permiten imágenes JPG, PNG, WebP o GIF.'
+                    );
+                    e.target.value = '';
+                    return;
+                  }
+                  
                   const formData = new FormData();
                   formData.append('file', file);
                   // Pedir leyenda para esta imagen insertada en el contenido
@@ -512,9 +566,10 @@ export default function CrearNoticia({ onCreada }: Props) {
                         `<figure><img src="${data.url}" alt="" /></figure>`
                       ).run();
                     }
-                    mostrarNotificacion('Imagen insertada correctamente', 'exito');
+                    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                    mostrarNotificacion('Imagen insertada correctamente', 'exito', `${file.name} (${sizeMB}MB)`);
                   } catch (err) {
-                    mostrarNotificacion('Error al subir la imagen al contenido', 'error');
+                    mostrarNotificacion('Error al subir la imagen al contenido', 'error', 'Intenta con una imagen más pequeña o en otro formato.');
                   } finally {
                     e.target.value = '';
                   }

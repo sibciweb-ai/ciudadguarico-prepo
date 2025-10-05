@@ -5,38 +5,48 @@ import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
 import axios from 'axios';
 import { createApiUrl } from '../config/api';
 import SEOHead from '../components/seo/SEOHead';
+import { obtenerUrlNoticia } from '../utils/noticiaUrl';
 
 export default function VistaNoticia() {
-  const { id } = useParams<{ id: string }>();
+  const { id: idOrSlug } = useParams<{ id: string }>();
   const { obtenerNoticiaPorId, noticias } = useContextoNoticias();
   const [noticia, setNoticia] = useState<Noticia | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(false);
   
-  if (!id) return <Navigate to="/" replace />;
+  if (!idOrSlug) return <Navigate to="/" replace />;
 
   useEffect(() => {
     const cargarNoticia = async () => {
       setCargando(true);
       setError(false);
       
-      // Primero intentar obtener de las noticias ya cargadas
-      const noticiaLocal = obtenerNoticiaPorId(id);
+      // Primero intentar obtener de las noticias ya cargadas por ID
+      const noticiaLocal = obtenerNoticiaPorId(idOrSlug);
       if (noticiaLocal) {
         setNoticia(noticiaLocal);
         setCargando(false);
         return;
       }
       
-      // Si no está en las noticias locales, cargar desde el backend
+      // Buscar por slug en las noticias ya cargadas
+      const noticiaPorSlug = noticias.find(n => n.slug === idOrSlug);
+      if (noticiaPorSlug) {
+        setNoticia(noticiaPorSlug);
+        setCargando(false);
+        return;
+      }
+      
+      // Si no está en las noticias locales, cargar desde el backend (acepta slug o ID)
       try {
-        const response = await axios.get(createApiUrl(`/news/${id}`));
+        const response = await axios.get(createApiUrl(`/news/${idOrSlug}`));
         const noticiaData = response.data;
         
         // Formatear la noticia igual que en el contexto
         const noticiaFormateada: Noticia = {
           id: noticiaData.id,
           titulo: noticiaData.titulo,
+          slug: noticiaData.slug,
           contenido: noticiaData.contenido,
           resumen: noticiaData.resumen,
           seccion: noticiaData.seccion,
@@ -62,7 +72,7 @@ export default function VistaNoticia() {
     };
 
     cargarNoticia();
-  }, [id, obtenerNoticiaPorId]);
+  }, [idOrSlug, obtenerNoticiaPorId, noticias]);
   
   if (cargando) {
     return (
@@ -247,7 +257,7 @@ export default function VistaNoticia() {
               return (
                 <Link
                   key={noticiaRel.id}
-                  to={`/noticia/${noticiaRel.id}`}
+                  to={obtenerUrlNoticia(noticiaRel)}
                   className="block hover:bg-white p-3 rounded-lg transition-colors"
                 >
                   <img
