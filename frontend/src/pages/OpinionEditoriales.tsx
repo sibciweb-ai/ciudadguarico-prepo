@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { obtenerUrlNoticia } from '../utils/noticiaUrl';
 import { Link } from 'react-router-dom';
 import { Calendar, BookOpen, MessageSquare, User } from 'lucide-react';
 import axios from 'axios';
@@ -267,7 +268,7 @@ const OpinionEditoriales: React.FC = () => {
                   return (
                     <Link 
                       key={noticia.id} 
-                      to={`/noticia/${noticia.id}`}
+                      to={obtenerUrlNoticia(noticia)}
                       className={`border-l-4 ${colors[index]} pl-4 hover:bg-gray-50 p-3 rounded-r-lg transition-colors block group`}
                     >
                       <h4 className="font-semibold text-gray-900 mb-2 title-content group-hover:text-guarico-blue transition-colors cursor-pointer">

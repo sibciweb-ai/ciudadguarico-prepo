@@ -1,4 +1,5 @@
 import { getPrismaClient } from '../config/prisma';
+import { generarSlug, truncarSlug } from '../utils/slug';
 
 const columnistasData = [
   {
@@ -77,30 +78,35 @@ async function seedColumnistas() {
     const opinionesData = [
       {
         titulo: "El futuro de la democracia en Venezuela",
+        slug: truncarSlug(generarSlug("El futuro de la democracia en Venezuela")),
         contenido: "En los últimos años, hemos sido testigos de transformaciones significativas en el panorama político venezolano. La participación ciudadana se ha convertido en un elemento clave para la construcción de una sociedad más justa y equitativa. Es fundamental que como ciudadanos mantengamos un compromiso activo con los procesos democráticos, participando no solo en las elecciones, sino también en los espacios de deliberación pública que nos permiten construir consensos sobre los grandes temas nacionales.",
         columnistaId: columnistasCreados[0].id,
         destacado: true
       },
       {
         titulo: "Análisis económico: perspectivas para 2025",
+        slug: truncarSlug(generarSlug("Análisis económico: perspectivas para 2025")),
         contenido: "La economía regional muestra signos de recuperación gradual. Los indicadores macroeconómicos sugieren una estabilización que podría traducirse en mejores oportunidades para el desarrollo local. Sin embargo, es crucial que las políticas públicas se enfoquen en crear un entorno propicio para la inversión productiva, el emprendimiento y la generación de empleo de calidad. La diversificación económica debe ser una prioridad para reducir la dependencia de sectores tradicionales.",
         columnistaId: columnistasCreados[1].id,
         destacado: false
       },
       {
         titulo: "Arte y cultura en tiempos de cambio",
+        slug: truncarSlug(generarSlug("Arte y cultura en tiempos de cambio")),
         contenido: "La expresión artística ha encontrado nuevos canales en la era digital. Los artistas locales están aprovechando las plataformas tecnológicas para difundir su trabajo y conectar con audiencias globales. Esta transformación digital del sector cultural presenta oportunidades únicas para la proyección internacional de nuestros valores y tradiciones, al tiempo que permite la experimentación con nuevas formas de expresión que dialogan con las tendencias contemporáneas.",
         columnistaId: columnistasCreados[2].id,
         destacado: true
       },
       {
         titulo: "El deporte como herramienta de integración social",
+        slug: truncarSlug(generarSlug("El deporte como herramienta de integración social")),
         contenido: "Las disciplinas deportivas han demostrado ser un vehículo efectivo para la cohesión social. En Guárico, los programas deportivos comunitarios están generando impactos positivos en la juventud, promoviendo valores como el trabajo en equipo, la disciplina y el respeto. Es fundamental que las autoridades locales continúen invirtiendo en infraestructura deportiva y programas de formación que permitan el desarrollo integral de nuestros jóvenes atletas.",
         columnistaId: columnistasCreados[3].id,
         destacado: false
       },
       {
         titulo: "Derechos humanos: avances y desafíos",
+        slug: truncarSlug(generarSlug("Derechos humanos: avances y desafíos")),
         contenido: "La protección de los derechos fundamentales requiere un esfuerzo conjunto de instituciones y sociedad civil. Es fundamental fortalecer los mecanismos de protección y garantía de estos derechos, especialmente en lo que respecta a los grupos más vulnerables de nuestra sociedad. La educación en derechos humanos debe ser una prioridad en todos los niveles educativos para formar ciudadanos conscientes de sus derechos y responsabilidades.",
         columnistaId: columnistasCreados[4].id,
         destacado: true

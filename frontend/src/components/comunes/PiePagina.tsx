@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { obtenerUrlNoticia } from '../../utils/noticiaUrl';
 import { Instagram, MapPin, Newspaper, Users, BookOpen, Radio, Mail, Send } from 'lucide-react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
@@ -149,7 +150,7 @@ export default function PiePagina() {
                 {noticiasRecientes.map((noticia) => (
                   <Link 
                     key={noticia.id}
-                    to={`/noticia/${noticia.id}`}
+                    to={obtenerUrlNoticia(noticia)}
                     className="block group"
                   >
                     <h6 className="text-gray-300 text-sm group-hover:text-guarico-gold transition-colors line-clamp-2">

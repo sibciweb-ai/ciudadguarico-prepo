@@ -9,6 +9,7 @@ import SEOHead from '../components/seo/SEOHead';
 interface Opinion {
   id: number;
   titulo: string;
+  slug?: string;
   contenido: string;
   fecha: string;
   destacado: boolean;

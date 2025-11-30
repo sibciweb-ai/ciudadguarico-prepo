@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { obtenerUrlNoticia } from '../utils/noticiaUrl';
 import { Link } from 'react-router-dom';
 import { Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
@@ -203,7 +204,7 @@ export default function PaginaPrincipal() {
                       return (
                         <Link 
                           key={noticiaMostrada.id} 
-                          to={`/noticia/${noticiaMostrada.id}`} 
+                          to={obtenerUrlNoticia(noticiaMostrada)} 
                           className="block"
                         >
                           <div className="relative overflow-hidden rounded-lg group">
@@ -290,7 +291,7 @@ export default function PaginaPrincipal() {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Noticias Destacadas</h3>
                 {noticiasSecundarias.length > 0 ? (
                   noticiasSecundarias.map((noticia) => (
-                    <Link key={noticia.id} to={`/noticia/${noticia.id}`} className="block group">
+                    <Link key={noticia.id} to={obtenerUrlNoticia(noticia)} className="block group">
                       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                         <img
                           src={noticia.media?.find(m => m.tipo === 'imagen')?.url || ''}

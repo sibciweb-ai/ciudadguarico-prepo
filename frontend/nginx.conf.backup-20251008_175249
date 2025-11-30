@@ -2,9 +2,6 @@ server {
   listen 80;
   server_name _;
 
-  # Aumentar límite de tamaño del cuerpo de las peticiones para permitir subidas de noticias con múltiples imágenes
-  client_max_body_size 50M;
-
   # Serve frontend
   root   /usr/share/nginx/html;
   index  index.html;
@@ -19,11 +16,6 @@ server {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_cache_bypass $http_upgrade;
-    
-    # Timeouts para operaciones largas (subida de archivos grandes)
-    proxy_connect_timeout 300s;
-    proxy_send_timeout 300s;
-    proxy_read_timeout 300s;
   }
 
   # Proxy uploads (archivos subidos) al backend - DEBE IR ANTES que la directiva de archivos estáticos

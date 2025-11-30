@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { obtenerUrlNoticia } from '../utils/noticiaUrl';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { useContextoNoticias, Noticia } from '../contexts/ContextoNoticias';
 import { Calendar, Clock } from 'lucide-react';
@@ -84,7 +85,7 @@ export default function PaginaSeccion() {
               return (
                 <Link 
                   key={noticia.id}
-                  to={`/noticia/${noticia.id}`}
+                  to={obtenerUrlNoticia(noticia)}
                   className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group"
                 >
                   {/* Imagen */}

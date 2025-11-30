@@ -135,6 +135,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
       const noticiasMapeadas = response.data.map((noticia: any) => ({
         id: noticia.id,
         titulo: noticia.titulo,
+        slug: noticia.slug,
         contenido: noticia.contenido,
         resumen: noticia.resumen,
         seccion: noticia.seccion,
@@ -178,6 +179,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
           const noticiasMapeadas = response.data.map((noticia: any) => ({
             id: noticia.id,
             titulo: noticia.titulo,
+        slug: noticia.slug,
             contenido: noticia.contenido,
             resumen: noticia.resumen,
             seccion: noticia.seccion,
@@ -283,6 +285,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
       return response.data.map((noticia: any) => ({
         id: noticia.id,
         titulo: noticia.titulo,
+        slug: noticia.slug,
         contenido: noticia.contenido,
         resumen: noticia.resumen,
         seccion: noticia.seccion,

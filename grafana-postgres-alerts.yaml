@@ -1,0 +1,410 @@
+# Grafana Alert Rules para PostgreSQL
+# Importar en: Alerting -> Alert rules -> Import
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: postgres-monitoring
+    folder: PostgreSQL Alerts
+    interval: 1m
+    rules:
+      # Alerta 1: PostgreSQL Caído
+      - uid: postgres_down_001
+        title: PostgreSQL DOWN - Bot Telegram
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="postgres_exporter"}
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "🔴 PostgreSQL está CAÍDO"
+          description: "La base de datos PostgreSQL no responde. El bot de Telegram está fuera de servicio. Valor: {{ $values.A }}"
+        labels:
+          severity: critical
+          service: postgres
+          alert_type: availability
+
+      # Alerta 2: Conexiones Altas
+      - uid: postgres_connections_002
+        title: Conexiones de BD Altas
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sum(pg_stat_activity_count)
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 80
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "⚠️ Número alto de conexiones a la BD"
+          description: "Hay {{ $values.A }} conexiones activas. Puede haber un problema de conexiones no cerradas o leak de conexiones."
+        labels:
+          severity: warning
+          service: postgres
+          alert_type: connections
+
+      # Alerta 3: Queries Lentas
+      - uid: postgres_slow_queries_003
+        title: Queries Lentas Detectadas
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: max(pg_stat_activity_max_tx_duration{datname="cg_database"})
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 30
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "🐌 Queries lentas en ejecución"
+          description: "Hay queries ejecutándose por más de 30 segundos. Tiempo máximo: {{ $values.A }}s. Revisa las queries activas."
+        labels:
+          severity: warning
+          service: postgres
+          alert_type: performance
+
+      # Alerta 4: Deadlocks
+      - uid: postgres_deadlocks_004
+        title: Deadlocks Detectados
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(pg_stat_database_deadlocks{datname="cg_database"}[5m])
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "🔒 Deadlocks en la base de datos"
+          description: "Se han detectado deadlocks en la base de datos. Tasa: {{ $values.A }}/s. Revisa las transacciones concurrentes."
+        labels:
+          severity: warning
+          service: postgres
+          alert_type: locks
+
+      # Alerta 5: Rollbacks Frecuentes
+      - uid: postgres_rollbacks_005
+        title: Rollbacks Frecuentes
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(pg_stat_database_xact_rollback{datname="cg_database"}[5m])
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 10
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "⚠️ Rollbacks frecuentes detectados"
+          description: "Tasa de rollbacks: {{ $values.A }}/s. Puede indicar errores en la aplicación o transacciones fallidas."
+        labels:
+          severity: warning
+          service: postgres
+          alert_type: transactions
+
+      # Alerta 6: Base de Datos Grande
+      - uid: postgres_db_size_006
+        title: Base de Datos Creciendo Mucho
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: pg_database_size_bytes{datname="cg_database"} / 1024 / 1024 / 1024
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 10
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: "💾 Base de datos grande"
+          description: "La base de datos tiene {{ $values.A }} GB. Considera hacer limpieza o vacuum si es necesario."
+        labels:
+          severity: info
+          service: postgres
+          alert_type: storage
+
+      # Alerta 7: Exporter Caído
+      - uid: postgres_exporter_down_007
+        title: Postgres Exporter DOWN
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="postgres_exporter"}
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "📊 Postgres Exporter no responde"
+          description: "El exportador de métricas de PostgreSQL está caído. No se pueden obtener métricas de la BD."
+        labels:
+          severity: warning
+          service: monitoring
+          alert_type: exporter
+
+      # Alerta 8: Demasiadas Conexiones Idle
+      - uid: postgres_idle_connections_008
+        title: Demasiadas Conexiones Idle
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sum(pg_stat_activity_count{state="idle"})
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 50
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  type: query
+              refId: C
+        noDataState: NoData
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: "💤 Demasiadas conexiones idle"
+          description: "Hay {{ $values.A }} conexiones idle. Puede indicar un problema con el pool de conexiones."
+        labels:
+          severity: info
+          service: postgres
+          alert_type: connections

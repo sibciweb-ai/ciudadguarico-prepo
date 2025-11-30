@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
+import { obtenerUrlNoticia } from '../../utils/noticiaUrl';
 
 export default function CarruselNoticias() {
   const { noticias } = useContextoNoticias();
@@ -63,7 +64,7 @@ export default function CarruselNoticias() {
                 index === indiceActual ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
             >
-              <Link to={`/noticia/${noticia.id}`} className="block h-full group">
+              <Link to={obtenerUrlNoticia(noticia)} className="block h-full group">
                 <div className="relative h-full">
                   <img
                     src={imagenPrincipal}
@@ -106,16 +107,14 @@ export default function CarruselNoticias() {
             <ChevronRight size={24} />
           </button>
 
-          {/* Indicadores de posición */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+          {/* Indicadores */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
             {noticiasParaMostrar.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setIndiceActual(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
-                  index === indiceActual 
-                    ? 'bg-white w-4' 
-                    : 'bg-white/50 hover:bg-white/80'
+                  index === indiceActual ? 'bg-white w-8' : 'bg-white/50'
                 }`}
                 aria-label={`Ir a noticia ${index + 1}`}
               />

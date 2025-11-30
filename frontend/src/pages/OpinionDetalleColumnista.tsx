@@ -3,11 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, MessageSquare } from 'lucide-react';
 import axios from 'axios';
 import { createApiUrl } from '../config/api';
+import { obtenerUrlOpinion } from '../utils/opinionUrl';
 import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
 
 interface Opinion {
   id: number;
   titulo: string;
+  slug?: string;
   contenido: string;
   fecha: string;
   destacado: boolean;
@@ -170,49 +172,54 @@ const OpinionDetalleColumnista: React.FC = () => {
         
         {columnista.opiniones && columnista.opiniones.length > 0 ? (
           <div className="space-y-6">
-            {columnista.opiniones.map((opinion) => (
-              <article key={opinion.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow opinion-container">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl font-bold text-gray-800 opinion-title break-words hover:text-guarico-blue transition-colors opinion-title break-words">
-                    {opinion.titulo}
-                  </h3>
-                  {opinion.destacado && (
-                    <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">
-                      Destacado
-                    </span>
-                  )}
-                </div>
-                
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span>{new Date(opinion.fecha).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}</span>
-                </div>
-                
-                <div className="prose prose-gray max-w-none">
-                  <div 
-                    className="text-gray-700 leading-relaxed opinion-content line-clamp-6"
-                    dangerouslySetInnerHTML={{ 
-                      __html: opinion.contenido.length > 300 
-                        ? opinion.contenido.replace(/<[^>]+>/g, '').substring(0, 300) + '...' 
-                        : opinion.contenido.replace(/<[^>]+>/g, '').substring(0, 300) + '...'
-                    }}
-                  />
-                </div>
-                
-                {opinion.contenido.length > 300 && (
+            {columnista.opiniones.map((opinion) => {
+              // Extraer texto plano del HTML
+              const textoPlano = opinion.contenido.replace(/<[^>]+>/g, '');
+              const mostrarResumen = textoPlano.length > 300;
+              const resumen = mostrarResumen ? textoPlano.substring(0, 300) + '...' : textoPlano;
+              
+              return (
+                <article key={opinion.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow opinion-container">
+                  <div className="flex items-start justify-between mb-3">
+                    <Link 
+                      to={obtenerUrlOpinion(opinion)}
+                      className="flex-1"
+                    >
+                      <h3 className="text-xl font-bold text-gray-800 hover:text-guarico-blue transition-colors opinion-title break-words">
+                        {opinion.titulo}
+                      </h3>
+                    </Link>
+                    {opinion.destacado && (
+                      <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium ml-4 flex-shrink-0">
+                        Destacado
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center text-sm text-gray-500 mb-4">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span>{new Date(opinion.fecha).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}</span>
+                  </div>
+                  
+                  <div className="prose prose-gray max-w-none mb-4">
+                    <p className="text-gray-700 leading-relaxed opinion-content">
+                      {resumen}
+                    </p>
+                  </div>
+                  
                   <Link 
-                    to={`/opinion/articulo/${opinion.id}`}
-                    className="mt-4 inline-block text-guarico-blue hover:text-blue-700 font-medium transition-colors"
+                    to={obtenerUrlOpinion(opinion)}
+                    className="inline-flex items-center text-guarico-blue hover:text-blue-700 font-medium transition-colors"
                   >
-                    Leer más →
+                    Leer artículo completo →
                   </Link>
-                )}
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
