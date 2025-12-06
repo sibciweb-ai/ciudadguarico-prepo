@@ -64,7 +64,7 @@ export default function BarraLateral() {
                   className="w-full rounded-lg"
                   style={{ height: '40px' }}
                 >
-                  <source src="http://admin-cantaguarico.sibciguarico.online:8000/cantaguarico" type="audio/mpeg" />
+                  <source src="http://149.50.138.208:8000/cantaguarico" type="audio/mpeg" />
                   Tu navegador no soporta el reproductor de audio.
                 </audio>
 
