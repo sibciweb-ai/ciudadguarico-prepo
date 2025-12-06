@@ -5,7 +5,7 @@ import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function PiePagina() {
   const { noticias } = useContextoNoticias();
-  
+
   // Obtener noticias recientes para el footer
   const noticiasRecientes = noticias
     .sort((a, b) => new Date(b.fecha_publicacion).getTime() - new Date(a.fecha_publicacion).getTime())
@@ -30,7 +30,7 @@ export default function PiePagina() {
       {/* Sección superior del footer */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          
+
           {/* Información principal */}
           <div className="lg:col-span-2">
             <div className="flex items-center mb-6">
@@ -39,9 +39,9 @@ export default function PiePagina() {
                 Ciudad <span className="text-guarico-gold">Guárico</span>
               </h3>
             </div>
-            
+
             <p className="text-gray-300 mb-6 leading-relaxed">
-              El periódico digital líder de Venezuela. Información veraz, oportuna y de calidad 
+              El periódico digital líder de Venezuela. Información veraz, oportuna y de calidad
               para mantener informada a la comunidad guariqueña y nacional.
             </p>
 
@@ -50,20 +50,20 @@ export default function PiePagina() {
             <div>
               <h5 className="text-lg font-semibold mb-3 text-guarico-gold">Síguenos</h5>
               <div className="flex space-x-4">
-                <a href="https://www.instagram.com/ciudad.guarico/" target="_blank" rel="noopener noreferrer" 
-                   className="bg-pink-600 hover:bg-pink-700 p-3 rounded-full transition-colors"
-                   aria-label="Instagram">
+                <a href="https://www.instagram.com/ciudad.guarico/" target="_blank" rel="noopener noreferrer"
+                  className="bg-pink-600 hover:bg-pink-700 p-3 rounded-full transition-colors"
+                  aria-label="Instagram">
                   <Instagram size={20} />
                 </a>
-                <a href="https://t.me/ciudadguarico" target="_blank" rel="noopener noreferrer" 
-                   className="bg-blue-500 hover:bg-blue-600 p-3 rounded-full transition-colors"
-                   aria-label="Telegram">
+                <a href="https://t.me/ciudadguarico" target="_blank" rel="noopener noreferrer"
+                  className="bg-blue-500 hover:bg-blue-600 p-3 rounded-full transition-colors"
+                  aria-label="Telegram">
                   <Send size={20} />
                 </a>
               </div>
             </div>
           </div>
-          
+
           {/* Secciones */}
           <div>
             <h4 className="text-xl font-semibold mb-6 text-guarico-gold flex items-center">
@@ -73,8 +73,8 @@ export default function PiePagina() {
             <ul className="space-y-3">
               {secciones.slice(0, 6).map((seccion) => (
                 <li key={seccion.nombre}>
-                  <Link 
-                    to={`/seccion/${seccion.nombre}`} 
+                  <Link
+                    to={`/seccion/${seccion.nombre}`}
                     className="text-gray-300 hover:text-guarico-gold transition-colors flex items-center group"
                   >
                     <seccion.icono size={16} className="mr-2 group-hover:text-guarico-gold" />
@@ -94,8 +94,8 @@ export default function PiePagina() {
             <ul className="space-y-3">
               {secciones.slice(6).map((seccion) => (
                 <li key={seccion.nombre}>
-                  <Link 
-                    to={`/seccion/${seccion.nombre}`} 
+                  <Link
+                    to={`/seccion/${seccion.nombre}`}
                     className="text-gray-300 hover:text-guarico-gold transition-colors flex items-center group"
                   >
                     <seccion.icono size={16} className="mr-2 group-hover:text-guarico-gold" />
@@ -104,8 +104,8 @@ export default function PiePagina() {
                 </li>
               ))}
               <li>
-                <Link 
-                  to="/opinion" 
+                <Link
+                  to="/opinion"
                   className="text-gray-300 hover:text-guarico-gold transition-colors flex items-center group"
                 >
                   <Users size={16} className="mr-2 group-hover:text-guarico-gold" />
@@ -114,14 +114,14 @@ export default function PiePagina() {
               </li>
             </ul>
           </div>
-          
+
           {/* Contacto y noticias recientes */}
           <div>
             <h4 className="text-xl font-semibold mb-6 text-guarico-gold flex items-center">
               <Mail className="mr-2" size={20} />
               Contacto
             </h4>
-            
+
             <div className="space-y-4 mb-6">
               <div className="flex items-start space-x-3">
                 <MapPin size={18} className="text-guarico-gold mt-1 flex-shrink-0" />
@@ -130,13 +130,13 @@ export default function PiePagina() {
                   <p className="text-gray-400 text-xs">Estado Guárico, Venezuela</p>
                 </div>
               </div>
-              
+
 
               <div className="flex items-start space-x-3">
                 <Radio size={18} className="text-guarico-gold mt-1 flex-shrink-0" />
                 <div>
-                  <a href="https://zeno.fm/radio/cantaguarico-91-3fm/" target="_blank" rel="noopener noreferrer" 
-                     className="text-gray-300 text-sm hover:text-guarico-gold transition-colors">
+                  <a href="https://cantaguarico.sibciguarico.online/" target="_blank" rel="noopener noreferrer"
+                    className="text-gray-300 text-sm hover:text-guarico-gold transition-colors">
                     Canta Guárico 91.3 FM
                   </a>
                 </div>
@@ -148,7 +148,7 @@ export default function PiePagina() {
               <h5 className="text-lg font-semibold mb-3 text-guarico-gold">Últimas Noticias</h5>
               <div className="space-y-3">
                 {noticiasRecientes.map((noticia) => (
-                  <Link 
+                  <Link
                     key={noticia.id}
                     to={obtenerUrlNoticia(noticia)}
                     className="block group"
@@ -166,18 +166,18 @@ export default function PiePagina() {
           </div>
         </div>
       </div>
-      
+
       {/* Línea divisoria */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="text-center">
-              <p className="text-gray-300 text-lg font-medium mb-2">
-                &copy; 2025 Ciudad Guárico. Todos los derechos reservados.
-              </p>
-              <p className="text-guarico-gold text-base font-semibold">
-                Desarrollado por el equipo de Informática de SIBCI Guárico
-              </p>
-            </div>
+          <div className="text-center">
+            <p className="text-gray-300 text-lg font-medium mb-2">
+              &copy; 2025 Ciudad Guárico. Todos los derechos reservados.
+            </p>
+            <p className="text-guarico-gold text-base font-semibold">
+              Desarrollado por el equipo de Informática de SIBCI Guárico
+            </p>
+          </div>
         </div>
       </div>
     </footer>

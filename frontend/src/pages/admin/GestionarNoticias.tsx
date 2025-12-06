@@ -29,6 +29,8 @@ export default function GestionarNoticias() {
   const [secciones, setSecciones] = useState<{ id: number; nombre: string }[]>([]);
   const [notificacion, setNotificacion] = useState<{ mensaje: string, tipo: 'exito' | 'error' } | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const ITEMS_POR_PAGINA = 10;
 
   // Editor TipTap para contenido
   const editor = useEditor({
@@ -50,15 +52,20 @@ export default function GestionarNoticias() {
     setTimeout(() => setNotificacion(null), 3500);
   };
 
+  // Resetear paginación cuando cambien los filtros
+  React.useEffect(() => {
+    setPaginaActual(1);
+  }, [seccionFiltro, busqueda]);
+
   // Optimización: usar useMemo para evitar recálculos innecesarios
   const noticiasBuscadas = useMemo(() => {
     let resultado = noticias;
-    
+
     // Filtrar por sección
     if (seccionFiltro) {
       resultado = resultado.filter(noticia => noticia.seccion?.nombre === seccionFiltro);
     }
-    
+
     // Filtrar por búsqueda
     if (busqueda.trim()) {
       const busquedaLower = busqueda.toLowerCase();
@@ -68,9 +75,15 @@ export default function GestionarNoticias() {
         noticia.resumen.toLowerCase().includes(busquedaLower)
       );
     }
-    
+
     return resultado;
   }, [noticias, seccionFiltro, busqueda]);
+
+  // Calcular paginación
+  const totalPaginas = Math.ceil(noticiasBuscadas.length / ITEMS_POR_PAGINA);
+  const indiceInicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
+  const indiceFin = indiceInicio + ITEMS_POR_PAGINA;
+  const noticiasPaginadas = noticiasBuscadas.slice(indiceInicio, indiceFin);
 
   const seccionesOptions = secciones.map(s => ({ id: s.id, nombre: s.nombre }));
 
@@ -102,16 +115,16 @@ export default function GestionarNoticias() {
           }
         }
       }
-      
+
       await editarNoticia(String(id), { destacada: !destacada });
-      
+
       // Esperar un momento para que el backend procese y luego recargar
       setTimeout(async () => {
         await cargarNoticias();
         mostrarNotificacion(
-          destacada 
-            ? 'Noticia removida de destacadas' 
-            : 'Noticia marcada como destacada', 
+          destacada
+            ? 'Noticia removida de destacadas'
+            : 'Noticia marcada como destacada',
           'exito'
         );
       }, 800);
@@ -131,7 +144,7 @@ export default function GestionarNoticias() {
       autorFoto: noticia.autorFoto || '',
       destacada: noticia.destacada || false
     });
-    
+
     // Cargar contenido en el editor
     if (editor) {
       editor.commands.setContent(noticia.contenido || '');
@@ -151,7 +164,7 @@ export default function GestionarNoticias() {
 
   const guardarEdicion = async () => {
     if (!noticiaEditando || Object.keys(formularioEdicion).length === 0) return;
-    
+
     setGuardando(true);
     try {
       // Enviar solo los campos editables y seccion_id
@@ -160,11 +173,11 @@ export default function GestionarNoticias() {
         seccion_id: formularioEdicion.seccion?.id || noticiaEditando.seccion?.id || null
       };
       delete payload.seccion;
-      
+
       await editarNoticia(String(noticiaEditando.id), payload);
       mostrarNotificacion('Noticia editada exitosamente', 'exito');
       cerrarModalEdicion();
-      
+
       // Recargar noticias en background sin bloquear UI
       setTimeout(() => cargarNoticias(), 500);
     } catch (error) {
@@ -215,7 +228,7 @@ export default function GestionarNoticias() {
         <div className="overflow-x-auto">
           {/* Vista móvil */}
           <div className="sm:hidden">
-            {noticiasBuscadas.map((noticia) => (
+            {noticiasPaginadas.map((noticia) => (
               <div key={noticia.id} className="p-4 border-b border-gray-200">
                 <div className="flex items-start space-x-3">
                   <div className="flex-1 min-w-0">
@@ -226,11 +239,10 @@ export default function GestionarNoticias() {
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                         {noticia.seccion?.nombre}
                       </span>
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        noticia.destacada 
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${noticia.destacada
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-gray-100 text-gray-800'
+                        }`}>
                         {noticia.destacada ? 'Destacada' : 'Normal'}
                       </span>
                     </div>
@@ -289,7 +301,7 @@ export default function GestionarNoticias() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {noticiasBuscadas.map((noticia) => (
+              {noticiasPaginadas.map((noticia) => (
                 <tr key={noticia.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
@@ -307,11 +319,10 @@ export default function GestionarNoticias() {
                     {noticia.autorTexto}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      noticia.destacada 
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${noticia.destacada
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-gray-100 text-gray-800'
+                      }`}>
                       {noticia.destacada ? 'Destacada' : 'Normal'}
                     </span>
                   </td>
@@ -363,23 +374,77 @@ export default function GestionarNoticias() {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron noticias</h3>
             <p className="text-gray-500">
-              {busqueda || seccionFiltro 
+              {busqueda || seccionFiltro
                 ? "Intenta ajustar los filtros de búsqueda"
                 : "Comienza creando una nueva noticia"}
             </p>
           </div>
         )}
       </div>
-      
-      <div className="flex justify-end">
-        <p className="text-sm text-gray-600">
-          Total: {noticiasBuscadas.length} {noticiasBuscadas.length === 1 ? 'noticia' : 'noticias'}
-        </p>
-      </div>
+
+      {/* Controles de paginación */}
+      {noticiasBuscadas.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-white border-t border-gray-200">
+          <div className="text-sm text-gray-700">
+            Mostrando <span className="font-medium">{indiceInicio + 1}</span> a{' '}
+            <span className="font-medium">{Math.min(indiceFin, noticiasBuscadas.length)}</span> de{' '}
+            <span className="font-medium">{noticiasBuscadas.length}</span> noticias
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPaginaActual(prev => Math.max(1, prev - 1))}
+              disabled={paginaActual === 1}
+              className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Anterior
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(pagina => {
+                // Mostrar solo algunas páginas para evitar overflow
+                const mostrarPagina =
+                  pagina === 1 ||
+                  pagina === totalPaginas ||
+                  (pagina >= paginaActual - 1 && pagina <= paginaActual + 1);
+
+                if (!mostrarPagina) {
+                  // Mostrar "..." entre grupos de páginas
+                  if (pagina === paginaActual - 2 || pagina === paginaActual + 2) {
+                    return <span key={pagina} className="px-2 text-gray-500">...</span>;
+                  }
+                  return null;
+                }
+
+                return (
+                  <button
+                    key={pagina}
+                    onClick={() => setPaginaActual(pagina)}
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${paginaActual === pagina
+                        ? 'bg-red-600 text-white'
+                        : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                      }`}
+                  >
+                    {pagina}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setPaginaActual(prev => Math.min(totalPaginas, prev + 1))}
+              disabled={paginaActual === totalPaginas}
+              className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Edición */}
       {noticiaEditando && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 min-h-screen w-screen"
           onClick={manejarClicFueraModal}
         >
@@ -422,57 +487,53 @@ export default function GestionarNoticias() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contenido *
                 </label>
-                
+
                 <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
                   {/* Barra de herramientas simplificada */}
                   <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleBold().run()}
-                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                        editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                      }`}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                        }`}
                     >
                       Negrita
                     </button>
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleItalic().run()}
-                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                        editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                      }`}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                        }`}
                     >
                       Cursiva
                     </button>
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                        editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                      }`}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                        }`}
                     >
                       H2
                     </button>
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                      className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                        editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                      }`}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                        }`}
                     >
                       Lista
                     </button>
                   </div>
-                  
+
                   {/* Área del editor */}
                   <div className="min-h-[300px] w-full">
-                    <EditorContent 
+                    <EditorContent
                       editor={editor}
                       className="w-full h-full"
                     />
                   </div>
                 </div>
-                
+
                 <style>{`
                   .editor-container .ProseMirror {
                     min-height: 300px !important;

@@ -7,7 +7,7 @@ export default function BarraLateral() {
   const contenidosSide = Array.isArray(contenidos)
     ? contenidos.filter(c => c.ubicacion?.startsWith('side-') && c.visible)
     : [];
-  
+
   // Debug: mostrar qué contenidos se encontraron
   console.log('Todos los contenidos:', contenidos);
   console.log('Contenidos side encontrados:', contenidosSide);
@@ -22,7 +22,7 @@ export default function BarraLateral() {
         </div>
         <div className="p-4 space-y-4">
           {/* Gobernación de Guárico */}
-          <a 
+          <a
             href="https://guarico.gob.ve/"
             target="_blank"
             rel="noopener noreferrer"
@@ -37,8 +37,8 @@ export default function BarraLateral() {
 
           {/* Canta Guárico */}
           <div className="space-y-2">
-            <a 
-              href="https://zeno.fm/radio/cantaguarico-91-3fm/"
+            <a
+              href="https://cantaguarico.sibciguarico.online/"
               target="_blank"
               rel="noopener noreferrer"
               className="block hover:opacity-90 transition-opacity"
@@ -49,18 +49,29 @@ export default function BarraLateral() {
                 className="w-full h-auto object-contain"
               />
             </a>
-            {/* Reproductor de Radio */}
-            <div className="w-full bg-gray-100 rounded-lg p-2 relative z-10">
-              <iframe
-                title="Canta Guárico Radio"
-                src="https://zeno.fm/player/cantaguarico-91-3fm"
-                width="100%"
-                height="100"
-                frameBorder="0"
-                scrolling="no"
-                className="w-full relative z-10"
-                style={{ position: 'relative', zIndex: 10 }}
-              ></iframe>
+
+            {/* Widget de Radio con Reproductor */}
+            <div className="bg-gradient-to-br from-red-600 to-red-800 rounded-lg p-4 shadow-lg">
+              <div className="text-center">
+                <p className="text-white text-sm font-semibold mb-3">
+                  🎵 Radio en Vivo
+                </p>
+
+                {/* Reproductor de Audio HTML5 con Autoplay */}
+                <audio
+                  controls
+                  autoPlay
+                  className="w-full rounded-lg"
+                  style={{ height: '40px' }}
+                >
+                  <source src="http://admin-cantaguarico.sibciguarico.online:8000/cantaguarico" type="audio/mpeg" />
+                  Tu navegador no soporta el reproductor de audio.
+                </audio>
+
+                <p className="text-white text-xs mt-3 opacity-80">
+                  91.3 FM
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -106,7 +117,7 @@ export default function BarraLateral() {
                       }
                     }}
                   />
-                  <div 
+                  <div
                     className="w-full h-24 bg-gray-100 rounded-lg shadow flex items-center justify-center hidden"
                     style={{ display: 'none' }}
                   >
