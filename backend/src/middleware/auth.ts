@@ -14,7 +14,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   }
 
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET || 'tu_clave_secreta');
+    const user = jwt.verify(token, process.env.JWT_SECRET || 'c1ud4dgu4r1c09879');
     req.user = user;
     next();
   } catch (error) {
@@ -23,7 +23,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 };
 
 export const isAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
-  if (req.user && req.user.role === 'admin') {
+  if (req.user && Array.isArray(req.user.roles) && req.user.roles.includes('admin')) {
     next();
   } else {
     res.status(403).json({ message: 'Acceso denegado: se requieren permisos de administrador' });

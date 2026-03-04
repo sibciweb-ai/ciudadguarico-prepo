@@ -6,7 +6,7 @@ import { Calendar, Clock } from 'lucide-react';
 import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
 import SEOHead from '../components/seo/SEOHead';
 
-const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Nacionales', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación']; // CORREGIDO: "Produccion" -> "Producción"
+const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Nacionales', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación', 'Política'];
 
 // Gradientes por sección (no usado actualmente porque el encabezado usa imagen de fondo)
 
@@ -15,7 +15,7 @@ export default function PaginaSeccion() {
   const { obtenerNoticiasPorSeccion } = useContextoNoticias();
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [cargando, setCargando] = useState(true);
-  
+
   // Función para convertir fecha a Date si es string
   const convertirFecha = (fecha: Date | string): Date => {
     if (fecha instanceof Date) {
@@ -23,7 +23,7 @@ export default function PaginaSeccion() {
     }
     return new Date(fecha);
   };
-  
+
   if (!seccion || !seccionesValidas.includes(seccion)) {
     return <Navigate to="/" replace />;
   }
@@ -44,12 +44,12 @@ export default function PaginaSeccion() {
 
     cargarNoticias();
   }, [seccion, obtenerNoticiasPorSeccion]);
-  
+
   // Nota: el gradiente por sección se ha desactivado temporalmente al usar imagen de fondo
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SEOHead 
+      <SEOHead
         title={`${seccion} - Ciudad Guárico`}
         description={`Las últimas noticias de ${seccion} en Ciudad Guárico. Mantente informado con las noticias más relevantes de ${seccion.toLowerCase()}.`}
         keywords={`${seccion}, noticias ${seccion.toLowerCase()}, Ciudad Guárico, Venezuela, Guárico`}
@@ -83,17 +83,20 @@ export default function PaginaSeccion() {
               // Obtener la imagen principal desde media
               const imagenPrincipal = noticia.media?.find(m => m.tipo === 'imagen')?.url || '';
               return (
-                <Link 
+                <Link
                   key={noticia.id}
                   to={obtenerUrlNoticia(noticia)}
                   className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group"
                 >
                   {/* Imagen */}
                   <div className="relative h-48 overflow-hidden rounded-t-lg">
-                    <img 
+                    <img
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       src={imagenPrincipal}
                       alt={noticia.titulo}
+                      loading="lazy"
+                      width={400}
+                      height={192}
                     />
                   </div>
                   {/* Contenido */}

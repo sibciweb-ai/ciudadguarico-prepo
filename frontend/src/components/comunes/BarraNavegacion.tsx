@@ -20,6 +20,7 @@ const seccionesMas = [
   { nombre: 'SEGURIDAD', ruta: '/seccion/Seguridad' },
   { nombre: 'TURISMO', ruta: '/seccion/Turismo' },
   { nombre: 'EDUCACIÓN', ruta: '/seccion/Educación' },
+  { nombre: 'POLÍTICA', ruta: '/seccion/Política' },
 ];
 
 // Todas las secciones para móvil
@@ -40,7 +41,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
   const [dropdownMasAbierto, setDropdownMasAbierto] = useState(false);
   const [termino, setTermino] = useState('');
   const [mostrarBusqueda, setMostrarBusqueda] = useState(false);
-  
+
   const dropdownOpinionRef = useRef<HTMLDivElement>(null);
   const dropdownMasRef = useRef<HTMLDivElement>(null);
   const dropdownBusquedaRef = useRef<HTMLDivElement>(null);
@@ -86,9 +87,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
   const masActivo = seccionesMas.some(s => location.pathname === s.ruta);
 
   return (
-    <nav className={`z-50 border-b-2 border-guarico-gold transition-all duration-300 sticky top-0 ${
-      isSticky ? 'bg-[#4CAF50] text-guarico-white shadow-lg' : 'bg-[#4CAF50] text-white'
-    }`}>
+    <nav className={`z-50 border-b-2 border-guarico-gold transition-all duration-300 sticky top-0 ${isSticky ? 'bg-[#4CAF50] text-guarico-white shadow-lg' : 'bg-[#4CAF50] text-white'
+      }`}>
       <div className="max-w-7xl mx-auto px-4">
 
         {/* Desktop Navigation */}
@@ -96,9 +96,9 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
           {/* Logo solo en sticky */}
           {isSticky && (
             <Link to="/" className="flex-shrink-0 mr-6">
-              <img 
-                src="/logo.png" 
-                alt="Logo Ciudad Guárico" 
+              <img
+                src="/logo.png"
+                alt="Logo Ciudad Guárico"
                 className="h-10 w-auto drop-shadow-md hover:scale-105 transition-transform duration-200"
               />
             </Link>
@@ -107,11 +107,10 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
           {/* Botón INICIO */}
           <Link
             to="/"
-            className={`flex items-center px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${
-              location.pathname === '/'
+            className={`flex items-center px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${location.pathname === '/'
                 ? 'text-guarico-gold bg-white/10'
                 : 'text-white hover:bg-white/10'
-            }`}
+              }`}
           >
             <Home size={16} className="mr-2" />
             INICIO
@@ -123,11 +122,10 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               <Link
                 key={seccion.nombre}
                 to={seccion.ruta}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${
-                  location.pathname === seccion.ruta
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${location.pathname === seccion.ruta
                     ? 'text-guarico-gold bg-white/10'
                     : 'text-white hover:bg-white/10'
-                }`}
+                  }`}
               >
                 {seccion.nombre}
               </Link>
@@ -140,28 +138,26 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                   setDropdownOpinionAbierto(!dropdownOpinionAbierto);
                   setDropdownMasAbierto(false);
                 }}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${
-                  location.pathname.startsWith('/opinion')
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${location.pathname.startsWith('/opinion')
                     ? 'text-guarico-gold bg-white/10'
                     : 'text-white hover:bg-white/10'
-                }`}
+                  }`}
                 aria-haspopup="menu"
                 aria-expanded={dropdownOpinionAbierto}
               >
                 OPINIÓN
               </button>
-              
+
               {dropdownOpinionAbierto && (
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg border border-gray-200" style={{ zIndex: 9999 }}>
                   {opinionSubsecciones.map((sub) => (
                     <Link
                       key={sub.nombre}
                       to={sub.ruta}
-                      className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
-                        location.pathname === sub.ruta
+                      className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${location.pathname === sub.ruta
                           ? 'text-guarico-gold bg-guarico-gold/10'
                           : 'hover:bg-gray-50'
-                      }`}
+                        }`}
                       onClick={() => setDropdownOpinionAbierto(false)}
                     >
                       {sub.nombre}
@@ -178,26 +174,24 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                   setDropdownMasAbierto(!dropdownMasAbierto);
                   setDropdownOpinionAbierto(false);
                 }}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${
-                  masActivo
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${masActivo
                     ? 'text-guarico-gold bg-white/10'
                     : 'text-white hover:bg-white/10'
-                }`}
+                  }`}
               >
                 MÁS
               </button>
-              
+
               {dropdownMasAbierto && (
                 <div className="absolute top-full left-0 mt-2 w-40 bg-white text-gray-900 rounded-lg shadow-lg border border-gray-200" style={{ zIndex: 9999 }}>
                   {seccionesMas.map((seccion) => (
                     <Link
                       key={seccion.nombre}
                       to={seccion.ruta}
-                      className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
-                        location.pathname === seccion.ruta
+                      className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${location.pathname === seccion.ruta
                           ? 'text-guarico-gold bg-guarico-gold/10'
                           : 'hover:bg-gray-50'
-                      }`}
+                        }`}
                       onClick={() => setDropdownMasAbierto(false)}
                     >
                       {seccion.nombre}
@@ -222,7 +216,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               >
                 <Search size={20} />
               </button>
-              
+
               {/* Dropdown de búsqueda */}
               {mostrarBusqueda && (
                 <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200" style={{ zIndex: 9999 }}>
@@ -255,9 +249,9 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
         <div className="lg:hidden flex items-center justify-between h-16">
           {/* Logo móvil */}
           <Link to="/" className="flex-shrink-0">
-            <img 
-              src="/logo.png" 
-              alt="Logo Ciudad Guárico" 
+            <img
+              src="/logo.png"
+              alt="Logo Ciudad Guárico"
               className="h-8 w-auto"
             />
           </Link>
@@ -279,7 +273,7 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
           <div className="relative w-80 max-w-[85vw] h-full bg-[#4CAF50] shadow-xl flex flex-col ml-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
               <span className="font-bold text-lg text-white">Menú</span>
-              <button 
+              <button
                 onClick={cerrarMenu}
                 className="p-2 text-white hover:bg-white/10 rounded-md transition-colors duration-200"
               >
@@ -308,9 +302,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
               <div className="py-2">
                 <Link
                   to="/"
-                  className={`flex items-center px-6 py-3 text-white font-medium transition-colors duration-200 ${
-                    location.pathname === '/' ? 'bg-white/20 text-guarico-gold' : 'hover:bg-white/10'
-                  }`}
+                  className={`flex items-center px-6 py-3 text-white font-medium transition-colors duration-200 ${location.pathname === '/' ? 'bg-white/20 text-guarico-gold' : 'hover:bg-white/10'
+                    }`}
                   onClick={cerrarMenu}
                 >
                   <Home size={18} className="mr-3" />
@@ -321,9 +314,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                   <Link
                     key={seccion.nombre}
                     to={seccion.ruta}
-                    className={`block px-6 py-3 text-white font-medium transition-colors duration-200 ${
-                      location.pathname === seccion.ruta ? 'bg-white/20 text-guarico-gold' : 'hover:bg-white/10'
-                    }`}
+                    className={`block px-6 py-3 text-white font-medium transition-colors duration-200 ${location.pathname === seccion.ruta ? 'bg-white/20 text-guarico-gold' : 'hover:bg-white/10'
+                      }`}
                     onClick={cerrarMenu}
                   >
                     {seccion.nombre}
@@ -339,9 +331,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                     <Link
                       key={sub.nombre}
                       to={sub.ruta}
-                      className={`block px-8 py-2 text-white font-medium transition-colors duration-200 ${
-                        location.pathname === sub.ruta ? 'bg-white/20 text-guarico-gold' : 'hover:bg-white/10'
-                      }`}
+                      className={`block px-8 py-2 text-white font-medium transition-colors duration-200 ${location.pathname === sub.ruta ? 'bg-white/20 text-guarico-gold' : 'hover:bg-white/10'
+                        }`}
                       onClick={cerrarMenu}
                     >
                       {sub.nombre}

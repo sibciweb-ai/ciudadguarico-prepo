@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getPrismaClient } from '../config/prisma';
 import { upload } from '../middleware/upload';
+import { authenticateToken } from '../middleware/auth';
 import { generarSlug, truncarSlug } from '../utils/slug';
 
 const router = Router();
@@ -12,13 +13,13 @@ router.get('/', async (req, res) => {
     const search = req.query.search ? String(req.query.search).toLowerCase() : '';
     const seccion = req.query.seccion ? String(req.query.seccion) : '';
     const limit = req.query.limit ? parseInt(String(req.query.limit)) : undefined;
-    
+
     let whereClause: any = {};
-    
+
     // Si hay filtro por sección, agregarlo al where
     if (seccion) {
-      const seccionData = await prisma.seccion.findFirst({ 
-        where: { nombre: seccion } 
+      const seccionData = await prisma.seccion.findFirst({
+        where: { nombre: seccion }
       });
       if (seccionData) {
         whereClause.seccionId = seccionData.id;
@@ -27,7 +28,7 @@ router.get('/', async (req, res) => {
         return res.json([]);
       }
     }
-    
+
     let news = await prisma.noticia.findMany({
       where: whereClause,
       include: {
@@ -41,7 +42,7 @@ router.get('/', async (req, res) => {
       orderBy: { fechaPublicacion: 'desc' },
       take: limit
     });
-    
+
     // Si hay término de búsqueda, aplicar filtro adicional
     if (search) {
       news = news.filter(n =>
@@ -52,7 +53,7 @@ router.get('/', async (req, res) => {
         n.autorFoto.toLowerCase().includes(search)
       );
     }
-    
+
     const formatted = news.map(n => ({
       id: n.id,
       titulo: n.titulo,
@@ -62,10 +63,10 @@ router.get('/', async (req, res) => {
       seccion: n.seccion ? { id: n.seccion.id, nombre: n.seccion.nombre } : null,
       autorTexto: n.autorTexto,
       autorFoto: n.autorFoto,
-      media: n.noticiaMedia?.map(nm => ({ 
-        url: nm.media?.url, 
-        tipo: nm.media?.tipo, 
-        descripcion: nm.media?.descripcion 
+      media: n.noticiaMedia?.map(nm => ({
+        url: nm.media?.url,
+        tipo: nm.media?.tipo,
+        descripcion: nm.media?.descripcion
       })) || [],
       destacada: n.destacada,
       fecha_publicacion: n.fechaPublicacion,
@@ -123,11 +124,11 @@ router.get('/:idOrSlug', async (req, res) => {
   try {
     const prisma = getPrismaClient();
     const { idOrSlug } = req.params;
-    
+
     // Intentar buscar por ID si es un número, sino por slug
     let noticia = null;
     const isNumeric = /^\d+$/.test(idOrSlug);
-    
+
     if (isNumeric) {
       // Buscar por ID
       noticia = await prisma.noticia.findUnique({
@@ -142,7 +143,7 @@ router.get('/:idOrSlug', async (req, res) => {
         }
       });
     }
-    
+
     // Si no se encontró por ID o el parámetro no es numérico, buscar por slug
     if (!noticia) {
       noticia = await prisma.noticia.findUnique({
@@ -157,9 +158,9 @@ router.get('/:idOrSlug', async (req, res) => {
         }
       });
     }
-    
+
     if (!noticia) return res.status(404).json({ message: 'Noticia no encontrada' });
-    
+
     const formatted = {
       id: noticia.id,
       titulo: noticia.titulo,
@@ -183,7 +184,7 @@ router.get('/:idOrSlug', async (req, res) => {
 });
 
 // Crear noticia
-router.post('/', upload.none(), async (req, res) => {
+router.post('/', authenticateToken, upload.none(), async (req, res) => {
   try {
     const prisma = getPrismaClient();
     // Normalizar datos para aceptar FormData
@@ -213,7 +214,7 @@ router.post('/', upload.none(), async (req, res) => {
         orderBy: { fechaPublicacion: 'asc' }, // Más antigua primero
         select: { id: true }
       });
-      
+
       // Si ya hay 3 destacadas, quitar la más antigua
       if (noticiasDestacadas.length >= 3) {
         await prisma.noticia.update({
@@ -225,13 +226,13 @@ router.post('/', upload.none(), async (req, res) => {
 
     // Generar slug único a partir del título
     let slug = truncarSlug(generarSlug(titulo));
-    
+
     // Verificar si el slug ya existe y hacerlo único
     const existentes = await prisma.noticia.findMany({
       where: { slug: { startsWith: slug } },
       select: { slug: true }
     });
-    
+
     if (existentes.length > 0) {
       const slugsExistentes = existentes.map(n => n.slug);
       if (slugsExistentes.includes(slug)) {
@@ -245,7 +246,7 @@ router.post('/', upload.none(), async (req, res) => {
         slug = slugUnico;
       }
     }
-    
+
     const noticia = await prisma.noticia.create({
       data: {
         titulo,
@@ -298,13 +299,13 @@ router.post('/', upload.none(), async (req, res) => {
 });
 
 // Editar noticia
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const prisma = getPrismaClient();
     const noticia = await prisma.noticia.findUnique({ where: { id: parseInt(req.params.id) } });
     if (!noticia) return res.status(404).json({ message: 'Noticia no encontrada' });
     const { titulo, contenido, resumen, seccion_id, autorTexto, autorFoto, media, destacada, fecha_publicacion } = req.body;
-    
+
     const updateData: any = {};
     if (seccion_id) {
       const seccion = await prisma.seccion.findUnique({ where: { id: seccion_id } });
@@ -318,7 +319,7 @@ router.put('/:id', async (req, res) => {
     if (resumen !== undefined) updateData.resumen = resumen;
     if (destacada !== undefined) {
       updateData.destacada = !!destacada;
-      
+
       // Si se marca como destacada, verificar el límite de 3
       if (!!destacada && !noticia.destacada) { // Solo si no era destacada antes
         const noticiasDestacadas = await prisma.noticia.findMany({
@@ -326,7 +327,7 @@ router.put('/:id', async (req, res) => {
           orderBy: { fechaPublicacion: 'asc' }, // Más antigua primero
           select: { id: true }
         });
-        
+
         // Si ya hay 3 destacadas, quitar la más antigua
         if (noticiasDestacadas.length >= 3) {
           await prisma.noticia.update({
@@ -337,7 +338,7 @@ router.put('/:id', async (req, res) => {
       }
     }
     if (fecha_publicacion !== undefined) updateData.fechaPublicacion = new Date(fecha_publicacion);
-    
+
     const updatedNoticia = await prisma.noticia.update({
       where: { id: noticia.id },
       data: updateData,
@@ -358,7 +359,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Eliminar noticia
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const prisma = getPrismaClient();
     const noticia = await prisma.noticia.findUnique({ where: { id: parseInt(req.params.id) } });

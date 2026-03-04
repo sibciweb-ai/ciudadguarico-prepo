@@ -15,7 +15,8 @@ export const obtenerImagenSeccion = (seccion: string): string => {
     'Opinión': '/opinion.jpg',
     'Editorial': '/editorial.jpg',
     'Columnistas': '/columnistas.jpg',
-    'Cantaguarico': '/cantaguarico.jpg'
+    'Cantaguarico': '/cantaguarico.jpg',
+    'Política': '/backgroun-secciones.jpg'
   };
 
   // Retorna la imagen específica de la sección o una imagen por defecto
@@ -24,15 +25,16 @@ export const obtenerImagenSeccion = (seccion: string): string => {
 
 // Lista de secciones válidas (mantenemos la consistencia con PaginaSeccion.tsx)
 export const seccionesValidas = [
-  'Gestión', 
-  'Municipales', 
-  'Deportes', 
-  'Salud', 
-  'Nacionales', 
-  'Cultura', 
-  'Producción', 
-  'Comunidad', 
-  'Seguridad', 
-  'Turismo', 
-  'Educación'
+  'Gestión',
+  'Municipales',
+  'Deportes',
+  'Salud',
+  'Nacionales',
+  'Cultura',
+  'Producción',
+  'Comunidad',
+  'Seguridad',
+  'Turismo',
+  'Educación',
+  'Política'
 ];

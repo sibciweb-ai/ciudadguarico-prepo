@@ -105,10 +105,9 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
   // Cargar contenidos destacados activos y visibles desde el backend
   const cargarContenidosDestacados = async () => {
     try {
-      console.log('Cargando contenidos destacados desde:', createApiUrl('/content/contenido-destacado'));
       const response = await axios.get(createApiUrl('/content/contenido-destacado'));
-      console.log('Respuesta de contenidos destacados:', response.data);
-      
+
+
       // Cargar todos los contenidos destacados del backend
       const contenidosDelBackend = response.data.map((c: any) => ({
         ...c,
@@ -118,8 +117,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
         ubicacion: c.ubicacion,
         tipo: c.ubicacion === 'carrusel' ? 'carrusel' : 'banner'
       }));
-      
-      console.log('Contenidos destacados procesados:', contenidosDelBackend);
+
       setContenidosDestacados(contenidosDelBackend);
     } catch (error) {
       console.error('Error al cargar contenidos destacados:', error);
@@ -179,7 +177,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
           const noticiasMapeadas = response.data.map((noticia: any) => ({
             id: noticia.id,
             titulo: noticia.titulo,
-        slug: noticia.slug,
+            slug: noticia.slug,
             contenido: noticia.contenido,
             resumen: noticia.resumen,
             seccion: noticia.seccion,
@@ -248,7 +246,7 @@ export function ProveedorContextoNoticias({ children }: { children: ReactNode })
   const eliminarNoticia = async (id: string) => {
     try {
       await axios.delete(createApiUrl(`/news/${id}`), config);
-    setNoticias(prev => prev.filter(noticia => noticia.id !== id));
+      setNoticias(prev => prev.filter(noticia => noticia.id !== id));
     } catch (error) {
       console.error('Error al eliminar noticia:', error);
       throw error;

@@ -24,16 +24,19 @@ export default function TarjetaNoticia({ noticia }: Props) {
   const nombreSeccion = noticia.seccion?.nombre || '';
 
   return (
-    <Link 
-      to={obtenerUrlNoticia(noticia)} 
+    <Link
+      to={obtenerUrlNoticia(noticia)}
       className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 group news-container"
     >
       <div className="relative h-48 md:h-56 lg:h-64 overflow-hidden">
-          <img
-            src={imagenPrincipal}
-            alt={noticia.titulo}
+        <img
+          src={imagenPrincipal}
+          alt={noticia.titulo}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          loading="lazy"
+          width={400}
+          height={256}
+        />
       </div>
       <div className="p-6 news-container">
         <div className="flex items-center gap-2 mb-3">
@@ -45,17 +48,17 @@ export default function TarjetaNoticia({ noticia }: Props) {
           </time>
         </div>
         <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 news-title">
-            {noticia.titulo}
+          {noticia.titulo}
         </h3>
         <p className="text-gray-600 line-clamp-3 text-sm mb-4 news-summary">
-            {noticia.resumen}
+          {noticia.resumen}
         </p>
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <span className="text-sm text-gray-600">{autores}</span>
           <time className="text-xs text-gray-500">
-            {convertirFecha(noticia.fecha_publicacion).toLocaleTimeString('es-ES', { 
-              hour: '2-digit', 
-              minute: '2-digit' 
+            {convertirFecha(noticia.fecha_publicacion).toLocaleTimeString('es-ES', {
+              hour: '2-digit',
+              minute: '2-digit'
             })}
           </time>
         </div>

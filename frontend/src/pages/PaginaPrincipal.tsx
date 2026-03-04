@@ -65,23 +65,27 @@ export default function PaginaPrincipal() {
   }, [noticias]);
 
   const cargarNoticiasPorSeccion = async () => {
-    // Usar las secciones definidas arriba para mantener consistencia
     const nombresSecciones = secciones.map(s => s.nombre);
+
+    // Cargar TODAS las secciones en paralelo (antes era secuencial)
+    const resultados = await Promise.allSettled(
+      nombresSecciones.map(async (seccion) => {
+        try {
+          const noticiasSeccion = await obtenerNoticiasPorSeccion(seccion);
+          return { seccion, noticias: noticiasSeccion };
+        } catch {
+          return { seccion, noticias: [] };
+        }
+      })
+    );
+
     const noticiasTemp: Record<string, Noticia[]> = {};
-    
-    console.log('Cargando noticias para secciones:', nombresSecciones);
-    
-    for (const seccion of nombresSecciones) {
-      try {
-        const noticiasSeccion = await obtenerNoticiasPorSeccion(seccion);
-        console.log(`Noticias cargadas para ${seccion}:`, noticiasSeccion.length);
-        noticiasTemp[seccion] = noticiasSeccion;
-      } catch (error) {
-        console.error(`Error cargando noticias para ${seccion}:`, error);
-        noticiasTemp[seccion] = [];
+    for (const resultado of resultados) {
+      if (resultado.status === 'fulfilled') {
+        noticiasTemp[resultado.value.seccion] = resultado.value.noticias;
       }
     }
-    
+
     setNoticiasPorSeccion(noticiasTemp);
   };
 
@@ -89,16 +93,14 @@ export default function PaginaPrincipal() {
   const noticiasPrincipales = noticias.slice(0, 5);
   const noticiasSecundarias = noticias.filter(noticia => noticia.destacada).slice(0, 3);
 
-  // Debug: mostrar qué noticia se está mostrando
-  console.log('Noticia actual:', noticiaActual, 'de', noticiasPrincipales.length);
-  console.log('Noticias en carrusel:', noticiasPrincipales.map(n => n.titulo));
+
 
   // Efecto para el autoplay del carrusel
   useEffect(() => {
     if (noticiasPrincipales.length <= 1) return;
-    
+
     const intervalo = setInterval(() => {
-      setNoticiaActual((actual) => 
+      setNoticiaActual((actual) =>
         actual === noticiasPrincipales.length - 1 ? 0 : actual + 1
       );
     }, 5000);
@@ -113,11 +115,11 @@ export default function PaginaPrincipal() {
 
   const renderSeccion = (seccion: string) => {
     const noticiasSeccion = noticiasPorSeccion[seccion] || [];
-    
+
     if (noticiasSeccion.length === 0) {
       return null;
     }
-    
+
     // Título más pequeño, alineado a la izquierda, línea solo a la derecha
     return (
       <div key={seccion} className="my-12">
@@ -133,14 +135,14 @@ export default function PaginaPrincipal() {
               <TarjetaNoticia key={noticia.id} noticia={noticia} />
             ))}
           </div>
-          
+
           {/* Tablet: 2 noticias lado a lado */}
           <div className="hidden md:grid lg:hidden grid-cols-2 gap-6">
             {noticiasSeccion.slice(0, 2).map((noticia) => (
               <TarjetaNoticia key={noticia.id} noticia={noticia} />
             ))}
           </div>
-          
+
           {/* Desktop: 3 noticias */}
           <div className="hidden lg:grid grid-cols-3 gap-6">
             {noticiasSeccion.slice(0, 3).map((noticia) => (
@@ -177,7 +179,7 @@ export default function PaginaPrincipal() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SEOHead 
+      <SEOHead
         title="Ciudad Guárico"
         description="Ciudad Guárico - Periódico digital líder de Venezuela. Noticias de Guárico, gobernación, municipios, deportes, cultura y política nacional."
         keywords="Ciudad Guárico, noticias Venezuela, Guárico, periódico digital, gobernación"
@@ -202,9 +204,9 @@ export default function PaginaPrincipal() {
                       if (!noticiaMostrada) return null;
                       console.log('Mostrando noticia actual:', noticiaMostrada?.id, noticiaMostrada?.titulo);
                       return (
-                        <Link 
-                          key={noticiaMostrada.id} 
-                          to={obtenerUrlNoticia(noticiaMostrada)} 
+                        <Link
+                          key={noticiaMostrada.id}
+                          to={obtenerUrlNoticia(noticiaMostrada)}
                           className="block"
                         >
                           <div className="relative overflow-hidden rounded-lg group">
@@ -212,6 +214,10 @@ export default function PaginaPrincipal() {
                               src={noticiaMostrada.media?.find(m => m.tipo === 'imagen')?.url || ''}
                               alt={noticiaMostrada.titulo}
                               className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="eager"
+                              fetchPriority="high"
+                              width={800}
+                              height={320}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -224,7 +230,7 @@ export default function PaginaPrincipal() {
                                 {noticiaMostrada.titulo}
                               </h2>
                               <div className="text-xs opacity-75">
-                                {convertirFecha(noticiaMostrada.fecha_publicacion).toLocaleDateString('es-ES')} | 
+                                {convertirFecha(noticiaMostrada.fecha_publicacion).toLocaleDateString('es-ES')} |
                                 Diario Ciudad Guárico
                               </div>
                             </div>
@@ -240,11 +246,10 @@ export default function PaginaPrincipal() {
                           <button
                             key={index}
                             onClick={() => irANoticia(index)}
-                            className={`w-2 h-2 rounded-full transition-all ${
-                              index === noticiaActual 
-                                ? 'bg-white w-6' 
+                            className={`w-2 h-2 rounded-full transition-all ${index === noticiaActual
+                                ? 'bg-white w-6'
                                 : 'bg-white/50 hover:bg-white'
-                            }`}
+                              }`}
                             aria-label={`Ir a noticia ${index + 1}`}
                           />
                         ))}
@@ -297,6 +302,9 @@ export default function PaginaPrincipal() {
                           src={noticia.media?.find(m => m.tipo === 'imagen')?.url || ''}
                           alt={noticia.titulo}
                           className="w-full sm:w-24 sm:h-20 h-40 object-cover rounded flex-shrink-0 mb-2 sm:mb-0"
+                          loading="lazy"
+                          width={96}
+                          height={80}
                         />
                         <div className="flex-1 flex flex-col justify-between">
                           <div>
@@ -310,7 +318,7 @@ export default function PaginaPrincipal() {
                             </h3>
                           </div>
                           <div className="text-xs text-gray-500 mt-2 sm:mt-0">
-                            {convertirFecha(noticia.fecha_publicacion).toLocaleDateString('es-ES')} | 
+                            {convertirFecha(noticia.fecha_publicacion).toLocaleDateString('es-ES')} |
                             Diario Ciudad Guárico
                           </div>
                         </div>
@@ -330,14 +338,14 @@ export default function PaginaPrincipal() {
               <div className="w-full mb-8">
                 {contenidoMain1.url ? (
                   <a href={contenidoMain1.url} target="_blank" rel="noopener noreferrer" className="block">
-                    <img 
+                    <img
                       src={contenidoMain1.media}
                       alt={contenidoMain1.titulo || 'Contenido destacado'}
                       className="w-full h-auto hover:opacity-90 transition-opacity duration-300"
                     />
                   </a>
                 ) : (
-                  <img 
+                  <img
                     src={contenidoMain1.media}
                     alt={contenidoMain1.titulo || 'Contenido destacado'}
                     className="w-full h-auto"
@@ -357,14 +365,14 @@ export default function PaginaPrincipal() {
                       <div className="w-full mb-8">
                         {contenidoMain2.url ? (
                           <a href={contenidoMain2.url} target="_blank" rel="noopener noreferrer" className="block">
-                            <img 
+                            <img
                               src={contenidoMain2.media}
                               alt={contenidoMain2.titulo || 'Contenido destacado'}
                               className="w-full h-auto hover:opacity-90 transition-opacity duration-300"
                             />
                           </a>
                         ) : (
-                          <img 
+                          <img
                             src={contenidoMain2.media}
                             alt={contenidoMain2.titulo || 'Contenido destacado'}
                             className="w-full h-auto"
@@ -376,7 +384,7 @@ export default function PaginaPrincipal() {
                   </React.Fragment>
                 );
               }
-              
+
               // Antes de la sección de Educación, mostrar el banner final
               if (seccion.nombre === 'Educación') {
                 return (
@@ -386,14 +394,14 @@ export default function PaginaPrincipal() {
                       <div className="w-full mb-8">
                         {contenidoMainBg.url ? (
                           <a href={contenidoMainBg.url} target="_blank" rel="noopener noreferrer" className="block">
-                            <img 
+                            <img
                               src={contenidoMainBg.media}
                               alt={contenidoMainBg.titulo || 'Contenido destacado'}
                               className="w-full h-auto hover:opacity-90 transition-opacity duration-300"
                             />
                           </a>
                         ) : (
-                          <img 
+                          <img
                             src={contenidoMainBg.media}
                             alt={contenidoMainBg.titulo || 'Contenido destacado'}
                             className="w-full h-auto"
@@ -405,7 +413,7 @@ export default function PaginaPrincipal() {
                   </React.Fragment>
                 );
               }
-              
+
               return renderSeccion(seccion.nombre);
             })}
 

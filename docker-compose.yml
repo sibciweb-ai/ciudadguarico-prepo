@@ -6,8 +6,6 @@ services:
       POSTGRES_USER: cg_user
       POSTGRES_PASSWORD: cg_password
       POSTGRES_DB: cg_database
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres-optimized.conf:/etc/postgresql/postgresql.conf:ro
@@ -62,6 +60,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://cg_user:cg_password@db:5432/cg_database?schema=public&pool_timeout=20&connection_limit=20&pool_size=20
+      JWT_SECRET: c1ud4dgu4r1c09879
       ALLOWED_ORIGINS: http://localhost,http://localhost:80,http://localhost:5173,http://localhost:8080,http://ciudadguarico.com,https://ciudadguarico.com,http://www.ciudadguarico.com,https://www.ciudadguarico.com,http://administracion.ciudadguarico.com,https://administracion.ciudadguarico.com,http://149.50.138.208,https://149.50.138.208
     depends_on:
       db:

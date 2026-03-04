@@ -26,7 +26,7 @@ export default function CrearNoticia({ onCreada }: Props) {
       setFormulario(prev => ({ ...prev, contenido: editor.getHTML() }));
     },
   });
-  
+
   const { agregarNoticia } = useContextoNoticias();
   const [formulario, setFormulario] = useState({
     titulo: '',
@@ -38,7 +38,7 @@ export default function CrearNoticia({ onCreada }: Props) {
     leyendaImagen: '', // AGREGADO: campo para leyenda
     destacada: false
   });
-  
+
   const [imagen, setImagen] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null); // AGREGADO: URL de previsualización
   const [secciones, setSecciones] = useState<Seccion[]>([]);
@@ -76,46 +76,46 @@ export default function CrearNoticia({ onCreada }: Props) {
   const manejarImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      
+
       // Validar tamaño (10MB máximo)
       const maxSize = 10 * 1024 * 1024; // 10MB en bytes
       if (file.size > maxSize) {
         const sizeMB = (file.size / 1024 / 1024).toFixed(2);
         mostrarNotificacion(
-          'Imagen demasiado pesada', 
+          'Imagen demasiado pesada',
           'advertencia',
           `El archivo pesa ${sizeMB}MB. El tamaño máximo permitido es 10MB. Por favor, comprime la imagen antes de subirla.`
         );
         e.target.value = ''; // Limpiar el input
         return;
       }
-      
+
       // Validar tipo de archivo
       const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
       if (!tiposPermitidos.includes(file.type)) {
         mostrarNotificacion(
-          'Tipo de archivo no válido', 
+          'Tipo de archivo no válido',
           'error',
           'Solo se permiten imágenes en formato JPG, PNG, WebP o GIF.'
         );
         e.target.value = '';
         return;
       }
-      
+
       // Limpiar URL anterior si existe
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
-      
+
       // Crear nueva URL para previsualización
       const newPreviewUrl = URL.createObjectURL(file);
       setImagen(file);
       setPreviewUrl(newPreviewUrl);
-      
+
       // Mostrar notificación de éxito
       const sizeMB = (file.size / 1024 / 1024).toFixed(2);
       mostrarNotificacion(
-        'Imagen cargada correctamente', 
+        'Imagen cargada correctamente',
         'exito',
         `Archivo: ${file.name} (${sizeMB}MB)`
       );
@@ -129,7 +129,7 @@ export default function CrearNoticia({ onCreada }: Props) {
     }
     setImagen(null);
     setPreviewUrl(null);
-    
+
     // Limpiar el input de archivo
     const fileInput = document.getElementById('imagen') as HTMLInputElement;
     if (fileInput) {
@@ -143,7 +143,7 @@ export default function CrearNoticia({ onCreada }: Props) {
       mostrarNotificacion('Por favor completa todos los campos obligatorios y selecciona una imagen', 'error');
       return;
     }
-    
+
     let mediaIds: number[] = [];
     try {
       // Subir imagen con descripción/leyenda
@@ -152,13 +152,19 @@ export default function CrearNoticia({ onCreada }: Props) {
       if (formulario.leyendaImagen.trim()) {
         formDataImg.append('descripcion', formulario.leyendaImagen);
       }
-      const res = await axios.post('/api/media', formDataImg, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const authToken = localStorage.getItem('token');
+      const res = await axios.post('/api/media', formDataImg, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+        }
+      });
       mediaIds = [res.data.id];
     } catch (err) {
       mostrarNotificacion('Error al subir la imagen', 'error');
       return;
     }
-    
+
     const noticiaForm = new FormData();
     noticiaForm.append('titulo', formulario.titulo);
     noticiaForm.append('contenido', formulario.contenido);
@@ -168,11 +174,11 @@ export default function CrearNoticia({ onCreada }: Props) {
     noticiaForm.append('autorFoto', formulario.autorFoto);
     noticiaForm.append('destacada', String(formulario.destacada));
     mediaIds.forEach(id => noticiaForm.append('media', String(id)));
-    
+
     try {
       await agregarNoticia(noticiaForm);
       mostrarNotificacion('Noticia creada exitosamente', 'exito');
-      
+
       // Limpiar formulario
       setFormulario({
         titulo: '',
@@ -184,14 +190,14 @@ export default function CrearNoticia({ onCreada }: Props) {
         leyendaImagen: '',
         destacada: false
       });
-      
+
       quitarImagen();
-      
+
       // Limpiar también el editor
       if (editor) {
         editor.commands.setContent('');
       }
-      
+
       onCreada();
     } catch (error) {
       mostrarNotificacion('Error al crear la noticia', 'error');
@@ -201,14 +207,14 @@ export default function CrearNoticia({ onCreada }: Props) {
   return (
     <div className="space-y-6">
       {notificacion && (
-        <NotificacionMejorada 
-          mensaje={notificacion.mensaje} 
+        <NotificacionMejorada
+          mensaje={notificacion.mensaje}
           tipo={notificacion.tipo}
           detalles={notificacion.detalles}
-          onClose={() => setNotificacion(null)} 
+          onClose={() => setNotificacion(null)}
         />
       )}
-      
+
       {/* Estilos CSS para el editor TipTap */}
       <style>{`
         .editor-container .ProseMirror {
@@ -318,11 +324,11 @@ export default function CrearNoticia({ onCreada }: Props) {
             <label htmlFor="imagen" className="block text-sm font-medium text-gray-700 mb-2">
               Imagen de la Noticia *
             </label>
-            
+
             {/* Si no hay imagen, mostrar input de carga estilizado */}
             {!imagen && (
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
-                   onClick={() => document.getElementById('imagen')?.click()}>
+                onClick={() => document.getElementById('imagen')?.click()}>
                 <input
                   type="file"
                   id="imagen"
@@ -341,14 +347,14 @@ export default function CrearNoticia({ onCreada }: Props) {
                 </p>
               </div>
             )}
-            
+
             {/* Si hay imagen, mostrar previsualización */}
             {imagen && previewUrl && (
               <div className="space-y-4">
                 <div className="relative border border-gray-300 rounded-lg overflow-hidden">
-                  <img 
-                    src={previewUrl} 
-                    alt="Previsualización" 
+                  <img
+                    src={previewUrl}
+                    alt="Previsualización"
                     className="w-full h-64 object-cover"
                   />
                   <button
@@ -446,52 +452,47 @@ export default function CrearNoticia({ onCreada }: Props) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Contenido de la Noticia *
           </label>
-          
+
           <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
             {/* Barra de herramientas */}
             <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleBold().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Negrita
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleItalic().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Cursiva
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 H2
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('heading', { level: 3 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 H3
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Lista
               </button>
@@ -501,91 +502,130 @@ export default function CrearNoticia({ onCreada }: Props) {
                 className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
                 <ImageIcon className="w-4 h-4" />
-                Insertar imagen
+                Insertar imágenes
               </button>
-              
+
               <input
                 type="file"
                 id="input-img-editor"
                 accept="image/*"
+                multiple
                 style={{ display: 'none' }}
                 onChange={async (e) => {
-                  if (!e.target.files || !e.target.files[0] || !editor) return;
-                  const file = e.target.files[0];
-                  
-                  // Validar tamaño
-                  const maxSize = 10 * 1024 * 1024; // 10MB
-                  if (file.size > maxSize) {
-                    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                  if (!e.target.files || e.target.files.length === 0 || !editor) return;
+                  const archivos = Array.from(e.target.files);
+
+                  // Limitar a 10 imágenes por lote
+                  if (archivos.length > 10) {
                     mostrarNotificacion(
-                      'Imagen demasiado pesada', 
+                      'Demasiadas imágenes',
                       'advertencia',
-                      `El archivo pesa ${sizeMB}MB. El tamaño máximo es 10MB. Comprime la imagen antes de subirla.`
+                      'Solo puedes subir hasta 10 imágenes a la vez.'
                     );
                     e.target.value = '';
                     return;
                   }
-                  
-                  // Validar tipo
+
+                  // Validar todas antes de subir
+                  const maxSize = 10 * 1024 * 1024; // 10MB
                   const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-                  if (!tiposPermitidos.includes(file.type)) {
-                    mostrarNotificacion(
-                      'Tipo de archivo no válido', 
-                      'error',
-                      'Solo se permiten imágenes JPG, PNG, WebP o GIF.'
-                    );
-                    e.target.value = '';
-                    return;
-                  }
-                  
-                  const formData = new FormData();
-                  formData.append('file', file);
-                  // Pedir leyenda para esta imagen insertada en el contenido
-                  const leyenda = window.prompt('Leyenda para esta imagen (opcional):', '') || '';
-                  if (leyenda.trim()) {
-                    formData.append('descripcion', leyenda.trim());
-                  }
-                  try {
-                    const res = await fetch('/api/media', {
-                      method: 'POST',
-                      body: formData
-                    });
-                    if (!res.ok) throw new Error('Error al subir la imagen');
-                    const data = await res.json();
-                    if (!data.url) throw new Error('No se obtuvo la URL de la imagen');
-                    // Insertar como figure con figcaption si hay leyenda
-                    if (leyenda.trim()) {
-                      editor.chain().focus().insertContent(
-                        `<figure>
-                          <img src="${data.url}" alt="${leyenda.replace(/\"/g, '&quot;')}" />
-                          <figcaption>${leyenda}</figcaption>
-                        </figure>`
-                      ).run();
-                    } else {
-                      editor.chain().focus().insertContent(
-                        `<figure><img src="${data.url}" alt="" /></figure>`
-                      ).run();
+
+                  for (const file of archivos) {
+                    if (file.size > maxSize) {
+                      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                      mostrarNotificacion(
+                        'Imagen demasiado pesada',
+                        'advertencia',
+                        `${file.name} pesa ${sizeMB}MB. El máximo es 10MB.`
+                      );
+                      e.target.value = '';
+                      return;
                     }
-                    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-                    mostrarNotificacion('Imagen insertada correctamente', 'exito', `${file.name} (${sizeMB}MB)`);
-                  } catch (err) {
-                    mostrarNotificacion('Error al subir la imagen al contenido', 'error', 'Intenta con una imagen más pequeña o en otro formato.');
-                  } finally {
-                    e.target.value = '';
+                    if (!tiposPermitidos.includes(file.type)) {
+                      mostrarNotificacion(
+                        'Tipo de archivo no válido',
+                        'error',
+                        `${file.name}: Solo se permiten JPG, PNG, WebP o GIF.`
+                      );
+                      e.target.value = '';
+                      return;
+                    }
                   }
+
+                  // Pedir leyenda compartida (opcional)
+                  const leyenda = archivos.length === 1
+                    ? (window.prompt('Leyenda para esta imagen (opcional):', '') || '')
+                    : (window.prompt(`Leyenda compartida para las ${archivos.length} imágenes (opcional):`, '') || '');
+
+                  // Obtener token de autenticación
+                  const authToken = localStorage.getItem('token');
+
+                  let subidas = 0;
+                  let errores = 0;
+
+                  for (const file of archivos) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    if (leyenda.trim()) {
+                      formData.append('descripcion', leyenda.trim());
+                    }
+                    try {
+                      const res = await fetch('/api/media', {
+                        method: 'POST',
+                        headers: {
+                          ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+                        },
+                        body: formData
+                      });
+                      if (!res.ok) throw new Error('Error al subir la imagen');
+                      const data = await res.json();
+                      if (!data.url) throw new Error('No se obtuvo la URL de la imagen');
+
+                      // Insertar como figure con figcaption si hay leyenda
+                      if (leyenda.trim()) {
+                        editor.chain().focus().insertContent(
+                          `<figure>
+                            <img src="${data.url}" alt="${leyenda.replace(/"/g, '&quot;')}" />
+                            <figcaption>${leyenda}</figcaption>
+                          </figure>`
+                        ).run();
+                      } else {
+                        editor.chain().focus().insertContent(
+                          `<figure><img src="${data.url}" alt="" /></figure>`
+                        ).run();
+                      }
+                      subidas++;
+                    } catch (err) {
+                      errores++;
+                    }
+                  }
+
+                  // Notificación final
+                  if (errores === 0) {
+                    mostrarNotificacion(
+                      `${subidas} imagen${subidas > 1 ? 'es' : ''} insertada${subidas > 1 ? 's' : ''} correctamente`,
+                      'exito'
+                    );
+                  } else {
+                    mostrarNotificacion(
+                      `${subidas} subida${subidas > 1 ? 's' : ''}, ${errores} error${errores > 1 ? 'es' : ''}`,
+                      errores === archivos.length ? 'error' : 'advertencia'
+                    );
+                  }
+                  e.target.value = '';
                 }}
               />
             </div>
-            
+
             {/* Área del editor */}
             <div className="min-h-[400px] w-full overflow-hidden">
-              <EditorContent 
+              <EditorContent
                 editor={editor}
                 className="w-full h-full overflow-hidden"
               />
             </div>
           </div>
-          
+
           <p className="text-xs text-gray-500 mt-2">
             {formulario.contenido.replace(/<[^>]+>/g, '').length}/5000 caracteres (texto)
           </p>

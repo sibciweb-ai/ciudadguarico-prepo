@@ -18,7 +18,7 @@ export default function CarruselNoticias() {
     if (noticiasParaMostrar.length <= 1) return;
 
     const intervalo = setInterval(() => {
-      setIndiceActual((actual) => 
+      setIndiceActual((actual) =>
         actual === noticiasParaMostrar.length - 1 ? 0 : actual + 1
       );
     }, 5000);
@@ -27,13 +27,13 @@ export default function CarruselNoticias() {
   }, [noticiasParaMostrar.length]);
 
   const irASiguiente = () => {
-    setIndiceActual((actual) => 
+    setIndiceActual((actual) =>
       actual === noticiasParaMostrar.length - 1 ? 0 : actual + 1
     );
   };
 
   const irAAnterior = () => {
-    setIndiceActual((actual) => 
+    setIndiceActual((actual) =>
       actual === 0 ? noticiasParaMostrar.length - 1 : actual - 1
     );
   };
@@ -52,7 +52,6 @@ export default function CarruselNoticias() {
     <div className="relative group">
       <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-xl">
         {noticiasParaMostrar.map((noticia, index) => {
-          console.log('Carrusel noticia:', noticia);
           // Obtener la imagen principal desde media
           const imagenPrincipal = noticia.media?.find(m => m.tipo === 'imagen')?.url || '';
           // Obtener nombre de la sección
@@ -60,9 +59,8 @@ export default function CarruselNoticias() {
           return (
             <div
               key={noticia.id}
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                index === indiceActual ? 'opacity-100' : 'opacity-0 pointer-events-none'
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ${index === indiceActual ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
             >
               <Link to={obtenerUrlNoticia(noticia)} className="block h-full group">
                 <div className="relative h-full">
@@ -70,6 +68,9 @@ export default function CarruselNoticias() {
                     src={imagenPrincipal}
                     alt={noticia.titulo}
                     className="w-full h-full object-cover"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    width={800}
+                    height={500}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -113,9 +114,8 @@ export default function CarruselNoticias() {
               <button
                 key={index}
                 onClick={() => setIndiceActual(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === indiceActual ? 'bg-white w-8' : 'bg-white/50'
-                }`}
+                className={`w-2 h-2 rounded-full transition-all ${index === indiceActual ? 'bg-white w-8' : 'bg-white/50'
+                  }`}
                 aria-label={`Ir a noticia ${index + 1}`}
               />
             ))}

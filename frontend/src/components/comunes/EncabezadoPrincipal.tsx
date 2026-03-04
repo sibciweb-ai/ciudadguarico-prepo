@@ -5,13 +5,9 @@ import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function EncabezadoPrincipal() {
   const { contenidos } = useContextoNoticias();
-  
+
   // Buscar el banner header-bg para usarlo como fondo
   const bannerHeader = contenidos.find(cont => cont.ubicacion === 'header-bg' && cont.visible);
-  
-  // Debug: mostrar qué contenidos se encontraron
-  console.log('Contenidos header encontrados:', contenidos.filter(c => c.ubicacion === 'header-bg'));
-  console.log('Banner header seleccionado:', bannerHeader);
 
   return (
     <header className="w-full">
@@ -23,17 +19,17 @@ export default function EncabezadoPrincipal() {
               Síguenos en nuestras redes comunitarias
             </div>
             <div className="flex items-center space-x-4 mx-auto sm:mx-0">
-              <a 
-                href="https://www.instagram.com/ciudad.guarico/" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com/ciudad.guarico/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-guarico-white hover:text-guarico-gold transition-colors"
               >
                 <Instagram size={18} />
               </a>
-              <a 
-                href="https://t.me/ciudadguarico" 
-                target="_blank" 
+              <a
+                href="https://t.me/ciudadguarico"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-guarico-white hover:text-guarico-gold transition-colors"
               >
@@ -47,7 +43,7 @@ export default function EncabezadoPrincipal() {
       {/* Encabezado principal con imagen de fondo */}
       <div className="w-full relative overflow-hidden">
         {/* Imagen de fondo */}
-        <div 
+        <div
           className="relative w-full bg-cover bg-center bg-no-repeat"
           style={{
             height: 'clamp(180px, 35vw, 320px)',
@@ -59,23 +55,27 @@ export default function EncabezadoPrincipal() {
           }}
         >
           {bannerHeader?.url && (
-            <a 
-              href={bannerHeader.url} 
-              target="_blank" 
+            <a
+              href={bannerHeader.url}
+              target="_blank"
               rel="noopener noreferrer"
               className="absolute inset-0 z-10 w-full h-full"
               aria-label="Enlace de contenido"
             />
           )}
-          
+
           {/* Contenido del encabezado */}
           <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center">
             {/* Logo */}
             <Link to="/" className="block">
-              <img 
+              <img
                 src="/logo.png"
-                alt="Logo Ciudad Guárico" 
+                alt="Logo Ciudad Guárico"
                 className="w-auto transition-transform duration-300 hover:scale-105 max-w-full"
+                loading="eager"
+                fetchPriority="high"
+                width={250}
+                height={250}
                 style={{
                   height: 'clamp(100px, 25vw, 250px)',
                   filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.15))'

@@ -41,16 +41,16 @@ router.post('/login', [
 
     // Genera el token
     const token = jwt.sign(
-      { 
-        id: user.id, 
+      {
+        id: user.id,
         username: user.username,
         roles: roles
       },
-      process.env.JWT_SECRET || 'secret',
+      process.env.JWT_SECRET || 'c1ud4dgu4r1c09879',
       { expiresIn: '24h' }
     );
 
-    res.json({ 
+    res.json({
       token,
       user: {
         id: user.id,

@@ -22,7 +22,8 @@ export default function PiePagina() {
     { nombre: 'Comunidad', icono: Users },
     { nombre: 'Seguridad', icono: Users },
     { nombre: 'Turismo', icono: MapPin },
-    { nombre: 'Educación', icono: BookOpen }
+    { nombre: 'Educación', icono: BookOpen },
+    { nombre: 'Política', icono: Newspaper }
   ];
 
   return (
