@@ -136,23 +136,46 @@ body {
   hyphens: auto;
 }
 
+/* Contenedor principal del contenido - prevenir overflow */
+.noticia-individual .prose {
+  overflow: hidden !important;
+  max-width: 100% !important;
+}
+
 /* Estilos para figuras e imágenes en el contenido */
 .noticia-individual .prose figure {
-  margin: 16px 0;
+  margin: 24px auto !important;
+  max-width: 80% !important;
+  text-align: center;
 }
 
 .noticia-individual .prose figure img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Imágenes sueltas (sin figure) en el contenido */
+.noticia-individual .prose img {
+  max-width: 80% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block !important;
+  margin: 24px auto !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* Leyendas del contenido idénticas a la imagen principal */
 .noticia-individual .prose figcaption {
-  font-size: 0.875rem !important; /* text-sm */
-  color: #4B5563 !important; /* text-gray-600 */
-  margin-top: -1rem !important; /* -mt-4 */
-  margin-bottom: 1rem !important; /* mb-4 */
+  font-size: 0.875rem !important;
+  color: #4B5563 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1rem !important;
   font-style: italic !important;
-  text-align: left !important;
+  text-align: center !important;
 }

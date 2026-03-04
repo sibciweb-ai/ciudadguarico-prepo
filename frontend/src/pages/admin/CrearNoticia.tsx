@@ -219,6 +219,8 @@ export default function CrearNoticia({ onCreada }: Props) {
       <style>{`
         .editor-container .ProseMirror {
           min-height: 400px !important;
+          max-height: 700px !important;
+          overflow-y: auto !important;
           padding: 16px !important;
           font-size: 14px !important;
           line-height: 1.6 !important;
@@ -241,7 +243,7 @@ export default function CrearNoticia({ onCreada }: Props) {
           border: 1px solid #D1D5DB !important;
           border-radius: 8px !important;
           background: #ffffff !important;
-          overflow: hidden !important;
+          overflow: visible !important;
           max-width: 100% !important;
         }
         .editor-container .ProseMirror p {
@@ -274,9 +276,22 @@ export default function CrearNoticia({ onCreada }: Props) {
           font-style: italic !important;
         }
         .editor-container .ProseMirror img {
-          max-width: 100% !important;
+          max-width: 60% !important;
           height: auto !important;
+          margin: 16px auto !important;
+          display: block !important;
+          border-radius: 6px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .editor-container .ProseMirror figure {
           margin: 16px 0 !important;
+          text-align: center;
+        }
+        .editor-container .ProseMirror figcaption {
+          font-size: 0.85rem !important;
+          color: #6B7280 !important;
+          font-style: italic !important;
+          margin-top: 4px !important;
         }
       `}</style>
 
@@ -618,10 +633,10 @@ export default function CrearNoticia({ onCreada }: Props) {
             </div>
 
             {/* Área del editor */}
-            <div className="min-h-[400px] w-full overflow-hidden">
+            <div className="min-h-[400px] w-full overflow-auto">
               <EditorContent
                 editor={editor}
-                className="w-full h-full overflow-hidden"
+                className="w-full h-full overflow-auto"
               />
             </div>
           </div>

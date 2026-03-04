@@ -8,10 +8,7 @@ export default function BarraLateral() {
     ? contenidos.filter(c => c.ubicacion?.startsWith('side-') && c.visible)
     : [];
 
-  // Debug: mostrar qué contenidos se encontraron
-  console.log('Todos los contenidos:', contenidos);
-  console.log('Contenidos side encontrados:', contenidosSide);
-  console.log('Ubicaciones disponibles:', contenidos.map(c => c.ubicacion));
+
 
   return (
     <aside className="space-y-6">
