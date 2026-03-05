@@ -574,6 +574,11 @@ export default function CrearNoticia({ onCreada }: Props) {
                     'Por favor espera, no cierres esta página.'
                   );
 
+                  // Pedir leyenda solo si es 1 imagen
+                  const leyenda = archivos.length === 1
+                    ? (window.prompt('Leyenda para esta imagen (opcional):', '') || '')
+                    : '';
+
                   // Obtener token de autenticación
                   const authToken = localStorage.getItem('token');
 
@@ -605,10 +610,16 @@ export default function CrearNoticia({ onCreada }: Props) {
                   let errores = 0;
                   for (const url of resultados) {
                     if (url) {
-                      // Insertar imagen con un párrafo abajo para poder escribir entre imágenes
-                      editor.chain().focus().insertContent(
-                        `<figure><img src="${url}" alt="" /></figure><p></p>`
-                      ).run();
+                      // Insertar imagen con párrafo para poder escribir entre imágenes
+                      if (leyenda.trim()) {
+                        editor.chain().focus().insertContent(
+                          `<figure><img src="${url}" alt="${leyenda.replace(/"/g, '&quot;')}" /><figcaption>${leyenda}</figcaption></figure><p></p>`
+                        ).run();
+                      } else {
+                        editor.chain().focus().insertContent(
+                          `<figure><img src="${url}" alt="" /></figure><p></p>`
+                        ).run();
+                      }
                       subidas++;
                     } else {
                       errores++;

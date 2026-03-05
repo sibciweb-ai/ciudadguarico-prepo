@@ -48,13 +48,16 @@ export default function BarraLateral() {
         }
         .side-img-container {
           overflow: visible !important;
+          position: relative;
         }
         .side-img-container .zoom-hint {
           opacity: 0;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.4s ease;
+          pointer-events: none;
         }
         .side-img-container:hover .zoom-hint {
           opacity: 1;
+          pointer-events: auto;
         }
       `}</style>
 
@@ -178,7 +181,7 @@ export default function BarraLateral() {
                     e.stopPropagation();
                     setImagenAmpliada(contenido.media);
                   }}
-                  className="zoom-hint absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-2 py-1 rounded-full transition-all flex items-center gap-1"
+                  className="zoom-hint absolute bottom-2 right-2 bg-black/70 hover:bg-black text-white text-xs px-3 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-lg"
                   title="Click para ampliar"
                 >
                   🔍 Ampliar
