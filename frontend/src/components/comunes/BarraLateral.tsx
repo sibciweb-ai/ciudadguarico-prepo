@@ -34,30 +34,11 @@ export default function BarraLateral() {
         </div>
       )}
 
-      {/* CSS para hover zoom */}
+      {/* CSS para overlay al hacer hover */}
       <style>{`
-        .side-img-zoom {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          cursor: pointer;
-        }
-        .side-img-zoom:hover {
-          transform: scale(1.08);
-          box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-          z-index: 10;
-          position: relative;
-        }
         .side-img-container {
-          overflow: visible !important;
           position: relative;
-        }
-        .side-img-container .zoom-hint {
-          opacity: 0;
-          transition: opacity 0.4s ease;
-          pointer-events: none;
-        }
-        .side-img-container:hover .zoom-hint {
-          opacity: 1;
-          pointer-events: auto;
+          cursor: pointer;
         }
       `}</style>
 
@@ -124,7 +105,7 @@ export default function BarraLateral() {
       </div>
 
       {/* Contenido Relacionado (contenidos side) */}
-      <section className="bg-white rounded-lg shadow-md overflow-visible">
+      <section className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="bg-guarico-blue text-white px-4 py-3">
           <h3 className="font-bold">ESPACIO PUBLICITARIO</h3>
         </div>
@@ -141,53 +122,32 @@ export default function BarraLateral() {
               </div>
             </div>
           ) : (
-            contenidosSide.map((contenido, idx) => (
-              <div key={contenido.id || idx} className="side-img-container relative">
-                <a
-                  href={contenido.url || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
+            contenidosSide.map((contenido, idx) => {
+              const tieneUrl = contenido.url && contenido.url.trim() !== '' && contenido.url !== '#';
+              return (
+                <div
+                  key={contenido.id || idx}
+                  className="side-img-container"
+                  onClick={() => {
+                    if (tieneUrl) {
+                      window.open(contenido.url, '_blank', 'noopener,noreferrer');
+                    } else {
+                      setImagenAmpliada(contenido.media);
+                    }
+                  }}
                 >
                   <img
                     src={contenido.media}
                     alt={contenido.titulo || 'Banner lateral'}
-                    className="w-full h-auto object-contain rounded-lg shadow side-img-zoom"
+                    className="w-full h-auto object-contain rounded-lg shadow"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) {
-                        fallback.style.display = 'flex';
-                      }
                     }}
                   />
-                  <div
-                    className="w-full h-24 bg-gray-100 rounded-lg shadow flex items-center justify-center"
-                    style={{ display: 'none' }}
-                  >
-                    <div className="text-center">
-                      <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <p className="text-xs text-gray-500">{contenido.titulo || 'Banner'}</p>
-                    </div>
-                  </div>
-                </a>
-                {/* Botón para ampliar */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setImagenAmpliada(contenido.media);
-                  }}
-                  className="zoom-hint absolute bottom-2 right-2 bg-black/70 hover:bg-black text-white text-xs px-3 py-1.5 rounded-full transition-all flex items-center gap-1 shadow-lg"
-                  title="Click para ampliar"
-                >
-                  🔍 Ampliar
-                </button>
-              </div>
-            ))
+                </div>
+              );
+            })
           )}
         </div>
       </section>
