@@ -94,7 +94,7 @@ export default function GestionarContenidoDestacado() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Verificar límite de contenidos para carrusel
     const posicion = POSICIONES.find(p => p.key === form.ubicacion);
     if (posicion && posicion.maxItems) {
@@ -104,7 +104,7 @@ export default function GestionarContenidoDestacado() {
         return;
       }
     }
-    
+
     const data = new FormData();
     if (form.file) data.append('file', form.file);
     data.append('url', form.url);
@@ -114,10 +114,12 @@ export default function GestionarContenidoDestacado() {
     data.append('ubicacion', form.ubicacion);
     data.append('visible', String(form.visible));
     try {
+      const authToken = localStorage.getItem('token');
+      const config = { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } };
       if (editContenido) {
-        await axios.put(`/api/content/contenido-destacado/${editContenido.id}`, data);
+        await axios.put(`/api/content/contenido-destacado/${editContenido.id}`, data, config);
       } else {
-        await axios.post('/api/content/contenido-destacado', data);
+        await axios.post('/api/content/contenido-destacado', data, config);
       }
       setForm({ media: '', file: null, url: '', fecha_inicio: '', fecha_fin: '', titulo: '', ubicacion: POSICIONES[0].key, visible: true });
       setFormOpen(false);
@@ -132,7 +134,7 @@ export default function GestionarContenidoDestacado() {
   // Función para previsualizar el contenido destacado
   const previsualizarContenido = () => {
     if (!form.media) return null;
-    
+
     const getContenidoStyle = () => {
       switch (form.ubicacion) {
         case 'carrusel':
@@ -160,9 +162,9 @@ export default function GestionarContenidoDestacado() {
       <div className="mt-4 p-4 bg-gray-100 rounded-lg">
         <h4 className="text-sm font-semibold mb-2">Previsualización - {POSICIONES.find(p => p.key === form.ubicacion)?.label}</h4>
         <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-          <img 
-            src={form.media} 
-            alt="Previsualización" 
+          <img
+            src={form.media}
+            alt="Previsualización"
             style={getContenidoStyle()}
             className="block"
           />
@@ -193,7 +195,8 @@ export default function GestionarContenidoDestacado() {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('¿Eliminar este contenido destacado?')) return;
-    await axios.delete(`/api/content/contenido-destacado/${id}`);
+    const authToken = localStorage.getItem('token');
+    await axios.delete(`/api/content/contenido-destacado/${id}`, { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } });
     fetchContenidos();
   };
 
@@ -202,7 +205,7 @@ export default function GestionarContenidoDestacado() {
     setForm({ media: '', file: null, url: '', fecha_inicio: '', fecha_fin: '', titulo: '', ubicacion, visible: true });
     setFormOpen(true);
   };
-    
+
   const openModal = (contenido: any | null, ubicacion: string) => {
     setModalSection(ubicacion);
     if (contenido) {
@@ -229,7 +232,7 @@ export default function GestionarContenidoDestacado() {
     setEditContenido(null);
     setModalSection('');
   };
-    
+
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -304,7 +307,7 @@ export default function GestionarContenidoDestacado() {
         {POSICIONES.map(pos => {
           const contenidosEnPosicion = contenidos.filter(b => b.ubicacion === pos.key);
           const puedeAgregar = !pos.maxItems || contenidosEnPosicion.length < pos.maxItems;
-          
+
           return (
             <section key={pos.key} className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
@@ -320,8 +323,8 @@ export default function GestionarContenidoDestacado() {
                   <p className="text-xs text-gray-500">{pos.description}</p>
                 </div>
                 {puedeAgregar && (
-                  <button 
-                    onClick={() => openModal(null, pos.key)} 
+                  <button
+                    onClick={() => openModal(null, pos.key)}
                     className="px-3 py-1 bg-guarico-green text-white rounded-lg hover:bg-guarico-light-green flex items-center text-sm font-semibold"
                   >
                     <Plus size={14} className="mr-1" />
@@ -329,7 +332,7 @@ export default function GestionarContenidoDestacado() {
                   </button>
                 )}
               </div>
-              
+
               <div className="space-y-3">
                 {contenidosEnPosicion.length === 0 ? (
                   <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
@@ -343,13 +346,13 @@ export default function GestionarContenidoDestacado() {
                   contenidosEnPosicion.map(contenido => {
                     const hoy = new Date().toISOString().slice(0, 10);
                     const activo = (!contenido.fecha_inicio || contenido.fecha_inicio <= hoy) && (!contenido.fecha_fin || contenido.fecha_fin >= hoy);
-                    
+
                     return (
                       <div key={contenido.id} className="bg-gray-50 rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all">
                         <div className="flex items-center gap-4">
-                          <img 
-                            src={contenido.media} 
-                            alt="contenido" 
+                          <img
+                            src={contenido.media}
+                            alt="contenido"
                             className="w-16 h-16 object-cover rounded border"
                           />
                           <div className="flex-1 min-w-0">
@@ -367,15 +370,15 @@ export default function GestionarContenidoDestacado() {
                             <p className="text-xs text-gray-500">{contenido.fecha_inicio} - {contenido.fecha_fin}</p>
                           </div>
                           <div className="flex gap-1">
-                            <button 
-                              onClick={() => openModal(contenido, pos.key)} 
+                            <button
+                              onClick={() => openModal(contenido, pos.key)}
                               className="p-1 text-blue-600 hover:bg-blue-100 rounded"
                               title="Editar"
                             >
                               <Settings size={16} />
                             </button>
-                            <button 
-                              onClick={() => handleDelete(contenido.id)} 
+                            <button
+                              onClick={() => handleDelete(contenido.id)}
                               className="p-1 text-red-600 hover:bg-red-100 rounded"
                               title="Eliminar"
                             >

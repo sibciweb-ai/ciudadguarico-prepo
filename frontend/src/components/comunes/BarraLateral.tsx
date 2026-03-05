@@ -1,17 +1,63 @@
+import { useState } from 'react';
 import { useContextoNoticias } from '../../contexts/ContextoNoticias';
 
 export default function BarraLateral() {
   const { contenidos } = useContextoNoticias();
+  const [imagenAmpliada, setImagenAmpliada] = useState<string | null>(null);
 
   // Filtrar los contenidos destacados con ubicaciones laterales (side-1, side-2, etc.) y visibles
   const contenidosSide = Array.isArray(contenidos)
     ? contenidos.filter(c => c.ubicacion?.startsWith('side-') && c.visible)
     : [];
 
-
-
   return (
     <aside className="space-y-6">
+      {/* Modal lightbox para imagen ampliada */}
+      {imagenAmpliada && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 cursor-pointer"
+          onClick={() => setImagenAmpliada(null)}
+        >
+          <div className="relative max-w-3xl max-h-[90vh] p-4">
+            <img
+              src={imagenAmpliada}
+              alt="Imagen ampliada"
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+            />
+            <button
+              onClick={() => setImagenAmpliada(null)}
+              className="absolute top-2 right-2 bg-white/90 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow-lg transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CSS para hover zoom */}
+      <style>{`
+        .side-img-zoom {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+        .side-img-zoom:hover {
+          transform: scale(1.08);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+          z-index: 10;
+          position: relative;
+        }
+        .side-img-container {
+          overflow: visible !important;
+        }
+        .side-img-container .zoom-hint {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .side-img-container:hover .zoom-hint {
+          opacity: 1;
+        }
+      `}</style>
+
       {/* Enlaces Institucionales */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="bg-guarico-blue text-white px-4 py-3">
@@ -75,9 +121,9 @@ export default function BarraLateral() {
       </div>
 
       {/* Contenido Relacionado (contenidos side) */}
-      <section className="bg-white rounded-lg shadow-md overflow-hidden">
+      <section className="bg-white rounded-lg shadow-md overflow-visible">
         <div className="bg-guarico-blue text-white px-4 py-3">
-          <h3 className="font-bold">Promociones</h3>
+          <h3 className="font-bold">ESPACIO PUBLICITARIO</h3>
         </div>
         <div className="p-4 space-y-4">
           {contenidosSide.length === 0 ? (
@@ -93,18 +139,17 @@ export default function BarraLateral() {
             </div>
           ) : (
             contenidosSide.map((contenido, idx) => (
-              <a
-                key={contenido.id || idx}
-                href={contenido.url || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block hover:opacity-90 transition-opacity"
-              >
-                <div className="relative">
+              <div key={contenido.id || idx} className="side-img-container relative">
+                <a
+                  href={contenido.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
                   <img
                     src={contenido.media}
                     alt={contenido.titulo || 'Banner lateral'}
-                    className="w-full h-auto object-contain rounded-lg shadow"
+                    className="w-full h-auto object-contain rounded-lg shadow side-img-zoom"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
@@ -115,7 +160,7 @@ export default function BarraLateral() {
                     }}
                   />
                   <div
-                    className="w-full h-24 bg-gray-100 rounded-lg shadow flex items-center justify-center hidden"
+                    className="w-full h-24 bg-gray-100 rounded-lg shadow flex items-center justify-center"
                     style={{ display: 'none' }}
                   >
                     <div className="text-center">
@@ -125,17 +170,22 @@ export default function BarraLateral() {
                       <p className="text-xs text-gray-500">{contenido.titulo || 'Banner'}</p>
                     </div>
                   </div>
-                </div>
-              </a>
+                </a>
+                {/* Botón para ampliar */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setImagenAmpliada(contenido.media);
+                  }}
+                  className="zoom-hint absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-2 py-1 rounded-full transition-all flex items-center gap-1"
+                  title="Click para ampliar"
+                >
+                  🔍 Ampliar
+                </button>
+              </div>
             ))
           )}
-        </div>
-      </section>
-
-      {/* Espacio adicional */}
-      <section className="bg-gray-100 rounded-lg p-4 text-center min-h-[600px] flex items-center justify-center">
-        <div className="text-gray-400">
-          <p className="text-sm">Próximamente más contenido</p>
         </div>
       </section>
     </aside>

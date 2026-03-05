@@ -56,10 +56,12 @@ const GestionarOpiniones: React.FC = () => {
 
   const handleSave = async () => {
     if (!nuevo.titulo || !nuevo.contenido || !nuevo.columnistaId) return;
+    const authToken = localStorage.getItem('token');
+    const config = { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } };
     if (editando) {
-      await axios.put(`/api/opiniones/${editando}`, nuevo);
+      await axios.put(`/api/opiniones/${editando}`, nuevo, config);
     } else {
-      await axios.post('/api/opiniones', nuevo);
+      await axios.post('/api/opiniones', nuevo, config);
     }
     setNuevo({});
     setEditando(null);
@@ -69,7 +71,7 @@ const GestionarOpiniones: React.FC = () => {
   const handleEdit = (op: Opinion) => {
     setNuevo({ ...op, columnistaId: op.columnista.id });
     setEditando(op.id);
-    
+
     // Cargar contenido en el editor
     if (editor) {
       editor.commands.setContent(op.contenido || '');
@@ -78,7 +80,8 @@ const GestionarOpiniones: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('¿Eliminar opinión?')) return;
-    await axios.delete(`/api/opiniones/${id}`);
+    const authToken = localStorage.getItem('token');
+    await axios.delete(`/api/opiniones/${id}`, { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } });
     fetchData();
   };
 
@@ -96,7 +99,7 @@ const GestionarOpiniones: React.FC = () => {
           <option value="">Selecciona columnista</option>
           {columnistas.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
         </select>
-        <input name="fecha" type="date" value={nuevo.fecha ? nuevo.fecha.slice(0,10) : ''} onChange={handleChange}
+        <input name="fecha" type="date" value={nuevo.fecha ? nuevo.fecha.slice(0, 10) : ''} onChange={handleChange}
           className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-400 transition" />
         <label className="flex items-center gap-2 text-gray-600">
           <input type="checkbox" name="destacado" checked={!!nuevo.destacado} onChange={e => setNuevo({ ...nuevo, destacado: e.target.checked })}
@@ -107,57 +110,53 @@ const GestionarOpiniones: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Contenido de la Opinión *
           </label>
-          
+
           <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
             {/* Barra de herramientas */}
             <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleBold().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Negrita
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleItalic().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Cursiva
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 H2
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Lista
               </button>
             </div>
-            
+
             {/* Área del editor */}
             <div className="min-h-[200px] w-full">
-              <EditorContent 
+              <EditorContent
                 editor={editor}
                 className="w-full h-full"
               />
             </div>
           </div>
-          
+
           <style>{`
             .editor-container .ProseMirror {
               min-height: 200px !important;
@@ -214,7 +213,7 @@ const GestionarOpiniones: React.FC = () => {
                 <tr key={op.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="py-2 px-4 whitespace-pre-line">{op.titulo}</td>
                   <td className="py-2 px-4">{op.columnista.nombre}</td>
-                  <td className="py-2 px-4">{op.fecha ? op.fecha.slice(0,10) : '-'}</td>
+                  <td className="py-2 px-4">{op.fecha ? op.fecha.slice(0, 10) : '-'}</td>
                   <td className="py-2 px-4">{op.destacado ? <span className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Sí</span> : <span className="inline-block bg-gray-200 text-gray-600 px-2 py-1 rounded text-xs">No</span>}</td>
                   <td className="py-2 px-4 flex gap-2">
                     <button onClick={() => handleEdit(op)}

@@ -29,10 +29,10 @@ const GestionarColumnistas: React.FC = () => {
         'http://localhost:3001/api', // Desarrollo alternativo
         '/api' // Fallback
       ];
-      
+
       let columnistasData = [];
       let apiConnected = false;
-      
+
       for (const API_BASE of API_ENDPOINTS) {
         try {
           console.log(`🔍 Admin: Conectando a ${API_BASE}/columnistas`);
@@ -46,7 +46,7 @@ const GestionarColumnistas: React.FC = () => {
           continue;
         }
       }
-      
+
       if (apiConnected) {
         setColumnistas(columnistasData);
       } else {
@@ -77,7 +77,7 @@ const GestionarColumnistas: React.FC = () => {
     if (nuevo.facebook) redesSociales.facebook = nuevo.facebook;
     if (nuevo.twitter) redesSociales.twitter = nuevo.twitter;
     if (nuevo.instagram) redesSociales.instagram = nuevo.instagram;
-    
+
     const payload = {
       nombre: nuevo.nombre,
       bio: nuevo.bio,
@@ -91,16 +91,16 @@ const GestionarColumnistas: React.FC = () => {
       'http://localhost:3001/api', // Desarrollo alternativo
       '/api' // Fallback
     ];
-    
+
     let success = false;
     for (const API_BASE of API_ENDPOINTS) {
       try {
+        const authToken = localStorage.getItem('token');
+        const config = { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } };
         if (editando) {
-          await axios.put(`${API_BASE}/columnistas/${editando}`, payload);
-          console.log('✅ Admin: Columnista actualizado');
+          await axios.put(`${API_BASE}/columnistas/${editando}`, payload, config);
         } else {
-          await axios.post(`${API_BASE}/columnistas`, payload);
-          console.log('✅ Admin: Columnista creado');
+          await axios.post(`${API_BASE}/columnistas`, payload, config);
         }
         success = true;
         break;
@@ -109,7 +109,7 @@ const GestionarColumnistas: React.FC = () => {
         continue;
       }
     }
-    
+
     if (!success) {
       alert('Error: No se pudo conectar al servidor');
       return;
@@ -129,7 +129,7 @@ const GestionarColumnistas: React.FC = () => {
         console.error('Error parsing redes sociales:', e);
       }
     }
-    
+
     setNuevo({
       ...col,
       facebook: redesParseadas.facebook || '',
@@ -141,19 +141,19 @@ const GestionarColumnistas: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('¿Eliminar columnista?')) return;
-    
+
     const API_ENDPOINTS = [
       '/api', // Producción
       'http://localhost:3000/api', // Desarrollo
       'http://localhost:3001/api', // Desarrollo alternativo
       '/api' // Fallback
     ];
-    
+
     let success = false;
     for (const API_BASE of API_ENDPOINTS) {
       try {
-        await axios.delete(`${API_BASE}/columnistas/${id}`);
-        console.log('✅ Admin: Columnista eliminado');
+        const authToken = localStorage.getItem('token');
+        await axios.delete(`${API_BASE}/columnistas/${id}`, { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } });
         success = true;
         break;
       } catch (apiError: any) {
@@ -161,7 +161,7 @@ const GestionarColumnistas: React.FC = () => {
         continue;
       }
     }
-    
+
     if (success) {
       fetchColumnistas();
     } else {
@@ -192,7 +192,12 @@ const GestionarColumnistas: React.FC = () => {
                   const formData = new FormData();
                   formData.append('file', file);
                   // Usa el endpoint backend para subir la imagen
-                  const res = await axios.post('/api/media', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+                  const res = await axios.post('/api/media', formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                      ...(localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {})
+                    }
+                  });
                   const url = res.data.url;
                   setNuevo(prev => ({ ...prev, fotoUrl: url }));
                 } catch (err) {
@@ -207,26 +212,26 @@ const GestionarColumnistas: React.FC = () => {
         <div className="col-span-1 md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">Redes Sociales (opcional)</label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input 
-              name="facebook" 
-              placeholder="Facebook (URL)" 
-              value={nuevo.facebook || ''} 
+            <input
+              name="facebook"
+              placeholder="Facebook (URL)"
+              value={nuevo.facebook || ''}
               onChange={handleChange}
-              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition" 
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition"
             />
-            <input 
-              name="twitter" 
-              placeholder="Twitter (URL)" 
-              value={nuevo.twitter || ''} 
+            <input
+              name="twitter"
+              placeholder="Twitter (URL)"
+              value={nuevo.twitter || ''}
               onChange={handleChange}
-              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition" 
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition"
             />
-            <input 
-              name="instagram" 
-              placeholder="Instagram (URL)" 
-              value={nuevo.instagram || ''} 
+            <input
+              name="instagram"
+              placeholder="Instagram (URL)"
+              value={nuevo.instagram || ''}
               onChange={handleChange}
-              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition" 
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-400 transition"
             />
           </div>
         </div>

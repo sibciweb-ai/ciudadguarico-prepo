@@ -45,10 +45,12 @@ const GestionarEditoriales: React.FC = () => {
 
   const handleSave = async () => {
     if (!nuevo.titulo || !nuevo.contenido) return;
+    const authToken = localStorage.getItem('token');
+    const config = { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } };
     if (editando) {
-      await axios.put(`/api/editoriales/${editando}`, nuevo);
+      await axios.put(`/api/editoriales/${editando}`, nuevo, config);
     } else {
-      await axios.post('/api/editoriales', nuevo);
+      await axios.post('/api/editoriales', nuevo, config);
     }
     setNuevo({});
     setEditando(null);
@@ -58,7 +60,7 @@ const GestionarEditoriales: React.FC = () => {
   const handleEdit = (ed: Editorial) => {
     setNuevo(ed);
     setEditando(ed.id);
-    
+
     // Cargar contenido en el editor
     if (editor) {
       editor.commands.setContent(ed.contenido || '');
@@ -67,7 +69,8 @@ const GestionarEditoriales: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('¿Eliminar editorial?')) return;
-    await axios.delete(`/api/editoriales/${id}`);
+    const authToken = localStorage.getItem('token');
+    await axios.delete(`/api/editoriales/${id}`, { headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) } });
     fetchEditoriales();
   };
 
@@ -82,63 +85,59 @@ const GestionarEditoriales: React.FC = () => {
           className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition" />
         <input name="autor" placeholder="Autor (opcional)" value={nuevo.autor || ''} onChange={handleChange}
           className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition" />
-        <input name="fecha" type="date" value={nuevo.fecha ? nuevo.fecha.slice(0,10) : ''} onChange={handleChange}
+        <input name="fecha" type="date" value={nuevo.fecha ? nuevo.fecha.slice(0, 10) : ''} onChange={handleChange}
           className="rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition" />
         <div className="col-span-1 md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Contenido del Editorial *
           </label>
-          
+
           <div className="editor-container bg-white border border-gray-300 rounded-lg overflow-hidden">
             {/* Barra de herramientas */}
             <div className="flex items-center gap-2 p-3 bg-gray-50 border-b flex-wrap">
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleBold().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bold') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Negrita
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleItalic().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('italic') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Cursiva
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 H2
               </button>
               <button
                 type="button"
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                className={`px-3 py-1 text-sm rounded transition-colors ${ 
-                  editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
-                }`}
+                className={`px-3 py-1 text-sm rounded transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-700 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
               >
                 Lista
               </button>
             </div>
-            
+
             {/* Área del editor */}
             <div className="min-h-[200px] w-full">
-              <EditorContent 
+              <EditorContent
                 editor={editor}
                 className="w-full h-full"
               />
             </div>
           </div>
-          
+
           <style>{`
             .editor-container .ProseMirror {
               min-height: 200px !important;
@@ -194,7 +193,7 @@ const GestionarEditoriales: React.FC = () => {
                 <tr key={ed.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="py-2 px-4 whitespace-pre-line">{ed.titulo}</td>
                   <td className="py-2 px-4">{ed.autor || '-'}</td>
-                  <td className="py-2 px-4">{ed.fecha ? ed.fecha.slice(0,10) : '-'}</td>
+                  <td className="py-2 px-4">{ed.fecha ? ed.fecha.slice(0, 10) : '-'}</td>
                   <td className="py-2 px-4 flex gap-2">
                     <button onClick={() => handleEdit(ed)}
                       className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold px-3 py-1 rounded transition"

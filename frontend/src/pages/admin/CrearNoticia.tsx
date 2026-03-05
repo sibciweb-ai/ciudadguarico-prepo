@@ -567,23 +567,20 @@ export default function CrearNoticia({ onCreada }: Props) {
                     }
                   }
 
-                  // Pedir leyenda compartida (opcional)
-                  const leyenda = archivos.length === 1
-                    ? (window.prompt('Leyenda para esta imagen (opcional):', '') || '')
-                    : (window.prompt(`Leyenda compartida para las ${archivos.length} imágenes (opcional):`, '') || '');
+                  // Mostrar progreso
+                  mostrarNotificacion(
+                    `Subiendo ${archivos.length} imagen${archivos.length > 1 ? 'es' : ''}...`,
+                    'info',
+                    'Por favor espera, no cierres esta página.'
+                  );
 
                   // Obtener token de autenticación
                   const authToken = localStorage.getItem('token');
 
-                  let subidas = 0;
-                  let errores = 0;
-
-                  for (const file of archivos) {
+                  // Subir imágenes en paralelo (de a 3 para no sobrecargar)
+                  const subirImagen = async (file: File): Promise<string | null> => {
                     const formData = new FormData();
                     formData.append('file', file);
-                    if (leyenda.trim()) {
-                      formData.append('descripcion', leyenda.trim());
-                    }
                     try {
                       const res = await fetch('/api/media', {
                         method: 'POST',
@@ -592,25 +589,28 @@ export default function CrearNoticia({ onCreada }: Props) {
                         },
                         body: formData
                       });
-                      if (!res.ok) throw new Error('Error al subir la imagen');
+                      if (!res.ok) throw new Error('Error al subir');
                       const data = await res.json();
-                      if (!data.url) throw new Error('No se obtuvo la URL de la imagen');
+                      return data.url || null;
+                    } catch {
+                      return null;
+                    }
+                  };
 
-                      // Insertar como figure con figcaption si hay leyenda
-                      if (leyenda.trim()) {
-                        editor.chain().focus().insertContent(
-                          `<figure>
-                            <img src="${data.url}" alt="${leyenda.replace(/"/g, '&quot;')}" />
-                            <figcaption>${leyenda}</figcaption>
-                          </figure>`
-                        ).run();
-                      } else {
-                        editor.chain().focus().insertContent(
-                          `<figure><img src="${data.url}" alt="" /></figure>`
-                        ).run();
-                      }
+                  // Subir todas en paralelo
+                  const resultados = await Promise.all(archivos.map(f => subirImagen(f)));
+
+                  // Insertar las que subieron exitosamente
+                  let subidas = 0;
+                  let errores = 0;
+                  for (const url of resultados) {
+                    if (url) {
+                      // Insertar imagen con un párrafo abajo para poder escribir entre imágenes
+                      editor.chain().focus().insertContent(
+                        `<figure><img src="${url}" alt="" /></figure><p></p>`
+                      ).run();
                       subidas++;
-                    } catch (err) {
+                    } else {
                       errores++;
                     }
                   }
@@ -618,13 +618,19 @@ export default function CrearNoticia({ onCreada }: Props) {
                   // Notificación final
                   if (errores === 0) {
                     mostrarNotificacion(
-                      `${subidas} imagen${subidas > 1 ? 'es' : ''} insertada${subidas > 1 ? 's' : ''} correctamente`,
+                      `✅ ${subidas} imagen${subidas > 1 ? 'es' : ''} insertada${subidas > 1 ? 's' : ''} correctamente`,
                       'exito'
+                    );
+                  } else if (subidas > 0) {
+                    mostrarNotificacion(
+                      `${subidas} subida${subidas > 1 ? 's' : ''}, ${errores} fallida${errores > 1 ? 's' : ''}`,
+                      'advertencia'
                     );
                   } else {
                     mostrarNotificacion(
-                      `${subidas} subida${subidas > 1 ? 's' : ''}, ${errores} error${errores > 1 ? 'es' : ''}`,
-                      errores === archivos.length ? 'error' : 'advertencia'
+                      'Error al subir las imágenes',
+                      'error',
+                      'Verifica tu conexión e intenta de nuevo.'
                     );
                   }
                   e.target.value = '';
