@@ -6,7 +6,7 @@ import { Calendar, Clock } from 'lucide-react';
 import { obtenerImagenSeccion } from '../utils/imagenesSeccion';
 import SEOHead from '../components/seo/SEOHead';
 
-const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Nacionales', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación', 'Política'];
+const seccionesValidas = ['Gestión', 'Municipales', 'Deportes', 'Salud', 'Nacionales', 'Cultura', 'Producción', 'Comunidad', 'Seguridad', 'Turismo', 'Educación', 'Política', 'Internacionales'];
 
 // Gradientes por sección (no usado actualmente porque el encabezado usa imagen de fondo)
 
