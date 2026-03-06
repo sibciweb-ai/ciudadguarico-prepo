@@ -25,7 +25,8 @@ const SECCIONES = [
     'Seguridad',
     'Turismo',
     'Educación',
-    'Política'
+    'Política',
+    'Internacionales'
 ];
 
 async function seedSecciones() {

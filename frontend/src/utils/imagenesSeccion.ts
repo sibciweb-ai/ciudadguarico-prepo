@@ -16,7 +16,8 @@ export const obtenerImagenSeccion = (seccion: string): string => {
     'Editorial': '/editorial.jpg',
     'Columnistas': '/columnistas.jpg',
     'Cantaguarico': '/cantaguarico.jpg',
-    'Política': '/backgroun-secciones.jpg'
+    'Política': '/politica.jpg',
+    'Internacionales': '/internacionales.jpg'
   };
 
   // Retorna la imagen específica de la sección o una imagen por defecto
@@ -36,5 +37,6 @@ export const seccionesValidas = [
   'Seguridad',
   'Turismo',
   'Educación',
-  'Política'
+  'Política',
+  'Internacionales'
 ];

@@ -21,6 +21,7 @@ const seccionesMas = [
   { nombre: 'TURISMO', ruta: '/seccion/Turismo' },
   { nombre: 'EDUCACIÓN', ruta: '/seccion/Educación' },
   { nombre: 'POLÍTICA', ruta: '/seccion/Política' },
+  { nombre: 'INTERNACIONALES', ruta: '/seccion/Internacionales' },
 ];
 
 // Todas las secciones para móvil
@@ -108,8 +109,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
           <Link
             to="/"
             className={`flex items-center px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${location.pathname === '/'
-                ? 'text-guarico-gold bg-white/10'
-                : 'text-white hover:bg-white/10'
+              ? 'text-guarico-gold bg-white/10'
+              : 'text-white hover:bg-white/10'
               }`}
           >
             <Home size={16} className="mr-2" />
@@ -123,8 +124,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                 key={seccion.nombre}
                 to={seccion.ruta}
                 className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${location.pathname === seccion.ruta
-                    ? 'text-guarico-gold bg-white/10'
-                    : 'text-white hover:bg-white/10'
+                  ? 'text-guarico-gold bg-white/10'
+                  : 'text-white hover:bg-white/10'
                   }`}
               >
                 {seccion.nombre}
@@ -139,8 +140,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                   setDropdownMasAbierto(false);
                 }}
                 className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 whitespace-nowrap ${location.pathname.startsWith('/opinion')
-                    ? 'text-guarico-gold bg-white/10'
-                    : 'text-white hover:bg-white/10'
+                  ? 'text-guarico-gold bg-white/10'
+                  : 'text-white hover:bg-white/10'
                   }`}
                 aria-haspopup="menu"
                 aria-expanded={dropdownOpinionAbierto}
@@ -155,8 +156,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                       key={sub.nombre}
                       to={sub.ruta}
                       className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${location.pathname === sub.ruta
-                          ? 'text-guarico-gold bg-guarico-gold/10'
-                          : 'hover:bg-gray-50'
+                        ? 'text-guarico-gold bg-guarico-gold/10'
+                        : 'hover:bg-gray-50'
                         }`}
                       onClick={() => setDropdownOpinionAbierto(false)}
                     >
@@ -175,8 +176,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                   setDropdownOpinionAbierto(false);
                 }}
                 className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 ${masActivo
-                    ? 'text-guarico-gold bg-white/10'
-                    : 'text-white hover:bg-white/10'
+                  ? 'text-guarico-gold bg-white/10'
+                  : 'text-white hover:bg-white/10'
                   }`}
               >
                 MÁS
@@ -189,8 +190,8 @@ export default function BarraNavegacion({ isSticky = false }: { isSticky?: boole
                       key={seccion.nombre}
                       to={seccion.ruta}
                       className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${location.pathname === seccion.ruta
-                          ? 'text-guarico-gold bg-guarico-gold/10'
-                          : 'hover:bg-gray-50'
+                        ? 'text-guarico-gold bg-guarico-gold/10'
+                        : 'hover:bg-gray-50'
                         }`}
                       onClick={() => setDropdownMasAbierto(false)}
                     >

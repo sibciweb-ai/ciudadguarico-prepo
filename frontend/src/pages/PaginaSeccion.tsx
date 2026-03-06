@@ -91,7 +91,7 @@ export default function PaginaSeccion() {
                   {/* Imagen */}
                   <div className="relative h-48 overflow-hidden rounded-t-lg">
                     <img
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                       src={imagenPrincipal}
                       alt={noticia.titulo}
                       loading="lazy"

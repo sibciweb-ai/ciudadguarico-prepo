@@ -421,8 +421,8 @@ export default function GestionarNoticias() {
                     key={pagina}
                     onClick={() => setPaginaActual(pagina)}
                     className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${paginaActual === pagina
-                        ? 'bg-red-600 text-white'
-                        : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                      ? 'bg-red-600 text-white'
+                      : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
                       }`}
                   >
                     {pagina}
@@ -523,6 +523,61 @@ export default function GestionarNoticias() {
                     >
                       Lista
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('edit-img-input')?.click()}
+                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-1"
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                      Insertar imágenes
+                    </button>
+                    <input
+                      type="file"
+                      id="edit-img-input"
+                      accept="image/*"
+                      multiple
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        if (!e.target.files || e.target.files.length === 0 || !editor) return;
+                        const archivos = Array.from(e.target.files);
+                        if (archivos.length > 10) {
+                          mostrarNotificacion('Solo puedes subir hasta 10 imágenes a la vez', 'error');
+                          e.target.value = '';
+                          return;
+                        }
+                        const authToken = localStorage.getItem('token');
+                        const subirImagen = async (file: File): Promise<string | null> => {
+                          const formData = new FormData();
+                          formData.append('file', file);
+                          try {
+                            const res = await fetch('/api/media', {
+                              method: 'POST',
+                              headers: { ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}) },
+                              body: formData
+                            });
+                            if (!res.ok) throw new Error('Error');
+                            const data = await res.json();
+                            return data.url || null;
+                          } catch { return null; }
+                        };
+                        const resultados = await Promise.all(archivos.map(f => subirImagen(f)));
+                        let subidas = 0;
+                        for (const url of resultados) {
+                          if (url) {
+                            editor.chain().focus().insertContent(
+                              `<figure><img src="${url}" alt="" /></figure><p></p>`
+                            ).run();
+                            subidas++;
+                          }
+                        }
+                        if (subidas > 0) {
+                          mostrarNotificacion(`${subidas} imagen${subidas > 1 ? 'es' : ''} insertada${subidas > 1 ? 's' : ''}`, 'exito');
+                        } else {
+                          mostrarNotificacion('Error al subir las imágenes', 'error');
+                        }
+                        e.target.value = '';
+                      }}
+                    />
                   </div>
 
                   {/* Área del editor */}

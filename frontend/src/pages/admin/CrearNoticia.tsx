@@ -370,7 +370,7 @@ export default function CrearNoticia({ onCreada }: Props) {
                   <img
                     src={previewUrl}
                     alt="Previsualización"
-                    className="w-full h-64 object-cover"
+                    className="w-full h-64 object-cover object-top"
                   />
                   <button
                     type="button"

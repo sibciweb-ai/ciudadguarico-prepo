@@ -13,14 +13,14 @@ export default function VistaNoticia() {
   const [noticia, setNoticia] = useState<Noticia | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(false);
-  
+
   if (!idOrSlug) return <Navigate to="/" replace />;
 
   useEffect(() => {
     const cargarNoticia = async () => {
       setCargando(true);
       setError(false);
-      
+
       // Primero intentar obtener de las noticias ya cargadas por ID
       const noticiaLocal = obtenerNoticiaPorId(idOrSlug);
       if (noticiaLocal) {
@@ -28,7 +28,7 @@ export default function VistaNoticia() {
         setCargando(false);
         return;
       }
-      
+
       // Buscar por slug en las noticias ya cargadas
       const noticiaPorSlug = noticias.find(n => n.slug === idOrSlug);
       if (noticiaPorSlug) {
@@ -36,12 +36,12 @@ export default function VistaNoticia() {
         setCargando(false);
         return;
       }
-      
+
       // Si no está en las noticias locales, cargar desde el backend (acepta slug o ID)
       try {
         const response = await axios.get(createApiUrl(`/news/${idOrSlug}`));
         const noticiaData = response.data;
-        
+
         // Formatear la noticia igual que en el contexto
         const noticiaFormateada: Noticia = {
           id: noticiaData.id,
@@ -61,7 +61,7 @@ export default function VistaNoticia() {
           created_at: noticiaData.created_at,
           updated_at: noticiaData.updated_at
         };
-        
+
         setNoticia(noticiaFormateada);
       } catch (error) {
         console.error('Error al cargar noticia:', error);
@@ -73,7 +73,7 @@ export default function VistaNoticia() {
 
     cargarNoticia();
   }, [idOrSlug, obtenerNoticiaPorId, noticias]);
-  
+
   if (cargando) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -84,7 +84,7 @@ export default function VistaNoticia() {
       </div>
     );
   }
-  
+
   if (error || !noticia) return <Navigate to="/" replace />;
 
   // Función para convertir fecha a Date si es string
@@ -110,7 +110,7 @@ export default function VistaNoticia() {
   const compartirEnRedes = (red: string) => {
     const url = window.location.href;
     const texto = noticia.titulo;
-    
+
     switch (red) {
       case 'instagram':
         // Instagram no permite compartir enlaces directamente, así que copiamos al portapapeles
@@ -145,138 +145,138 @@ export default function VistaNoticia() {
         section={nombreSeccion}
         tags={[nombreSeccion, 'Venezuela', 'Guárico', 'noticias']}
       />
-      
+
       <div className="p-6">
         {/* Imagen principal */}
-      <div className="relative mb-6">
-        <img
-          src={imagenPrincipal}
-          alt={noticia.titulo}
-          className="w-full h-64 md:h-96 object-cover rounded-lg"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg" />
-        <span className="absolute top-4 left-4 bg-guarico-blue text-guarico-white px-3 py-1 text-sm rounded-lg shadow-lg">
-          {nombreSeccion}
-        </span>
-      </div>
-      {leyendaImagen && (
-        <p className="text-sm text-gray-600 -mt-4 mb-4 italic text-left">
-          {leyendaImagen}
-        </p>
-      )}
+        <div className="relative mb-6">
+          <img
+            src={imagenPrincipal}
+            alt={noticia.titulo}
+            className="w-full h-64 md:h-96 object-cover object-top rounded-lg"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg" />
+          <span className="absolute top-4 left-4 bg-guarico-blue text-guarico-white px-3 py-1 text-sm rounded-lg shadow-lg">
+            {nombreSeccion}
+          </span>
+        </div>
+        {leyendaImagen && (
+          <p className="text-sm text-gray-600 -mt-4 mb-4 italic text-left">
+            {leyendaImagen}
+          </p>
+        )}
 
-      {/* Título */}
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight font-serif">
-        {noticia.titulo}
-      </h1>
-      
-      {/* Metadatos y compartir */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 text-sm text-gray-600 border-b border-gray-200 pb-4">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center">
-            <Calendar size={16} className="mr-2 text-guarico-blue" />
-            <span>{convertirFecha(noticia.fecha_publicacion).toLocaleDateString('es-ES', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}</span>
+        {/* Título */}
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight font-serif">
+          {noticia.titulo}
+        </h1>
+
+        {/* Metadatos y compartir */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 text-sm text-gray-600 border-b border-gray-200 pb-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center">
+              <Calendar size={16} className="mr-2 text-guarico-blue" />
+              <span>{convertirFecha(noticia.fecha_publicacion).toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</span>
+            </div>
+            {noticia.autorTexto && (
+              <div className="flex items-center">
+                <User size={16} className="mr-2 text-guarico-blue" />
+                <span><span className="font-semibold">Redacción por</span> {noticia.autorTexto}</span>
+              </div>
+            )}
+            {noticia.autorFoto && (
+              <div className="flex items-center">
+                <Camera size={16} className="mr-2 text-guarico-blue" />
+                <span><span className="font-semibold">Fotografía por</span> {noticia.autorFoto}</span>
+              </div>
+            )}
           </div>
-          {noticia.autorTexto && (
-            <div className="flex items-center">
-              <User size={16} className="mr-2 text-guarico-blue" />
-              <span><span className="font-semibold">Redacción por</span> {noticia.autorTexto}</span>
-            </div>
-          )}
-          {noticia.autorFoto && (
-            <div className="flex items-center">
-              <Camera size={16} className="mr-2 text-guarico-blue" />
-              <span><span className="font-semibold">Fotografía por</span> {noticia.autorFoto}</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Share2 size={16} className="text-gray-500" />
-          <span className="text-xs text-gray-500 mr-2">Compartir:</span>
-          <button
-            onClick={() => compartirEnRedes('instagram')}
-            className="p-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
-            title="Compartir en Instagram"
-          >
-            <Instagram size={14} />
-          </button>
-          <button
-            onClick={() => compartirEnRedes('facebook')}
-            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            title="Compartir en Facebook"
-          >
-            <Facebook size={14} />
-          </button>
-          <button
-            onClick={() => compartirEnRedes('x')}
-            className="p-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-            title="Compartir en X (Twitter)"
-          >
-            <X size={14} />
-          </button>
-          <button
-            onClick={() => compartirEnRedes('whatsapp')}
-            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-            title="Compartir en WhatsApp"
-          >
-            <MessageCircle size={14} />
-          </button>
-        </div>
-      </div>
-      
-      {/* Contenido */}
-      <div className="prose prose-lg max-w-none">
-        <p className="text-xl text-gray-700 leading-relaxed mb-6 font-medium border-l-4 border-guarico-blue pl-4 italic">
-          <span className="summary-text">{noticia.resumen}</span>
-        </p>
-        
-        <div className="text-gray-800 leading-relaxed space-y-4 noticia-individual">
-  {/* Renderizar el contenido como HTML enriquecido (incluyendo imágenes) */}
-  <div
-    className="prose prose-lg max-w-none"
-    dangerouslySetInnerHTML={{ __html: noticia.contenido }}
-  />
-</div>
-      </div>
 
-      {/* Noticias relacionadas */}
-      {noticiasRelacionadas.length > 0 && (
-        <div className="mt-8 bg-gray-50 p-6 rounded-lg border-t border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-            Más noticias de {nombreSeccion}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {noticiasRelacionadas.map((noticiaRel) => {
-              const imagenRel = noticiaRel.media?.find(m => m.tipo === 'imagen')?.url || '';
-              return (
-                <Link
-                  key={noticiaRel.id}
-                  to={obtenerUrlNoticia(noticiaRel)}
-                  className="block hover:bg-white p-3 rounded-lg transition-colors"
-                >
-                  <img
-                    src={imagenRel}
-                    alt={noticiaRel.titulo}
-                    className="w-full h-32 object-cover rounded-lg mb-2"
-                  />
-                  <h4 className="font-semibold text-sm text-gray-900 line-clamp-2 hover:text-guarico-blue transition-colors">
-                    {noticiaRel.titulo}
-                  </h4>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {convertirFecha(noticiaRel.fecha_publicacion).toLocaleDateString('es-ES')}
-                  </p>
-                </Link>
-              );
-            })}
+          <div className="flex items-center space-x-2">
+            <Share2 size={16} className="text-gray-500" />
+            <span className="text-xs text-gray-500 mr-2">Compartir:</span>
+            <button
+              onClick={() => compartirEnRedes('instagram')}
+              className="p-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+              title="Compartir en Instagram"
+            >
+              <Instagram size={14} />
+            </button>
+            <button
+              onClick={() => compartirEnRedes('facebook')}
+              className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              title="Compartir en Facebook"
+            >
+              <Facebook size={14} />
+            </button>
+            <button
+              onClick={() => compartirEnRedes('x')}
+              className="p-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              title="Compartir en X (Twitter)"
+            >
+              <X size={14} />
+            </button>
+            <button
+              onClick={() => compartirEnRedes('whatsapp')}
+              className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              title="Compartir en WhatsApp"
+            >
+              <MessageCircle size={14} />
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Contenido */}
+        <div className="prose prose-lg max-w-none">
+          <p className="text-xl text-gray-700 leading-relaxed mb-6 font-medium border-l-4 border-guarico-blue pl-4 italic">
+            <span className="summary-text">{noticia.resumen}</span>
+          </p>
+
+          <div className="text-gray-800 leading-relaxed space-y-4 noticia-individual">
+            {/* Renderizar el contenido como HTML enriquecido (incluyendo imágenes) */}
+            <div
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: noticia.contenido }}
+            />
+          </div>
+        </div>
+
+        {/* Noticias relacionadas */}
+        {noticiasRelacionadas.length > 0 && (
+          <div className="mt-8 bg-gray-50 p-6 rounded-lg border-t border-gray-200">
+            <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+              Más noticias de {nombreSeccion}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {noticiasRelacionadas.map((noticiaRel) => {
+                const imagenRel = noticiaRel.media?.find(m => m.tipo === 'imagen')?.url || '';
+                return (
+                  <Link
+                    key={noticiaRel.id}
+                    to={obtenerUrlNoticia(noticiaRel)}
+                    className="block hover:bg-white p-3 rounded-lg transition-colors"
+                  >
+                    <img
+                      src={imagenRel}
+                      alt={noticiaRel.titulo}
+                      className="w-full h-32 object-cover object-top rounded-lg mb-2"
+                    />
+                    <h4 className="font-semibold text-sm text-gray-900 line-clamp-2 hover:text-guarico-blue transition-colors">
+                      {noticiaRel.titulo}
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {convertirFecha(noticiaRel.fecha_publicacion).toLocaleDateString('es-ES')}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

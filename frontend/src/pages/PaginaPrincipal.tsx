@@ -213,7 +213,7 @@ export default function PaginaPrincipal() {
                             <img
                               src={noticiaMostrada.media?.find(m => m.tipo === 'imagen')?.url || ''}
                               alt={noticiaMostrada.titulo}
-                              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                              className="w-full h-80 object-cover object-top group-hover:scale-105 transition-transform duration-300"
                               loading="eager"
                               fetchPriority="high"
                               width={800}
@@ -247,8 +247,8 @@ export default function PaginaPrincipal() {
                             key={index}
                             onClick={() => irANoticia(index)}
                             className={`w-2 h-2 rounded-full transition-all ${index === noticiaActual
-                                ? 'bg-white w-6'
-                                : 'bg-white/50 hover:bg-white'
+                              ? 'bg-white w-6'
+                              : 'bg-white/50 hover:bg-white'
                               }`}
                             aria-label={`Ir a noticia ${index + 1}`}
                           />
@@ -301,7 +301,7 @@ export default function PaginaPrincipal() {
                         <img
                           src={noticia.media?.find(m => m.tipo === 'imagen')?.url || ''}
                           alt={noticia.titulo}
-                          className="w-full sm:w-24 sm:h-20 h-40 object-cover rounded flex-shrink-0 mb-2 sm:mb-0"
+                          className="w-full sm:w-24 sm:h-20 h-40 object-cover object-top rounded flex-shrink-0 mb-2 sm:mb-0"
                           loading="lazy"
                           width={96}
                           height={80}

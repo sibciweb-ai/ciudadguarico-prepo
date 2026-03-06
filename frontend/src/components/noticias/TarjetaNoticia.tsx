@@ -32,7 +32,7 @@ export default function TarjetaNoticia({ noticia }: Props) {
         <img
           src={imagenPrincipal}
           alt={noticia.titulo}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
           width={400}
           height={256}

@@ -67,7 +67,7 @@ export default function CarruselNoticias() {
                   <img
                     src={imagenPrincipal}
                     alt={noticia.titulo}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                     loading={index === 0 ? 'eager' : 'lazy'}
                     width={800}
                     height={500}
